@@ -1,91 +1,71 @@
-<!DOCTYPE html>
-<html>
+﻿<!DOCTYPE html>
+<html lang="zh-cn">
 <head>
-  <meta charset="utf-8">
-  <title>2048</title>
-
-  <link href="style/main.css" rel="stylesheet" type="text/css">
-  <link rel="shortcut icon" href="favicon.ico">
-  <link rel="apple-touch-icon" href="meta/apple-touch-icon.png">
-  <link rel="apple-touch-startup-image" href="meta/apple-touch-startup-image-640x1096.png" media="(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)"> <!-- iPhone 5+ -->
-  <link rel="apple-touch-startup-image" href="meta/apple-touch-startup-image-640x920.png"  media="(device-width: 320px) and (device-height: 480px) and (-webkit-device-pixel-ratio: 2)"> <!-- iPhone, retina -->
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black">
-
-  <meta name="HandheldFriendly" content="True">
-  <meta name="MobileOptimized" content="320">
-  <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0, maximum-scale=1, user-scalable=no, minimal-ui">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="referrer" content="origin">
+    <title>marble</title>
+    <link type="text/css" rel="stylesheet" href="./marble/yangshi.css">
+    <script src="./marble/jquery-2.2.0.min.js"></script>
 </head>
 <body>
-  <div class="container">
-    <div class="heading">
-      <h1 class="title">2048</h1>
-      <div class="scores-container">
-        <div class="score-container">0</div>
-        <div class="best-container">0</div>
-      </div>
-    </div>
+    <a name="top"></a>
+    <!--done-->
+    <div id="home">
+        <div id="header">
+            <div id="blogTitle">
+                <a id="lnkBlogLogo" href="https://marblemm.github.io/"><img id="blogLogo" src="./marble/logo.gif" alt="返回主页"></a>
 
-    <div class="above-game">
-      <p class="game-intro">Join the numbers and get to the <strong>2048 tile!</strong></p>
-      <a class="restart-button">New Game</a>
-    </div>
+                <!--done-->
+                <h1><a id="Header1_HeaderTitle" class="headermaintitle" href="https://marblemm.github.io/">marble</a></h1>
+                <h2>既然选择了远方，便只顾风雨兼程</h2>
 
-    <div class="game-container">
-      <div class="game-message">
-        <p></p>
-        <div class="lower">
-	        <a class="keep-playing-button">Keep going</a>
-          <a class="retry-button">Try again</a>
-        </div>
-      </div>
 
-      <div class="grid-container">
-        <div class="grid-row">
-          <div class="grid-cell"></div>
-          <div class="grid-cell"></div>
-          <div class="grid-cell"></div>
-          <div class="grid-cell"></div>
-        </div>
-        <div class="grid-row">
-          <div class="grid-cell"></div>
-          <div class="grid-cell"></div>
-          <div class="grid-cell"></div>
-          <div class="grid-cell"></div>
-        </div>
-        <div class="grid-row">
-          <div class="grid-cell"></div>
-          <div class="grid-cell"></div>
-          <div class="grid-cell"></div>
-          <div class="grid-cell"></div>
-        </div>
-        <div class="grid-row">
-          <div class="grid-cell"></div>
-          <div class="grid-cell"></div>
-          <div class="grid-cell"></div>
-          <div class="grid-cell"></div>
-        </div>
-      </div>
+            </div><!--end: blogTitle 博客的标题和副标题 -->
+            <div id="navigator">
 
-      <div class="tile-container">
+                <ul id="navList">
+                    <li><a href="https://marblemm.github.io/" title="首页">首页</a></li>
+                    <li><a href="#" title="前端">前端</a></li>
+                    <li><a href="#" title="后端">后端</a></li>
+                    <li><a href="#" title="学习网站">学习网站</a></li>
+                    <li><a href="2018/index.html" title="游戏">游戏</a></li>
+                    <li><a href="#" title="其他">其他</a></li>
+                </ul>
+                <div class="blogStats">
 
-      </div>
-    </div>
 
-    <p class="game-explanation">
-      <strong class="important">How to play:</strong> Use your <strong>arrow keys</strong> to move the tiles. When two tiles with the same number touch, they <strong>merge into one!</strong>
-    </p>
-  </div>
 
-  <script src="js/bind_polyfill.js"></script>
-  <script src="js/classlist_polyfill.js"></script>
-  <script src="js/animframe_polyfill.js"></script>
-  <script src="js/keyboard_input_manager.js"></script>
-  <script src="js/html_actuator.js"></script>
-  <script src="js/grid.js"></script>
-  <script src="js/tile.js"></script>
-  <script src="js/local_storage_manager.js"></script>
-  <script src="js/game_manager.js"></script>
-  <script src="js/application.js"></script>
+                </div><!--end: blogStats -->
+            </div><!--end: navigator 博客导航栏 -->
+        </div><!--end: header 头部 -->
+        <div id="main">
+            <div id="mainContent">
+                <div class="forFlow">
+
+                    <!--done-->
+
+                    <div class="day">
+                        <div class="postTitle">
+                            <a id="homepage1_HomePageDays_DaysList_ctl00_DayList_TitleUrl_0" class="postTitle2" href="#">aaa</a>
+                        </div>
+                    </div>
+                    <div class="day">
+                        <div class="postTitle">
+                            <a id="homepage1_HomePageDays_DaysList_ctl01_DayList_TitleUrl_0" class="postTitle2" href="#">bbb</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div><!--end: forFlow -->
+    </div><!--end: mainContent 主体内容容器-->
+    </div><!--end: main -->
+    <div id="footer">
+        <!--done-->
+        Copyright ©2018 marble
+    </div><!--end: footer -->
+    </div><!--end: home 自定义的最大容器 -->
+    <a href="https://marblemm.github.io/#" id="goTop">#回到顶部</a>
+
 </body>
 </html>
