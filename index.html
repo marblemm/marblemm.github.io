@@ -5,67 +5,157 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="referrer" content="origin">
     <title>marble</title>
-    <link type="text/css" rel="stylesheet" href="./marble/yangshi.css">
-    <script src="./marble/jquery-2.2.0.min.js"></script>
+    <!--<link rel="stylesheet" href="css/nav.css">-->
+    <link type="text/css" rel="stylesheet" href="css/yangshi.css">
+    <script src="js/jquery-2.2.0.min.js"></script>
+
+    <style>
+
+        .subnav  li:hover {
+            background: -webkit-linear-gradient(#1c1c1c, #1b1b1b);
+
+        }
+
+        .subnav {
+            position: absolute;
+            top: 50px;
+            left: 0;
+            width: 100%;
+            -webkit-perspective: 400px;
+            max-height: 0;
+        }
+
+        .subnav li {
+            background: -webkit-linear-gradient(#292929, #252525);
+            opacity: 0;
+            transform: rotateY(90deg);
+            transition: opacity .4s, transform .5s;
+        }
+
+        .subnav  > li:hover .subnav li {
+            opacity: 1;
+            transform: none;
+
+        }
+
+        .subnav li:nth-child(1) {
+            /*-webkit-transition-delay: 250ms;*/
+
+        }
+
+        .subnav li:nth-child(2) {
+            -webkit-transition-delay: 200ms;
+
+        }
+
+        .subnav li:nth-child(3) {
+            -webkit-transition-delay: 150ms;
+
+        }
+
+        .subnav li:nth-child(4) {
+            -webkit-transition-delay: 100ms;
+
+        }
+
+        .subnav li:nth-child(5) {
+            -webkit-transition-delay: 50ms;
+
+        }
+
+        .subnav li:nth-child(6) {
+            -webkit-transition-delay: 0ms;
+
+        }
+
+        .subnav  > li:hover .subnav li:nth-child(1) {
+            -webkit-transition-delay: 0s;
+        }
+
+        .subnav  > li:hover .subnav li:nth-child(2) {
+            -webkit-transition-delay: 50ms;
+        }
+
+        .subnav  > li:hover .subnav li:nth-child(3) {
+            -webkit-transition-delay: 100ms;
+        }
+
+        .subnav > li:hover .subnav li:nth-child(4) {
+            -webkit-transition-delay: 150ms;
+        }
+
+        .subnav  > li:hover .subnav li:nth-child(5) {
+            -webkit-transition-delay: 200ms;
+        }
+
+        .subnav  > li:hover .subnav li:nth-child(6) {
+            -webkit-transition-delay: 250ms;
+        }
+
+
+    </style>
 </head>
 <body>
-    <a name="top"></a>
-    <!--done-->
-    <div id="home">
-        <div id="header">
-            <div id="blogTitle">
-                <a id="lnkBlogLogo" href="https://marblemm.github.io/"><img id="blogLogo" src="./marble/logo.gif" alt="返回主页"></a>
+<a name="top"></a>
+<!--done-->
+<div id="home">
+    <div id="header">
+        <div id="blogTitle">
+            <a id="lnkBlogLogo" href="https://marblemm.github.io/">
+                <img id="blogLogo" src="marble/logo.gif" alt="返回主页">
+            </a>
+            <!--done-->
+            <h1><a id="Header1_HeaderTitle" class="headermaintitle" href="https://marblemm.github.io/">marble</a></h1>
+            <h2>既然选择了远方，便只顾风雨兼程</h2>
+        </div><!--end: blogTitle 博客的标题和副标题 -->
+        <div id="navigator">
+            <ul id="navList">
+                <li><a href="https://marblemm.github.io/" title="首页">首页</a></li>
+                <li><a href="#" title="前端">前端</a></li>
+                <li><a href="#" title="后端">后端</a></li>
+                <li><a href="#" title="学习网站">学习网站</a></li>
+                <li><a href="#" >游戏</a>
+                    <ul class="subnav">
+                        <li><a href="2048/index.html">2048</a></li>
+                    </ul>
+                </li>
+                <li><a href="#" title="其他">其他</a></li>
+            </ul>
+            <div class="blogStats">
+
+
+            </div><!--end: blogStats -->
+        </div><!--end: navigator 博客导航栏 -->
+    </div><!--end: header 头部 -->
+    <div id="main">
+        <div id="mainContent">
+            <div class="forFlow">
 
                 <!--done-->
-                <h1><a id="Header1_HeaderTitle" class="headermaintitle" href="https://marblemm.github.io/">marble</a></h1>
-                <h2>既然选择了远方，便只顾风雨兼程</h2>
 
-
-            </div><!--end: blogTitle 博客的标题和副标题 -->
-            <div id="navigator">
-
-                <ul id="navList">
-                    <li><a href="https://marblemm.github.io/" title="首页">首页</a></li>
-                    <li><a href="#" title="前端">前端</a></li>
-                    <li><a href="#" title="后端">后端</a></li>
-                    <li><a href="#" title="学习网站">学习网站</a></li>
-                    <li><a href="./2048/index.html" title="游戏">游戏</a></li>
-                    <li><a href="#" title="其他">其他</a></li>
-                </ul>
-                <div class="blogStats">
-
-
-
-                </div><!--end: blogStats -->
-            </div><!--end: navigator 博客导航栏 -->
-        </div><!--end: header 头部 -->
-        <div id="main">
-            <div id="mainContent">
-                <div class="forFlow">
-
-                    <!--done-->
-
-                    <div class="day">
-                        <div class="postTitle">
-                            <a id="homepage1_HomePageDays_DaysList_ctl00_DayList_TitleUrl_0" class="postTitle2" href="#">aaa</a>
-                        </div>
+                <div class="day">
+                    <div class="postTitle">
+                        <a id="homepage1_HomePageDays_DaysList_ctl00_DayList_TitleUrl_0" class="postTitle2"
+                           href="navIndex.html">另一种风格的主页</a>
                     </div>
-                    <div class="day">
-                        <div class="postTitle">
-                            <a id="homepage1_HomePageDays_DaysList_ctl01_DayList_TitleUrl_0" class="postTitle2" href="#">bbb</a>
-                        </div>
+                </div>
+                <div class="day">
+                    <div class="postTitle">
+                        <a id="homepage1_HomePageDays_DaysList_ctl01_DayList_TitleUrl_0" class="postTitle2"
+                           href="#">bbb</a>
                     </div>
                 </div>
             </div>
-        </div><!--end: forFlow -->
-    </div><!--end: mainContent 主体内容容器-->
-    </div><!--end: main -->
-    <div id="footer">
-        <!--done-->
-        Copyright ©2018 marble
-    </div><!--end: footer -->
-    </div><!--end: home 自定义的最大容器 -->
-    <a href="https://marblemm.github.io/#" id="goTop">#回到顶部</a>
+        </div>
+    </div><!--end: forFlow -->
+</div><!--end: mainContent 主体内容容器-->
+</div><!--end: main -->
+<div id="footer">
+    <!--done-->
+    Copyright ©2018 marble
+</div><!--end: footer -->
+</div><!--end: home 自定义的最大容器 -->
+<a href="https://marblemm.github.io/#" id="goTop">#回到顶部</a>
 
 </body>
 </html>

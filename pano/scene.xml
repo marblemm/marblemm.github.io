@@ -1,0 +1,19 @@
+<krpano version="1.16" ispartialpano="true">
+	
+	<view hlookat="0" vlookat="0" maxpixelzoom="1.0" fovmax="100" limitview="range" vlookatmin="-100" vlookatmax="100" />
+
+	<preview url="preview.jpg" />
+
+	<image type="CUBE" multires="true" tilesize="512" progressive="false">
+		<level tiledimagewidth="2048" tiledimageheight="2048">
+			<cube url="l3_%s_%0v_%0h.jpg" />
+		</level>
+		<level tiledimagewidth="1024" tiledimageheight="1024">
+			<cube url="l2_%s_%0v_%0h.jpg" />
+		</level>
+		<level tiledimagewidth="512" tiledimageheight="512">
+			<cube url="l1_%s_%0v_%0h.jpg" />
+		</level>
+	</image>
+
+</krpano>
