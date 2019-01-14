@@ -1,7 +1,7 @@
 {
     "version": "1.7",
     "octreeDir": "data",
-    "projection": "",
+    "projection": "+proj=tmerc +lat_0=0 +lon_0=108 +k=1 +x_0=500000 +y_0=0 +ellps=GRS80 +units=m +no_defs",
     "points": 10000000,
     "boundingBox": {
         "lx": 588054.5117549588,
