@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="Cache-Control" content="no-transform" />
+  <meta http-equiv="Cache-Control" content="no-siteapp" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="format-detection" content="telephone=no,email=no,adress=no">
+  <!-- Color theme for statusbar -->
+  <meta name="theme-color" content="#000000" />
+  <!-- 强制页面在当前窗口以独立页面显示,防止别人在框架里调用页面 -->
+  <meta http-equiv="window-target" content="_top" />
+  
+  
+  <title>字符类型总结区别wchar_t和char | marble</title>
+  <meta name="description" content="1.区别wchar_t,char,WCHARANSI：即 char(8bit)，可用字符串处理函数：strcat( ),strcpy( ), strlen( )等以str打头的函数。 UNICODE：wchar_t(16bit)是Unicode字符的数据类型，可用字符串处理函数：wcscat(),wcscpy(),wcslen()等以wcs打头的函数。它实际定义在里： 123　　typedef u">
+<meta property="og:type" content="article">
+<meta property="og:title" content="字符类型总结区别wchar_t和char">
+<meta property="og:url" content="https://marblemm.github.io/2021/08/14/%E5%AD%97%E7%AC%A6%E7%B1%BB%E5%9E%8B%E6%80%BB%E7%BB%93%E5%8C%BA%E5%88%ABwchar_t%E5%92%8Cchar/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="1.区别wchar_t,char,WCHARANSI：即 char(8bit)，可用字符串处理函数：strcat( ),strcpy( ), strlen( )等以str打头的函数。 UNICODE：wchar_t(16bit)是Unicode字符的数据类型，可用字符串处理函数：wcscat(),wcscpy(),wcslen()等以wcs打头的函数。它实际定义在里： 123　　typedef u">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-08-14T03:07:29.000Z">
+<meta property="article:modified_time" content="2021-08-30T15:46:18.123Z">
+<meta property="article:author" content="John Doe">
+<meta name="twitter:card" content="summary">
+  <!-- Canonical links -->
+  <link rel="canonical" href="https://marblemm.github.io/2021/08/14/%E5%AD%97%E7%AC%A6%E7%B1%BB%E5%9E%8B%E6%80%BB%E7%BB%93%E5%8C%BA%E5%88%ABwchar_t%E5%92%8Cchar/index.html">
+  
+    <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png" type="image/x-icon">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+  
+  
+  
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body class="main-center theme-green" itemscope itemtype="http://schema.org/WebPage">
+  <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+  <div class="slimContent">
+    <div class="navbar-header">
+      
+      
+      <div class="profile-block text-center">
+        <a id="avatar" href="https://github.com/marblemm" target="_blank">
+          <img class="img-circle img-rotate" src="/images/avatar.jpg" width="200" height="200">
+        </a>
+        <h2 id="name" class="hidden-xs hidden-sm">marble</h2>
+        <h3 id="title" class="hidden-xs hidden-sm hidden-md">software Developer</h3>
+        <small id="location" class="text-muted hidden-xs hidden-sm"><i class="icon icon-map-marker"></i> wuhan, China</small>
+      </div>
+      
+      <div class="search" id="search-form-wrap">
+
+    <form class="search-form sidebar-form">
+        <div class="input-group">
+            <input type="text" class="search-form-input form-control" placeholder="搜索" />
+            <span class="input-group-btn">
+                <button type="submit" class="search-form-submit btn btn-flat" onclick="return false;"><i class="icon icon-search"></i></button>
+            </span>
+        </div>
+    </form>
+    <div class="ins-search">
+  <div class="ins-search-mask"></div>
+  <div class="ins-search-container">
+    <div class="ins-input-wrapper">
+      <input type="text" class="ins-search-input" placeholder="想要查找什么..." x-webkit-speech />
+      <button type="button" class="close ins-close ins-selectable" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+    </div>
+    <div class="ins-section-wrapper">
+      <div class="ins-section-container"></div>
+    </div>
+  </div>
+</div>
+
+
+</div>
+      <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <nav id="main-navbar" class="collapse navbar-collapse" itemscope itemtype="http://schema.org/SiteNavigationElement" role="navigation">
+      <ul class="nav navbar-nav main-nav ">
+        
+        
+        <li class="menu-item menu-item-home">
+          <a href="/.">
+            
+            <i class="icon icon-home-fill"></i>
+            
+            <span class="menu-title">首页</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives">
+            
+            <i class="icon icon-archives-fill"></i>
+            
+            <span class="menu-title">归档</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories">
+            
+            <i class="icon icon-folder"></i>
+            
+            <span class="menu-title">分类</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-links">
+          <a href="/links">
+            
+            <i class="icon icon-friendship"></i>
+            
+            <span class="menu-title">友链</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-pano">
+          <a href="/pano">
+            
+            <i class="icon icon-friendship"></i>
+            
+            <span class="menu-title">全景</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-pointcloud">
+          <a href="/pointcloud">
+            
+            <i class="icon icon-friendship"></i>
+            
+            <span class="menu-title">点云</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-game">
+          <a href="/2048">
+            
+            <i class="icon icon-friendship"></i>
+            
+            <span class="menu-title">游戏</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about">
+            
+            <i class="icon icon-cup-fill"></i>
+            
+            <span class="menu-title">关于</span>
+          </a>
+        </li>
+        
+      </ul>
+      
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/marblemm" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+    </ul>
+
+    </nav>
+  </div>
+</header>
+
+  
+    <aside class="sidebar" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    
+      <div class="widget">
+    <h3 class="widget-title">公告</h3>
+    <div class="widget-body">
+        <div id="board">
+            <div class="content">
+                <p>欢迎交流与分享经验!</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">分类</h3>
+    <div class="widget-body">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/c/">c++</a><span class="category-list-count">7</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/c-%E9%9D%A2%E8%AF%95/">c++面试</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/git/">git</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E4%B9%A6%E7%B1%8D/">书籍</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%A4%9A%E7%BA%BF%E7%A8%8B/">多线程</a><span class="category-list-count">5</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+
+    
+      
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget-body">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/08/">八月 2021</a><span class="archive-list-count">22</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget-body">
+      <ul class="recent-post-list list-unstyled no-thumbnail">
+        
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/c/">c++</a>
+              </p>
+              <p class="item-title">
+                <a href="/2021/08/29/%E5%AD%97%E7%AC%A6%E4%B8%B2BSTR/" class="title">字符串BSTR</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2021-08-29T15:57:04.000Z" itemprop="datePublished">2021-08-29</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/c/">c++</a>
+              </p>
+              <p class="item-title">
+                <a href="/2021/08/23/cpp11%E8%AE%A1%E6%97%B6%E5%99%A8-chrono/" class="title">cpp11计时器-chrono</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2021-08-23T15:21:16.000Z" itemprop="datePublished">2021-08-23</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/c/">c++</a>
+              </p>
+              <p class="item-title">
+                <a href="/2021/08/22/cpp%E5%8D%95%E4%BE%8B%E6%A8%A1%E5%BC%8F%E6%80%BB%E7%BB%93/" class="title">cpp单例模式总结</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2021-08-22T08:40:01.000Z" itemprop="datePublished">2021-08-22</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/c/">c++</a>
+              </p>
+              <p class="item-title">
+                <a href="/2021/08/22/cpp%E4%B8%ADstd-ref/" class="title">cpp中std::ref</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2021-08-22T07:07:29.000Z" itemprop="datePublished">2021-08-22</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                
+              </p>
+              <p class="item-title">
+                <a href="/2021/08/20/cpp%E4%B8%AD%E7%9A%84RAII%E6%9C%BA%E5%88%B6/" class="title">cpp中的RAII机制</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2021-08-20T15:52:47.000Z" itemprop="datePublished">2021-08-20</time>
+              </p>
+            </div>
+          </li>
+          
+      </ul>
+    </div>
+  </div>
+  
+
+    
+  </div>
+</aside>
+
+  
+  
+<aside class="sidebar sidebar-toc collapse" id="collapseToc" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    <nav id="toc" class="article-toc">
+      <h3 class="toc-title">文章目录</h3>
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E5%8C%BA%E5%88%ABwchar-t-char-WCHAR"><span class="toc-number">1.</span> <span class="toc-text">1.区别wchar_t,char,WCHAR</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-TCHAR"><span class="toc-number">2.</span> <span class="toc-text">2.TCHAR</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-bstr"><span class="toc-number">3.</span> <span class="toc-text">3.bstr</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-%E6%9B%B4%E8%BF%9B%E4%B8%80%E6%AD%A5%E7%9A%84%E5%AD%97%E7%AC%A6%E4%B8%B2%E4%BB%A5%E5%8F%8A%E5%85%B6%E6%8C%87%E9%92%88%E7%9A%84%E7%B1%BB%E5%9E%8B%E5%AE%9A%E4%B9%89"><span class="toc-number">4.</span> <span class="toc-text">4.更进一步的字符串以及其指针的类型定义</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-%E7%9B%B8%E4%BA%92%E8%BD%AC%E6%8D%A2"><span class="toc-number">5.</span> <span class="toc-text">5.相互转换</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#wchar-t-%E8%BD%AC%E4%B8%BA-char"><span class="toc-number">5.1.</span> <span class="toc-text">wchar_t*   转为  char*</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#char-%E8%BD%AC%E4%B8%BA-wchar-t"><span class="toc-number">5.2.</span> <span class="toc-text">char  转为  wchar_t</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#char-%E8%BD%AC%E6%8D%A2%E6%88%90CString"><span class="toc-number">5.3.</span> <span class="toc-text">char*转换成CString</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#CString%E8%BD%AC%E6%8D%A2%E6%88%90char"><span class="toc-number">5.4.</span> <span class="toc-text">CString转换成char*</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#BSTR%E8%BD%AC%E6%8D%A2%E6%88%90char"><span class="toc-number">5.5.</span> <span class="toc-text">BSTR转换成char*</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#bstr-t%E8%BD%ACCString"><span class="toc-number">5.6.</span> <span class="toc-text">_bstr_t转CString</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#BSTR-%E8%BD%ACLPCTSTR"><span class="toc-number">5.7.</span> <span class="toc-text">BSTR 转LPCTSTR</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#LPCTSTR%E8%BD%ACCString"><span class="toc-number">5.8.</span> <span class="toc-text">LPCTSTR转CString</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#CString%E4%B8%8ELPCWSTR"><span class="toc-number">5.9.</span> <span class="toc-text">CString与LPCWSTR</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#CString%E8%BD%AC%E6%8D%A2%E6%88%90LPSTR"><span class="toc-number">5.10.</span> <span class="toc-text">CString转换成LPSTR</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#ANSI%E3%80%81Unicode%E5%92%8C%E5%AE%BD%E5%AD%97%E7%AC%A6%E4%B9%8B%E9%97%B4%E7%9A%84%E8%BD%AC%E6%8D%A2"><span class="toc-number">6.</span> <span class="toc-text">ANSI、Unicode和宽字符之间的转换</span></a></li></ol>
+    </nav>
+  </div>
+</aside>
+
+<main class="main" role="main">
+  <div class="content">
+  <article id="post-字符类型总结区别wchar_t和char" class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
+    
+    <div class="article-header">
+      
+        
+  
+    <h1 class="article-title" itemprop="name">
+      字符类型总结区别wchar_t和char
+    </h1>
+  
+
+      
+      <div class="article-meta">
+        <span class="article-date">
+    <i class="icon icon-calendar-check"></i>
+	<a href="/2021/08/14/%E5%AD%97%E7%AC%A6%E7%B1%BB%E5%9E%8B%E6%80%BB%E7%BB%93%E5%8C%BA%E5%88%ABwchar_t%E5%92%8Cchar/" class="article-date">
+	  <time datetime="2021-08-14T03:07:29.000Z" itemprop="datePublished">2021-08-14</time>
+	</a>
+</span>
+        
+  <span class="article-category">
+    <i class="icon icon-folder"></i>
+    <a class="article-category-link" href="/categories/c/">c++</a>
+  </span>
+
+        
+
+        
+	<span class="article-read hidden-xs">
+	    <i class="icon icon-eye-fill" aria-hidden="true"></i>
+	    <span id="busuanzi_container_page_pv">
+			<span id="busuanzi_value_page_pv">0</span>
+		</span>
+	</span>
+
+
+        <span class="post-comment"><i class="icon icon-comment"></i> <a href="/2021/08/14/%E5%AD%97%E7%AC%A6%E7%B1%BB%E5%9E%8B%E6%80%BB%E7%BB%93%E5%8C%BA%E5%88%ABwchar_t%E5%92%8Cchar/#comments" class="article-comment-link">评论</a></span>
+        
+	
+		<span class="post-wordcount hidden-xs" itemprop="wordCount">字数统计: 1.9k(字)</span>
+	
+	
+		<span class="post-readcount hidden-xs" itemprop="timeRequired">阅读时长: 8(分)</span>
+	
+
+      </div>
+    </div>
+    <div class="article-entry marked-body" itemprop="articleBody">
+      
+        <h2 id="1-区别wchar-t-char-WCHAR"><a href="#1-区别wchar-t-char-WCHAR" class="headerlink" title="1.区别wchar_t,char,WCHAR"></a>1.区别wchar_t,char,WCHAR</h2><p>ANSI：即 char(8bit)，可用字符串处理函数：strcat( ),strcpy( ), strlen( )等以str打头的函数。</p>
+<p>UNICODE：wchar_t(16bit)是Unicode字符的数据类型，可用字符串处理函数：wcscat(),wcscpy(),wcslen()等以wcs打头的函数。它实际定义在里：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">　　typedef unsigned short wchar_t;</span><br><span class="line">　　另外，在头文件中有这样的定义：typedef wchar_t WCHAR; 所以WCHAR实际就是wchar_t</span><br><span class="line">　　为了让编译器识别Unicode字符串，必须以在前面加一个“L”,例如: wchar_t *szTest=L&quot;This is a Unicode string.&quot;;</span><br></pre></td></tr></table></figure>
+<h2 id="2-TCHAR"><a href="#2-TCHAR" class="headerlink" title="2.TCHAR"></a>2.TCHAR</h2><p>　　在C语言里面提供了 _UNICODE宏（有下划线），在Windows里面提供了UNICODE宏（无下划线），只要定了_UNICODE宏和UNICODE宏，系统就会自 动切换到UNICODE版本，否则，系统按照ANSI的方式进行编译和运行。只定义了宏并不能实现自动的转换，他还需要一系列的字符定义支持。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">1． TCHAR</span><br><span class="line">　　如果定义了UNICODE宏则TCHAR被定义为wchar_t。</span><br><span class="line">　　typedef wchar_t TCHAR;</span><br><span class="line">   　否则TCHAR被定义为char typedef char TCHAR;</span><br><span class="line">2． LPTSTR</span><br><span class="line">   　如果定义了UNICODE宏则LPTSTR被定义为LPWSTR。</span><br><span class="line">  　 typedef LPTSTR LPWSTR;</span><br><span class="line">   　否则TCHAR被定义为char typedef LPTSTR LPSTR;</span><br><span class="line">   　说明：在使用字符串常量的时候需要使用_TEXT(“MyStr”)或者_T(&quot;&quot;)来支持系统的自动转换。</span><br></pre></td></tr></table></figure>
+<h2 id="3-bstr"><a href="#3-bstr" class="headerlink" title="3.bstr"></a>3.bstr</h2><p><a href="%E5%AD%97%E7%AC%A6%E4%B8%B2BSTR.md">字符串BSTR</a></p>
+<h2 id="4-更进一步的字符串以及其指针的类型定义"><a href="#4-更进一步的字符串以及其指针的类型定义" class="headerlink" title="4.更进一步的字符串以及其指针的类型定义"></a>4.更进一步的字符串以及其指针的类型定义</h2><p>　　由于Win32 API文档的函数列表使用函数的常用名字（例如， “SetWindowText”），所有的字符串都是用TCHAR来定义的。（除了XP中引入的只适用于Unicode的API）。下面列出一些常用的typedefs，你可以在msdn中看到他们。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">type	Meaning in MBCS builds	Meaning in Unicode builds</span><br><span class="line">WCHAR	wchar_t	wchar_t</span><br><span class="line">LPSTR	char*	char*</span><br><span class="line">LPCSTR	const char*	const char*</span><br><span class="line">LPWSTR	wchar_t*	wchar_t*</span><br><span class="line">LPCWSTR	wchar_t*	wchar_t*</span><br><span class="line">TCHAR	TCHAR char	wchar_t</span><br><span class="line">LPTSTR	TCHAR*	TCHAR*</span><br><span class="line">LPCTSTR	const TCHAR*	const TCHAR*</span><br></pre></td></tr></table></figure>
+
+<h2 id="5-相互转换"><a href="#5-相互转换" class="headerlink" title="5.相互转换"></a>5.相互转换</h2><h3 id="wchar-t-转为-char"><a href="#wchar-t-转为-char" class="headerlink" title="wchar_t*   转为  char*"></a>wchar_t*   转为  char*</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">wchar_t* pwszUnicode = L&quot;Holle&quot;;  //wcslen(pwsUnicode)=5</span><br><span class="line">int iSize;</span><br><span class="line">char* pszMultiByte;//返回接受字符串所需缓冲区的大小，已经包含字符结尾符&#x27;\0&#x27;</span><br><span class="line">iSize = WideCharToMultiByte(CP_ACP, 0, pwszUnicode, -1, NULL, 0, NULL, NULL); //iSize =wcslen(pwsUnicode)+1=6</span><br><span class="line">pszMultiByte = (char*)malloc(iSize*sizeof(char)); //不需要 pszMultiByte = (char*)malloc(iSize*sizeof(char)+1);</span><br><span class="line">WideCharToMultiByte(CP_ACP, 0, pwszUnicode, -1, pszMultiByte, iSize, NULL, NULL);</span><br></pre></td></tr></table></figure>
+
+<h3 id="char-转为-wchar-t"><a href="#char-转为-wchar-t" class="headerlink" title="char  转为  wchar_t"></a>char  转为  wchar_t</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">char* pszMultiByte = &quot;Holle&quot;;  //strlen(pwsUnicode)=5</span><br><span class="line">int iSize; wchar_t* pwszUnicode ; </span><br><span class="line">//返回接受字符串所需缓冲区的大小，已经包含字符结尾符&#x27;\0&#x27;</span><br><span class="line">iSize = MultiByteToWideChar(CP_ACP, 0, pszMultiByte , -1, NULL, 0); //iSize =wcslen(pwsUnicode)+1=6</span><br><span class="line">pwszUnicode = (wchar_t *)malloc(iSize*sizeof(wchar_t)); //不需要 pwszUnicode = (wchar_t *)malloc((iSize+1)*sizeof(wchar_t))</span><br><span class="line">MultiByteToWideChar(CP_ACP, 0, pszMultiByte , -1, pwszUnicode , iSize);</span><br></pre></td></tr></table></figure>
+<h3 id="char-转换成CString"><a href="#char-转换成CString" class="headerlink" title="char*转换成CString"></a>char*转换成CString</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">　　若将char*转换成CString，除了直接赋值外，还可使用CString::Format进行。例如：</span><br><span class="line">　　char chArray[] = &quot;This is a test&quot;;</span><br><span class="line">　　char * p = &quot;This is a test&quot;;</span><br><span class="line">　　或</span><br><span class="line">　　LPSTR p = &quot;This is a test&quot;;</span><br><span class="line">　　或在已定义Unicode应的用程序中</span><br><span class="line">　　TCHAR * p = _T(&quot;This is a test&quot;);</span><br><span class="line">　　或</span><br><span class="line">　　LPTSTR p = _T(&quot;This is a test&quot;);</span><br><span class="line">　　CString theString = chArray;</span><br><span class="line">　　theString.Format(_T(&quot;%s&quot;), chArray);</span><br><span class="line">　　theString = p;</span><br><span class="line"></span><br><span class="line">//方法一</span><br><span class="line">char *p = &quot;test&quot;;</span><br><span class="line">CString str(p);</span><br><span class="line"></span><br><span class="line">//方法二</span><br><span class="line">char * pFileName = &quot;test&quot;; </span><br><span class="line">USES_CONVERSION;</span><br><span class="line">CString s = A2T(pFileName);</span><br><span class="line">//CString s = A2W(pFileName);</span><br></pre></td></tr></table></figure>
+<h3 id="CString转换成char"><a href="#CString转换成char" class="headerlink" title="CString转换成char*"></a>CString转换成char*</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">　　若将CString类转换成char*(LPSTR)类型，常常使用下列三种方法：</span><br><span class="line">　　方法一，使用强制转换。例如：</span><br><span class="line">　　CString theString( &quot;This is a test&quot; );</span><br><span class="line">　　LPTSTR lpsz =(LPTSTR)(LPCTSTR)theString; </span><br><span class="line"></span><br><span class="line">　　方法二，使用strcpy。例如：</span><br><span class="line">　　CString theString( &quot;This is a test&quot; );</span><br><span class="line">　　LPTSTR lpsz = new TCHAR[theString.GetLength()+1];</span><br><span class="line">　　_tcscpy(lpsz, theString);</span><br><span class="line">　　需要说明的是，strcpy(或可移值Unicode/MBCS的_tcscpy)的第二个参数是 const wchar_t* (Unicode)或const char* (ANSI)，系统编译器将会自动对其进行转换。</span><br><span class="line"></span><br><span class="line">　　方法三，使用CString::GetBuffer。例如：</span><br><span class="line">　　CString s(_T(&quot;This is a test &quot;));</span><br><span class="line">　　LPTSTR p = s.GetBuffer();</span><br><span class="line">　　// 在这里添加使用p的代码</span><br><span class="line">　　if(p != NULL) *p = _T(&#x27;\0&#x27;);</span><br><span class="line">　　s.ReleaseBuffer();</span><br><span class="line">　　// 使用完后及时释放，以便能使用其它的CString成员函数</span><br><span class="line"></span><br><span class="line">//方法四</span><br><span class="line">CString cstr = _T(&quot;test&quot;)</span><br><span class="line">//声明标识</span><br><span class="line">USES_CONVERSION;</span><br><span class="line">//函数T2A和W2A均支持ATL和MFC中的字符</span><br><span class="line">char * pFileName = T2A(cstr);   </span><br><span class="line">//char * pFileName = W2A(cstr); //也可实现转换</span><br><span class="line"></span><br><span class="line">//注意：有时候可能还需要添加引用#include &lt;afxpriv.h&gt;</span><br></pre></td></tr></table></figure>
+<h3 id="BSTR转换成char"><a href="#BSTR转换成char" class="headerlink" title="BSTR转换成char*"></a>BSTR转换成char*</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">　　方法一，使用ConvertBSTRToString。例如：</span><br><span class="line">　　#include</span><br><span class="line">　　#pragma comment(lib, &quot;comsupp.lib&quot;)</span><br><span class="line">　　int _tmain(int argc, _TCHAR* argv[])&#123;</span><br><span class="line">　　　　BSTR bstrText = ::SysAllocString(L&quot;Test&quot;);</span><br><span class="line">　　　　char* lpszText2 = _com_util::ConvertBSTRToString(bstrText);</span><br><span class="line">　　　　SysFreeString(bstrText); // 用完释放</span><br><span class="line">　　　　delete[] lpszText2;</span><br><span class="line">　　　　return 0;</span><br><span class="line">　　&#125; </span><br><span class="line">　　方法二，使用_bstr_t的赋值运算符重载。例如：</span><br><span class="line">　　_bstr_t b = bstrText;</span><br><span class="line">　　char* lpszText2 = b;//底层还是调的_com_util::ConvertBSTRToString(bstrText);</span><br><span class="line">```　　</span><br><span class="line">### char*转换成BSTR</span><br></pre></td></tr></table></figure>
+<p>　　方法一，使用SysAllocString等API函数。例如：<br>　　BSTR bstrText = ::SysAllocString(L”Test”);<br>　　BSTR bstrText = ::SysAllocStringLen(L”Test”,4);<br>　　BSTR bstrText = ::SysAllocStringByteLen(“Test”,4);</p>
+<p>　　方法二，使用COleVariant或_variant_t。例如：<br>　　//COleVariant strVar(“This is a test”);<br>　　_variant_t strVar(“This is a test”);<br>　　BSTR bstrText = strVar.bstrVal;</p>
+<p>　　方法三，使用_bstr_t，这是一种最简单的方法。例如：<br>　　BSTR bstrText = _bstr_t(“This is a test”);//底层还是调的方法五</p>
+<p>　　方法四，使用CComBSTR。例如：<br>　　BSTR bstrText = CComBSTR(“This is a test”);<br>　　或<br>　　CComBSTR bstr(“This is a test”);<br>　　BSTR bstrText = bstr.m_str;</p>
+<p>　　方法五，使用ConvertStringToBSTR。例如：<br>　　char* lpszText = “Test”;<br>　　BSTR bstrText = _com_util::ConvertStringToBSTR(lpszText);<br>    //使用前需要加上头文件comutil.h<br>    反之可以使用char *p=_com_util::ConvertBSTRToString(b);
+　　</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">### CString转换成BSTR</span><br></pre></td></tr></table></figure>
+<p>　　通常是通过使用CStringT::AllocSysString来实现。例如：<br>　　CString str(“This is a test”);<br>　　BSTR bstrText = str.AllocSysString();<br>　　…<br>　　SysFreeString(bstrText); // 用完释放 </p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">　　注意：用完之后必须使用SysFreeString 释放！！！</span><br><span class="line"></span><br><span class="line">### BSTR转换成CString</span><br></pre></td></tr></table></figure>
+<p>方法一：<br>　　BSTR bstrText = ::SysAllocString(L”Test”);<br>　　CStringA str;<br>　　str.Empty();<br>　　str = (LPCSTR)bstrText;<br>方法二：<br>　　BSTR bstrText = ::SysAllocString(L”Test”);<br>　　CStringA str(bstrText);</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">### CString转_bstr_t</span><br><span class="line">```　　</span><br><span class="line">    _bstr_t bstr;</span><br><span class="line">    CString strSql; </span><br><span class="line">    bstr = (_bstr_t)strSql;</span><br></pre></td></tr></table></figure>
+<h3 id="bstr-t转CString"><a href="#bstr-t转CString" class="headerlink" title="_bstr_t转CString"></a>_bstr_t转CString</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">_bstr_t bstr;</span><br><span class="line">CString strSql; </span><br><span class="line">strSql = (LPCSTR)bstr;</span><br></pre></td></tr></table></figure>
+<h3 id="BSTR-转LPCTSTR"><a href="#BSTR-转LPCTSTR" class="headerlink" title="BSTR 转LPCTSTR"></a>BSTR 转LPCTSTR</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">//方法一：</span><br><span class="line">_bstr_t strstr = bstrtext;</span><br><span class="line">LPCTSTR lpctstrname = strstr;</span><br><span class="line"></span><br><span class="line">//方法二:</span><br><span class="line">CString str = bstrtext;</span><br><span class="line">LPCTSTR lpctstrname = (LPCTSTR)str;</span><br></pre></td></tr></table></figure>
+<h3 id="LPCTSTR转CString"><a href="#LPCTSTR转CString" class="headerlink" title="LPCTSTR转CString"></a>LPCTSTR转CString</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">//方法一：</span><br><span class="line">LPCTSTR lpctStr;</span><br><span class="line">CString cStr=lpctStr;</span><br><span class="line"></span><br><span class="line">//方法二：</span><br><span class="line">LPCTSTR p; </span><br><span class="line">CString str=&quot;hello&quot;; </span><br><span class="line">p=str.GetBuffer(str.GetLength()); </span><br><span class="line">str.ReleaseBuffer();</span><br></pre></td></tr></table></figure>
+<h3 id="CString与LPCWSTR"><a href="#CString与LPCWSTR" class="headerlink" title="CString与LPCWSTR"></a>CString与LPCWSTR</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">两者的不同：LPCWSTR 是Unicode字符串指针，初始化时串有多大，申请空间就有多大，以后存贮若超过则出现无法预料的结果，这是它与CString的不同之处。而CString是一个串类，内存空间类会自动管理。</span><br><span class="line"></span><br><span class="line">CString转换成LPCWSTR</span><br><span class="line"></span><br><span class="line">方法一：CString strFileName;</span><br><span class="line"></span><br><span class="line">                 LPCWSTR lpcwStr = strFileName.AllocSysString();</span><br><span class="line"></span><br><span class="line">方法二：CString str=_T(&quot;TestStr&quot;); </span><br><span class="line">                USES_CONVERSION; </span><br><span class="line">                LPCWSTR lpcwStr = A2CW((LPCSTR)str);</span><br><span class="line"></span><br><span class="line">MFC中CString和LPSTR是可以通用，其中A2CW表示(LPCSTR)  -&gt; (LPCWSTR)，USER_CONVERSION表示用来定义一些中间变量，在使用ATL的转换宏之前必须定义该语句。</span><br><span class="line"></span><br><span class="line">LPCWSTR转换成CString</span><br><span class="line"></span><br><span class="line">LPCWSTR lpcwStr = L&quot;TestWStr&quot;; </span><br><span class="line">CString str(lpcwStr);</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h3 id="CString转换成LPSTR"><a href="#CString转换成LPSTR" class="headerlink" title="CString转换成LPSTR"></a>CString转换成LPSTR</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">方法一：CString strFileName;</span><br><span class="line"></span><br><span class="line">                LPSTR lpStr = strFileName.GetBuffer();</span><br><span class="line"></span><br><span class="line">                strFileName.ReleaseBuffer();</span><br><span class="line"></span><br><span class="line">方法二：CString strFileName;</span><br><span class="line"></span><br><span class="line">                LPSTR lpStr = (LPSTR)(LPCSTR)strFimeName;</span><br><span class="line"></span><br><span class="line">LPSTR转换成CString:</span><br><span class="line"></span><br><span class="line">                LPSTR lpStr = L&quot;TestStr&quot;; </span><br><span class="line">                CString str(lpStr);</span><br><span class="line"></span><br><span class="line">注意：CString和LPCSTR可直接转换，如下:</span><br><span class="line"></span><br><span class="line">                CString str;</span><br><span class="line"></span><br><span class="line">                LPCSTR lpcStr = (LPCSTR)str;</span><br></pre></td></tr></table></figure>
+<h2 id="ANSI、Unicode和宽字符之间的转换"><a href="#ANSI、Unicode和宽字符之间的转换" class="headerlink" title="ANSI、Unicode和宽字符之间的转换"></a>ANSI、Unicode和宽字符之间的转换</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">　　方法一，使用MultiByteToWideChar将ANSI字符转换成Unicode字符，使用WideCharToMultiByte将Unicode字符转换成ANSI字符。</span><br><span class="line"></span><br><span class="line">　　方法二，使用“_T”将ANSI转换成“一般”类型字符串，使用“L”将ANSI转换成Unicode，而在托管C++环境中还可使用S将ANSI字符串转换成String*对象。例如：</span><br><span class="line">　　TCHAR tstr[] = _T(&quot;this is a test&quot;);</span><br><span class="line">　　wchar_t wszStr[] = L&quot;This is a test&quot;;</span><br><span class="line">　　String* str = S”This is a test”;</span><br><span class="line"></span><br><span class="line">　　方法三，使用ATL 7.0的转换宏和类。ATL7.0在原有3.0基础上完善和增加了许多字符串转换宏以及提供相应的类，它具有如图3所示的统一形式：</span><br><span class="line">　　其中，第一个C表示“类”，以便于ATL 3.0宏相区别，第二个C表示常量，2表示“to”，EX表示要开辟一定大小的缓冲。SourceType和DestinationType可以是A、 　　T、W和OLE，其含义分别是ANSI、Unicode、“一般”类型和OLE字符串。例如，CA2CT就是将ANSI转换成一般类型的字符串常量。下面 是一些示例代码：</span><br><span class="line">　　LPTSTR tstr= CA2TEX&lt;16&gt;(&quot;this is a test&quot;);</span><br><span class="line">　　LPCTSTR tcstr= CA2CT(&quot;this is a test&quot;);</span><br><span class="line">　　wchar_t wszStr[] = L&quot;This is a test&quot;;</span><br><span class="line">　　char* chstr = CW2A(wszStr);</span><br><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/zhoug2020/archive/2012/06/13/2547463.html">https://www.cnblogs.com/zhoug2020/archive/2012/06/13/2547463.html</a></p>
+<p><a target="_blank" rel="noopener" href="http://www.imkevinyang.com/2010/06/%E5%85%B3%E4%BA%8E%E5%AD%97%E7%AC%A6%E7%BC%96%E7%A0%81%EF%BC%8C%E4%BD%A0%E6%89%80%E9%9C%80%E8%A6%81%E7%9F%A5%E9%81%93%E7%9A%84.html">http://www.imkevinyang.com/2010/06/%E5%85%B3%E4%BA%8E%E5%AD%97%E7%AC%A6%E7%BC%96%E7%A0%81%EF%BC%8C%E4%BD%A0%E6%89%80%E9%9C%80%E8%A6%81%E7%9F%A5%E9%81%93%E7%9A%84.html</a></p>
+<p><a target="_blank" rel="noopener" href="http://cppblog.com/lizao2/articles/169250.html">http://cppblog.com/lizao2/articles/169250.html</a></p>
+
+      
+    </div>
+    <div class="article-footer">
+      <blockquote class="mt-2x">
+  <ul class="post-copyright list-unstyled">
+    
+    <li class="post-copyright-link hidden-xs">
+      <strong>本文链接：</strong>
+      <a href="https://marblemm.github.io/2021/08/14/%E5%AD%97%E7%AC%A6%E7%B1%BB%E5%9E%8B%E6%80%BB%E7%BB%93%E5%8C%BA%E5%88%ABwchar_t%E5%92%8Cchar/" title="字符类型总结区别wchar_t和char" target="_blank" rel="external">https://marblemm.github.io/2021/08/14/字符类型总结区别wchar_t和char/</a>
+    </li>
+    
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong> 本博客所有文章除特别声明外，均采用 <a href="http://creativecommons.org/licenses/by/4.0/deed.zh" target="_blank" rel="external">CC BY 4.0 CN协议</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+</blockquote>
+
+
+<div class="panel panel-default panel-badger">
+  <div class="panel-body">
+    <figure class="media">
+      <div class="media-left">
+        <a href="https://github.com/marblemm" target="_blank" class="img-burn thumb-sm visible-lg">
+          <img src="/images/avatar.jpg" class="img-rounded w-full" alt="">
+        </a>
+      </div>
+      <div class="media-body">
+        <h3 class="media-heading"><a href="https://github.com/marblemm" target="_blank"><span class="text-dark">marble</span><small class="ml-1x">software Developer</small></a></h3>
+        <div>个人简介。</div>
+      </div>
+    </figure>
+  </div>
+</div>
+
+
+    </div>
+  </article>
+  
+    
+  <section id="comments">
+  	
+      <div id="vcomments"></div>
+    
+  </section>
+
+
+  
+</div>
+
+  <nav class="bar bar-footer clearfix" data-stick-bottom>
+  <div class="bar-inner">
+  
+  <ul class="pager pull-left">
+    
+    <li class="prev">
+      <a href="/2021/08/15/cpp11%E5%A4%9A%E7%BA%BF%E7%A8%8B1-thread/" title="cpp11多线程1-thread"><i class="icon icon-angle-left" aria-hidden="true"></i><span>&nbsp;&nbsp;上一篇</span></a>
+    </li>
+    
+    
+    <li class="next">
+      <a href="/2021/08/13/cpp%E9%9D%A2%E8%AF%95%E6%80%BB%E7%BB%93-STL/" title="c++面试总结-STL"><span>下一篇&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
+    </li>
+    
+    
+    <li class="toggle-toc">
+      <a class="toggle-btn collapsed" data-toggle="collapse" href="#collapseToc" aria-expanded="false" title="文章目录" role="button">
+        <span>[&nbsp;</span><span>文章目录</span>
+        <i class="text-collapsed icon icon-anchor"></i>
+        <i class="text-in icon icon-close"></i>
+        <span>]</span>
+      </a>
+    </li>
+    
+  </ul>
+  
+  
+  <!-- Button trigger modal -->
+  <button type="button" class="btn btn-fancy btn-donate pop-onhover bg-gradient-warning" data-toggle="modal" data-target="#donateModal"><span>赏</span></button>
+  <!-- <div class="wave-icon wave-icon-danger btn-donate" data-toggle="modal" data-target="#donateModal">
+    <div class="wave-circle"><span class="icon"><i class="icon icon-bill"></i></span></div>
+  </div> -->
+  
+  
+  <div class="bar-right">
+    
+    <div class="share-component" data-sites="weibo,qq,wechat" data-mobile-sites="weibo,qq,qzone"></div>
+    
+  </div>
+  </div>
+</nav>
+  
+<!-- Modal -->
+<div class="modal modal-center modal-small modal-xs-full fade" id="donateModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content donate">
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      <div class="modal-body">
+        <div class="donate-box">
+          <div class="donate-head">
+            <p>感谢您的支持，我会继续努力的!</p>
+          </div>
+          <div class="tab-content">
+            <div role="tabpanel" class="tab-pane fade active in" id="alipay">
+              <div class="donate-payimg">
+                <img src="/images/donate/alipayimg.png" alt="扫码支持" title="扫一扫" />
+              </div>
+              <p class="text-muted mv">扫码打赏，你说多少就多少</p>
+              <p class="text-grey">打开支付宝扫一扫，即可进行扫码打赏哦</p>
+            </div>
+            <div role="tabpanel" class="tab-pane fade" id="wechatpay">
+              <div class="donate-payimg">
+                <img src="/images/donate/wechatpayimg.png" alt="扫码支持" title="扫一扫" />
+              </div>
+              <p class="text-muted mv">扫码打赏，你说多少就多少</p>
+              <p class="text-grey">打开微信扫一扫，即可进行扫码打赏哦</p>
+            </div>
+          </div>
+          <div class="donate-footer">
+            <ul class="nav nav-tabs nav-justified" role="tablist">
+              <li role="presentation" class="active">
+                <a href="#alipay" id="alipay-tab" role="tab" data-toggle="tab" aria-controls="alipay" aria-expanded="true"><i class="icon icon-alipay"></i> 支付宝</a>
+              </li>
+              <li role="presentation" class="">
+                <a href="#wechatpay" role="tab" id="wechatpay-tab" data-toggle="tab" aria-controls="wechatpay" aria-expanded="false"><i class="icon icon-wepay"></i> 微信支付</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+</main>
+
+  <footer class="footer" itemscope itemtype="http://schema.org/WPFooter">
+	
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/marblemm" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+    </ul>
+
+    <div class="copyright">
+    	
+        <div class="publishby">
+        	Theme by <a href="https://github.com/cofess" target="_blank"> cofess </a>base on <a href="https://github.com/cofess/hexo-theme-pure" target="_blank">pure</a>.
+        </div>
+    </div>
+</footer>
+  <script src="//cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+<script>
+window.jQuery || document.write('<script src="js/jquery.min.js"><\/script>')
+</script>
+
+<script src="/js/plugin.min.js"></script>
+
+
+<script src="/js/application.js"></script>
+
+
+    <script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+
+
+
+
+
+   
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+   
+    
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/valine"></script>
+  <script type="text/javascript">
+  var GUEST = ['nick', 'mail', 'link'];
+  var meta = 'nick,mail,link';
+  meta = meta.split(',').filter(function(item) {
+    return GUEST.indexOf(item) > -1;
+  });
+  new Valine({
+    el: '#vcomments',
+    verify: false,
+    notify: false,
+    appId: 'vsxVYXKPSCaf1SOO9F2DEyXU-gzGzoHsz',
+    appKey: '1djOltTjcB8Ap3RrgA6zX8HF',
+    placeholder: 'Just go go',
+    avatar: 'mm',
+    meta: meta,
+    pageSize: '10' || 10,
+    visitor: false
+  });
+  </script>
+
+     
+
+
+
+
+
+
+
+</body>
+</html>

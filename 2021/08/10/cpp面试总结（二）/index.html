@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="Cache-Control" content="no-transform" />
+  <meta http-equiv="Cache-Control" content="no-siteapp" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="format-detection" content="telephone=no,email=no,adress=no">
+  <!-- Color theme for statusbar -->
+  <meta name="theme-color" content="#000000" />
+  <!-- 强制页面在当前窗口以独立页面显示,防止别人在框架里调用页面 -->
+  <meta http-equiv="window-target" content="_top" />
+  
+  
+  <title>c++面试总结（二） | marble</title>
+  <meta name="description" content="1.有哪几种情况只能用intialization list 而不能用assignment?答案：当类中含有const、reference 成员变量；基类的构造函数都需要初始化表。 2. C++是不是类型安全的？答案：不是。两个不同类型的指针之间可以强制转换（用reinterpret cast)。C#是类型安全的。 3. main 函数执行以前，还会执行什么代码？答案：全局对象的构造函数会在main">
+<meta property="og:type" content="article">
+<meta property="og:title" content="c++面试总结（二）">
+<meta property="og:url" content="https://marblemm.github.io/2021/08/10/cpp%E9%9D%A2%E8%AF%95%E6%80%BB%E7%BB%93%EF%BC%88%E4%BA%8C%EF%BC%89/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="1.有哪几种情况只能用intialization list 而不能用assignment?答案：当类中含有const、reference 成员变量；基类的构造函数都需要初始化表。 2. C++是不是类型安全的？答案：不是。两个不同类型的指针之间可以强制转换（用reinterpret cast)。C#是类型安全的。 3. main 函数执行以前，还会执行什么代码？答案：全局对象的构造函数会在main">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-08-10T13:28:09.000Z">
+<meta property="article:modified_time" content="2021-08-27T14:42:51.327Z">
+<meta property="article:author" content="John Doe">
+<meta name="twitter:card" content="summary">
+  <!-- Canonical links -->
+  <link rel="canonical" href="https://marblemm.github.io/2021/08/10/cpp%E9%9D%A2%E8%AF%95%E6%80%BB%E7%BB%93%EF%BC%88%E4%BA%8C%EF%BC%89/index.html">
+  
+    <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png" type="image/x-icon">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+  
+  
+  
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body class="main-center theme-green" itemscope itemtype="http://schema.org/WebPage">
+  <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+  <div class="slimContent">
+    <div class="navbar-header">
+      
+      
+      <div class="profile-block text-center">
+        <a id="avatar" href="https://github.com/marblemm" target="_blank">
+          <img class="img-circle img-rotate" src="/images/avatar.jpg" width="200" height="200">
+        </a>
+        <h2 id="name" class="hidden-xs hidden-sm">marble</h2>
+        <h3 id="title" class="hidden-xs hidden-sm hidden-md">software Developer</h3>
+        <small id="location" class="text-muted hidden-xs hidden-sm"><i class="icon icon-map-marker"></i> wuhan, China</small>
+      </div>
+      
+      <div class="search" id="search-form-wrap">
+
+    <form class="search-form sidebar-form">
+        <div class="input-group">
+            <input type="text" class="search-form-input form-control" placeholder="搜索" />
+            <span class="input-group-btn">
+                <button type="submit" class="search-form-submit btn btn-flat" onclick="return false;"><i class="icon icon-search"></i></button>
+            </span>
+        </div>
+    </form>
+    <div class="ins-search">
+  <div class="ins-search-mask"></div>
+  <div class="ins-search-container">
+    <div class="ins-input-wrapper">
+      <input type="text" class="ins-search-input" placeholder="想要查找什么..." x-webkit-speech />
+      <button type="button" class="close ins-close ins-selectable" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+    </div>
+    <div class="ins-section-wrapper">
+      <div class="ins-section-container"></div>
+    </div>
+  </div>
+</div>
+
+
+</div>
+      <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <nav id="main-navbar" class="collapse navbar-collapse" itemscope itemtype="http://schema.org/SiteNavigationElement" role="navigation">
+      <ul class="nav navbar-nav main-nav ">
+        
+        
+        <li class="menu-item menu-item-home">
+          <a href="/.">
+            
+            <i class="icon icon-home-fill"></i>
+            
+            <span class="menu-title">首页</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives">
+            
+            <i class="icon icon-archives-fill"></i>
+            
+            <span class="menu-title">归档</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories">
+            
+            <i class="icon icon-folder"></i>
+            
+            <span class="menu-title">分类</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-links">
+          <a href="/links">
+            
+            <i class="icon icon-friendship"></i>
+            
+            <span class="menu-title">友链</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-pano">
+          <a href="/pano">
+            
+            <i class="icon icon-friendship"></i>
+            
+            <span class="menu-title">全景</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-pointcloud">
+          <a href="/pointcloud">
+            
+            <i class="icon icon-friendship"></i>
+            
+            <span class="menu-title">点云</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-game">
+          <a href="/2048">
+            
+            <i class="icon icon-friendship"></i>
+            
+            <span class="menu-title">游戏</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about">
+            
+            <i class="icon icon-cup-fill"></i>
+            
+            <span class="menu-title">关于</span>
+          </a>
+        </li>
+        
+      </ul>
+      
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/marblemm" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+    </ul>
+
+    </nav>
+  </div>
+</header>
+
+  
+    <aside class="sidebar" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    
+      <div class="widget">
+    <h3 class="widget-title">公告</h3>
+    <div class="widget-body">
+        <div id="board">
+            <div class="content">
+                <p>欢迎交流与分享经验!</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">分类</h3>
+    <div class="widget-body">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/c/">c++</a><span class="category-list-count">7</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/c-%E9%9D%A2%E8%AF%95/">c++面试</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/git/">git</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E4%B9%A6%E7%B1%8D/">书籍</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%A4%9A%E7%BA%BF%E7%A8%8B/">多线程</a><span class="category-list-count">5</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+
+    
+      
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget-body">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/08/">八月 2021</a><span class="archive-list-count">22</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget-body">
+      <ul class="recent-post-list list-unstyled no-thumbnail">
+        
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/c/">c++</a>
+              </p>
+              <p class="item-title">
+                <a href="/2021/08/29/%E5%AD%97%E7%AC%A6%E4%B8%B2BSTR/" class="title">字符串BSTR</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2021-08-29T15:57:04.000Z" itemprop="datePublished">2021-08-29</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/c/">c++</a>
+              </p>
+              <p class="item-title">
+                <a href="/2021/08/23/cpp11%E8%AE%A1%E6%97%B6%E5%99%A8-chrono/" class="title">cpp11计时器-chrono</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2021-08-23T15:21:16.000Z" itemprop="datePublished">2021-08-23</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/c/">c++</a>
+              </p>
+              <p class="item-title">
+                <a href="/2021/08/22/cpp%E5%8D%95%E4%BE%8B%E6%A8%A1%E5%BC%8F%E6%80%BB%E7%BB%93/" class="title">cpp单例模式总结</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2021-08-22T08:40:01.000Z" itemprop="datePublished">2021-08-22</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/c/">c++</a>
+              </p>
+              <p class="item-title">
+                <a href="/2021/08/22/cpp%E4%B8%ADstd-ref/" class="title">cpp中std::ref</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2021-08-22T07:07:29.000Z" itemprop="datePublished">2021-08-22</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                
+              </p>
+              <p class="item-title">
+                <a href="/2021/08/20/cpp%E4%B8%AD%E7%9A%84RAII%E6%9C%BA%E5%88%B6/" class="title">cpp中的RAII机制</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2021-08-20T15:52:47.000Z" itemprop="datePublished">2021-08-20</time>
+              </p>
+            </div>
+          </li>
+          
+      </ul>
+    </div>
+  </div>
+  
+
+    
+  </div>
+</aside>
+
+  
+  
+<aside class="sidebar sidebar-toc collapse" id="collapseToc" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    <nav id="toc" class="article-toc">
+      <h3 class="toc-title">文章目录</h3>
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E6%9C%89%E5%93%AA%E5%87%A0%E7%A7%8D%E6%83%85%E5%86%B5%E5%8F%AA%E8%83%BD%E7%94%A8intialization-list-%E8%80%8C%E4%B8%8D%E8%83%BD%E7%94%A8assignment"><span class="toc-number">1.</span> <span class="toc-text">1.有哪几种情况只能用intialization list 而不能用assignment?</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-C-%E6%98%AF%E4%B8%8D%E6%98%AF%E7%B1%BB%E5%9E%8B%E5%AE%89%E5%85%A8%E7%9A%84%EF%BC%9F"><span class="toc-number">2.</span> <span class="toc-text">2. C++是不是类型安全的？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-main-%E5%87%BD%E6%95%B0%E6%89%A7%E8%A1%8C%E4%BB%A5%E5%89%8D%EF%BC%8C%E8%BF%98%E4%BC%9A%E6%89%A7%E8%A1%8C%E4%BB%80%E4%B9%88%E4%BB%A3%E7%A0%81%EF%BC%9F"><span class="toc-number">3.</span> <span class="toc-text">3. main 函数执行以前，还会执行什么代码？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-%E6%8F%8F%E8%BF%B0%E5%86%85%E5%AD%98%E5%88%86%E9%85%8D%E6%96%B9%E5%BC%8F%E4%BB%A5%E5%8F%8A%E5%AE%83%E4%BB%AC%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="toc-number">4.</span> <span class="toc-text">4. 描述内存分配方式以及它们的区别?</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-%E8%AF%B7%E8%AF%B4%E5%87%BAconst%E4%B8%8E-define-%E7%9B%B8%E6%AF%94%EF%BC%8C%E6%9C%89%E4%BD%95%E4%BC%98%E7%82%B9%EF%BC%9F"><span class="toc-number">5.</span> <span class="toc-text">5.请说出const与#define 相比，有何优点？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-%E7%AE%80%E8%BF%B0%E6%95%B0%E7%BB%84%E4%B8%8E%E6%8C%87%E9%92%88%E7%9A%84%E5%8C%BA%E5%88%AB%EF%BC%9F"><span class="toc-number">6.</span> <span class="toc-text">6.简述数组与指针的区别？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#7%EF%BC%9A-int-s-10-int-%E8%A1%A8%E7%A4%BA%E7%9A%84%E6%98%AF%E4%BB%80%E4%B9%88%EF%BC%9F"><span class="toc-number">7.</span> <span class="toc-text">7： int (*s[10])(int) 表示的是什么？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#8%EF%BC%9A%E6%A0%88%E5%86%85%E5%AD%98%E4%B8%8E%E6%96%87%E5%AD%97%E5%B8%B8%E9%87%8F%E5%8C%BA"><span class="toc-number">8.</span> <span class="toc-text">8：栈内存与文字常量区</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#9%EF%BC%9A%E5%B0%86%E7%A8%8B%E5%BA%8F%E8%B7%B3%E8%BD%AC%E5%88%B0%E6%8C%87%E5%AE%9A%E5%86%85%E5%AD%98%E5%9C%B0%E5%9D%80"><span class="toc-number">9.</span> <span class="toc-text">9：将程序跳转到指定内存地址</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#10%EF%BC%9Aint-id-sizeof-unsigned-long-%E8%BF%99%E4%B8%AA%E5%AF%B9%E5%90%97%EF%BC%9F%E4%B8%BA%E4%BB%80%E4%B9%88%EF%BC%9F"><span class="toc-number">10.</span> <span class="toc-text">10：int id[sizeof(unsigned long)];这个对吗？为什么？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#11%EF%BC%9A%E5%BC%95%E7%94%A8%E4%B8%8E%E6%8C%87%E9%92%88%E6%9C%89%E4%BB%80%E4%B9%88%E5%8C%BA%E5%88%AB%EF%BC%9F"><span class="toc-number">11.</span> <span class="toc-text">11：引用与指针有什么区别？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#12%EF%BC%9A%E5%9F%BA%E7%B1%BB%E7%9A%84%E6%9E%90%E6%9E%84%E5%87%BD%E6%95%B0%E4%B8%8D%E6%98%AF%E8%99%9A%E5%87%BD%E6%95%B0%EF%BC%8C%E4%BC%9A%E5%B8%A6%E6%9D%A5%E4%BB%80%E4%B9%88%E9%97%AE%E9%A2%98%EF%BC%9F"><span class="toc-number">12.</span> <span class="toc-text">12：基类的析构函数不是虚函数，会带来什么问题？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#13%EF%BC%9A%E5%85%A8%E5%B1%80%E5%8F%98%E9%87%8F%E5%92%8C%E5%B1%80%E9%83%A8%E5%8F%98%E9%87%8F%E6%9C%89%E4%BB%80%E4%B9%88%E5%8C%BA%E5%88%AB%EF%BC%9F%E6%98%AF%E6%80%8E%E4%B9%88%E5%AE%9E%E7%8E%B0%E7%9A%84%EF%BC%9F%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%92%8C%E7%BC%96%E8%AF%91%E5%99%A8%E6%98%AF%E6%80%8E%E4%B9%88%E7%9F%A5%E9%81%93%E7%9A%84%EF%BC%9F"><span class="toc-number">13.</span> <span class="toc-text">13：全局变量和局部变量有什么区别？是怎么实现的？操作系统和编译器是怎么知道的？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#STL%E4%B8%AD%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95%E7%9A%84%E5%AE%9E%E7%8E%B0%E6%98%AF%E4%BB%80%E4%B9%88"><span class="toc-number">14.</span> <span class="toc-text">STL中排序算法的实现是什么</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E5%87%BD%E6%95%B0%E5%8F%82%E6%95%B0%E7%9A%84%E5%85%A5%E6%A0%88%E7%9A%84%E9%A1%BA%E5%BA%8F%E6%98%AF%E4%BB%8E%E5%8F%B3%E5%BE%80%E5%B7%A6"><span class="toc-number">15.</span> <span class="toc-text">为什么函数参数的入栈的顺序是从右往左</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-static%E7%9A%84%E7%94%A8%E6%B3%95%E5%92%8C%E4%BD%9C%E7%94%A8%EF%BC%9F"><span class="toc-number">16.</span> <span class="toc-text">5. static的用法和作用？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#8-const%E6%88%90%E5%91%98%E5%87%BD%E6%95%B0%E7%9A%84%E7%90%86%E8%A7%A3%E5%92%8C%E5%BA%94%E7%94%A8%EF%BC%9F"><span class="toc-number">17.</span> <span class="toc-text">8. const成员函数的理解和应用？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#11-extern%E7%94%A8%E6%B3%95%EF%BC%9F"><span class="toc-number">18.</span> <span class="toc-text">11. extern用法？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#21-%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0%E5%92%8C%E6%9E%90%E6%9E%84%E5%87%BD%E6%95%B0%E5%8F%AF%E4%BB%A5%E8%B0%83%E7%94%A8%E8%99%9A%E5%87%BD%E6%95%B0%E5%90%97%EF%BC%8C%E4%B8%BA%E4%BB%80%E4%B9%88"><span class="toc-number">19.</span> <span class="toc-text">21. 构造函数和析构函数可以调用虚函数吗，为什么</span></a></li></ol>
+    </nav>
+  </div>
+</aside>
+
+<main class="main" role="main">
+  <div class="content">
+  <article id="post-cpp面试总结（二）" class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
+    
+    <div class="article-header">
+      
+        
+  
+    <h1 class="article-title" itemprop="name">
+      c++面试总结（二）
+    </h1>
+  
+
+      
+      <div class="article-meta">
+        <span class="article-date">
+    <i class="icon icon-calendar-check"></i>
+	<a href="/2021/08/10/cpp%E9%9D%A2%E8%AF%95%E6%80%BB%E7%BB%93%EF%BC%88%E4%BA%8C%EF%BC%89/" class="article-date">
+	  <time datetime="2021-08-10T13:28:09.000Z" itemprop="datePublished">2021-08-10</time>
+	</a>
+</span>
+        
+  <span class="article-category">
+    <i class="icon icon-folder"></i>
+    <a class="article-category-link" href="/categories/c-%E9%9D%A2%E8%AF%95/">c++面试</a>
+  </span>
+
+        
+
+        
+	<span class="article-read hidden-xs">
+	    <i class="icon icon-eye-fill" aria-hidden="true"></i>
+	    <span id="busuanzi_container_page_pv">
+			<span id="busuanzi_value_page_pv">0</span>
+		</span>
+	</span>
+
+
+        <span class="post-comment"><i class="icon icon-comment"></i> <a href="/2021/08/10/cpp%E9%9D%A2%E8%AF%95%E6%80%BB%E7%BB%93%EF%BC%88%E4%BA%8C%EF%BC%89/#comments" class="article-comment-link">评论</a></span>
+        
+	
+		<span class="post-wordcount hidden-xs" itemprop="wordCount">字数统计: 3k(字)</span>
+	
+	
+		<span class="post-readcount hidden-xs" itemprop="timeRequired">阅读时长: 11(分)</span>
+	
+
+      </div>
+    </div>
+    <div class="article-entry marked-body" itemprop="articleBody">
+      
+        <h2 id="1-有哪几种情况只能用intialization-list-而不能用assignment"><a href="#1-有哪几种情况只能用intialization-list-而不能用assignment" class="headerlink" title="1.有哪几种情况只能用intialization list 而不能用assignment?"></a>1.有哪几种情况只能用intialization list 而不能用assignment?</h2><p>答案：当类中含有const、reference 成员变量；基类的构造函数都需要初始化表。</p>
+<h2 id="2-C-是不是类型安全的？"><a href="#2-C-是不是类型安全的？" class="headerlink" title="2. C++是不是类型安全的？"></a>2. C++是不是类型安全的？</h2><p>答案：不是。两个不同类型的指针之间可以强制转换（用reinterpret cast)。C#是类型安全的。</p>
+<h2 id="3-main-函数执行以前，还会执行什么代码？"><a href="#3-main-函数执行以前，还会执行什么代码？" class="headerlink" title="3. main 函数执行以前，还会执行什么代码？"></a>3. main 函数执行以前，还会执行什么代码？</h2><p>答案：全局对象的构造函数会在main 函数之前执行。</p>
+<h2 id="4-描述内存分配方式以及它们的区别"><a href="#4-描述内存分配方式以及它们的区别" class="headerlink" title="4. 描述内存分配方式以及它们的区别?"></a>4. 描述内存分配方式以及它们的区别?</h2><p>1） 从静态存储区域分配。内存在程序编译的时候就已经分配好，这块内存在程序的整个运行期间都存在。例如全局变量，static 变量。</p>
+<p>2） 在栈上创建。在执行函数时，函数内局部变量的存储单元都可以在栈上创建，函数执行结束时这些存储单元自动被释放。栈内存分配运算内置于处理器的指令集。</p>
+<p>3） 从堆上分配，亦称动态内存分配。程序在运行的时候用malloc 或new 申请任意多少的内存，程序员自己负责在何时用free 或delete 释放内存。动态内存的生存期由程序员决定，使用非常灵活，但问题也最多。</p>
+<h2 id="5-请说出const与-define-相比，有何优点？"><a href="#5-请说出const与-define-相比，有何优点？" class="headerlink" title="5.请说出const与#define 相比，有何优点？"></a>5.请说出const与#define 相比，有何优点？</h2><p>答案：</p>
+<p>const作用：定义常量、修饰函数参数、修饰函数返回值三个作用。被Const修饰的东西都受到强制保护，可以预防意外的变动，能提高程序的健壮性。</p>
+<p>1） const 常量有数据类型，而宏常量没有数据类型。编译器可以对前者进行类型安全检查。而对后者只进行字符替换，没有类型安全检查，并且在字符替换可能会产生意料不到的错误。</p>
+<p>2） 有些集成化的调试工具可以对const 常量进行调试，但是不能对宏常量进行调试。</p>
+<h2 id="6-简述数组与指针的区别？"><a href="#6-简述数组与指针的区别？" class="headerlink" title="6.简述数组与指针的区别？"></a>6.简述数组与指针的区别？</h2><p>数组要么在静态存储区被创建（如全局数组），要么在栈上被创建。指针可以随时指向任意类型的内存块。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">(1)修改内容上的差别</span><br><span class="line"></span><br><span class="line">char a[] = “hello”;</span><br><span class="line"></span><br><span class="line">a[0] = ‘X’;</span><br><span class="line"></span><br><span class="line">char *p = “world”; // 注意p 指向常量字符串</span><br><span class="line"></span><br><span class="line">p[0] = ‘X’; // 编译器不能发现该错误，运行时错误</span><br><span class="line"></span><br><span class="line">(2) 用运算符sizeof 可以计算出数组的容量（字节数）。sizeof(p),p 为指针得到的是一个指针变量的字节数，而不是p 所指的内存容量。C++/C 语言没有办法知道指针所指的内存容量，除非在申请内存时记住它。注意当数组作为函数的参数进行传递时，该数组自动退化为同类型的指针。</span><br><span class="line"></span><br><span class="line">char a[] = &quot;hello world&quot;;</span><br><span class="line"></span><br><span class="line">char *p = a;</span><br><span class="line"></span><br><span class="line">cout&lt;&lt; sizeof(a) &lt;&lt; endl; // 12 字节</span><br><span class="line"></span><br><span class="line">cout&lt;&lt; sizeof(p) &lt;&lt; endl; // 4 字节</span><br><span class="line"></span><br><span class="line">计算数组和指针的内存容量</span><br><span class="line"></span><br><span class="line">void Func(char a[100])</span><br><span class="line"></span><br><span class="line">&#123;</span><br><span class="line"></span><br><span class="line">cout&lt;&lt; sizeof(a) &lt;&lt; endl; // 4 字节而不是100 字节</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="7：-int-s-10-int-表示的是什么？"><a href="#7：-int-s-10-int-表示的是什么？" class="headerlink" title="7： int (*s[10])(int) 表示的是什么？"></a>7： int (*s[10])(int) 表示的是什么？</h2><p>int (*s[10])(int) 函数指针数组，每个指针指向一个int func(int param)的函数。</p>
+<h2 id="8：栈内存与文字常量区"><a href="#8：栈内存与文字常量区" class="headerlink" title="8：栈内存与文字常量区"></a>8：栈内存与文字常量区</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">char str1[] = &quot;abc&quot;;</span><br><span class="line">　　char str2[] = &quot;abc&quot;;</span><br><span class="line"></span><br><span class="line">　　const char str3[] = &quot;abc&quot;;</span><br><span class="line">　　const char str4[] = &quot;abc&quot;;</span><br><span class="line"></span><br><span class="line">　　const char *str5 = &quot;abc&quot;;</span><br><span class="line">　　const char *str6 = &quot;abc&quot;;</span><br><span class="line"></span><br><span class="line">　　char *str7 = &quot;abc&quot;;</span><br><span class="line">　　char *str8 = &quot;abc&quot;;</span><br><span class="line"></span><br><span class="line">　　cout &lt;&lt; ( str1 == str2 ) &lt;&lt; endl;//0  分别指向各自的栈内存</span><br><span class="line">　　cout &lt;&lt; ( str3 == str4 ) &lt;&lt; endl;//0  分别指向各自的栈内存</span><br><span class="line">　　cout &lt;&lt; ( str5 == str6 ) &lt;&lt; endl;//1指向文字常量区地址相同</span><br><span class="line"></span><br><span class="line">　　cout &lt;&lt; ( str7 == str8 ) &lt;&lt; endl;//1指向文字常量区地址相同</span><br><span class="line"></span><br><span class="line">　　结果是：0 0 1 1</span><br></pre></td></tr></table></figure>
+<p>　　解答：str1,str2,str3,str4是数组变量，它们有各自的内存空间；而str5,str6,str7,str8是指针，它们指向相同的常量区域。</p>
+<h2 id="9：将程序跳转到指定内存地址"><a href="#9：将程序跳转到指定内存地址" class="headerlink" title="9：将程序跳转到指定内存地址"></a>9：将程序跳转到指定内存地址</h2><p>要对绝对地址0x100000赋值，我们可以用(unsigned int*)0x100000 = 1234;那么要是想让程序跳转到绝对地址是0x100000去执行，应该怎么做？</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">　　*((void (*)( ))0x100000 ) ( );</span><br><span class="line">　　首先要将0x100000强制转换成函数指针,即:</span><br><span class="line">　　(void (*)())0x100000</span><br><span class="line">　　然后再调用它:</span><br><span class="line">　　*((void (*)())0x100000)();</span><br><span class="line">　　用typedef可以看得更直观些:</span><br><span class="line">　　typedef void(*)() voidFuncPtr;</span><br><span class="line">　　*((voidFuncPtr)0x100000)();</span><br></pre></td></tr></table></figure>
+<h2 id="10：int-id-sizeof-unsigned-long-这个对吗？为什么？"><a href="#10：int-id-sizeof-unsigned-long-这个对吗？为什么？" class="headerlink" title="10：int id[sizeof(unsigned long)];这个对吗？为什么？"></a>10：int id[sizeof(unsigned long)];这个对吗？为什么？</h2><p> 答案:正确 这个 sizeof是编译时运算符，编译时就确定了  ,可以看成和机器有关的常量。</p>
+<p>当sizeof的参数是数组名时，计算的是整个数组的存储大小；当sizeof的参数是指针时，计算的是指针的大小（8字节，64位系统）</p>
+<h2 id="11：引用与指针有什么区别？"><a href="#11：引用与指针有什么区别？" class="headerlink" title="11：引用与指针有什么区别？"></a>11：引用与指针有什么区别？</h2><p>【参考答案】                         </p>
+<ol>
+<li><p>引用必须被初始化，指针不必。</p>
+</li>
+<li><p>引用初始化以后不能被改变，指针可以改变所指的对象。</p>
+</li>
+<li><p>不存在指向空值的引用，但是存在指向空值的指针。</p>
+</li>
+</ol>
+<h2 id="12：基类的析构函数不是虚函数，会带来什么问题？"><a href="#12：基类的析构函数不是虚函数，会带来什么问题？" class="headerlink" title="12：基类的析构函数不是虚函数，会带来什么问题？"></a>12：基类的析构函数不是虚函数，会带来什么问题？</h2><p>【参考答案】派生类的析构函数用不上，会造成资源的泄漏。</p>
+<h2 id="13：全局变量和局部变量有什么区别？是怎么实现的？操作系统和编译器是怎么知道的？"><a href="#13：全局变量和局部变量有什么区别？是怎么实现的？操作系统和编译器是怎么知道的？" class="headerlink" title="13：全局变量和局部变量有什么区别？是怎么实现的？操作系统和编译器是怎么知道的？"></a>13：全局变量和局部变量有什么区别？是怎么实现的？操作系统和编译器是怎么知道的？</h2><p>【参考答案】</p>
+<p>生命周期不同：</p>
+<p>全局变量随主程序创建和创建，随主程序销毁而销毁；局部变量在局部函数内部，甚至局部循环体等内部存在，退出就不存在；</p>
+<p>使用方式不同：通过声明后全局变量程序的各个部分都可以用到；局部变量只能在局部使用；分配在栈区。 </p>
+<p>操作系统和编译器通过内存分配的位置来知道的，全局变量分配在全局数据段并且在程序开始运行的时候被加载。局部变量则分配在堆栈里面 。</p>
+<h2 id="STL中排序算法的实现是什么"><a href="#STL中排序算法的实现是什么" class="headerlink" title="STL中排序算法的实现是什么"></a>STL中排序算法的实现是什么</h2><p>解答：STL中的sort()，在数据量大时，采用quicksort，分段递归排序；一旦分段后的数量小于某个门限值，改用Insertion sort，避免quicksort深度递归带来的过大的额外负担，如果递归层次过深，还会改用heapsort。</p>
+<h2 id="为什么函数参数的入栈的顺序是从右往左"><a href="#为什么函数参数的入栈的顺序是从右往左" class="headerlink" title="为什么函数参数的入栈的顺序是从右往左"></a>为什么函数参数的入栈的顺序是从右往左</h2><p>因为好多函数是不定参数个数的，比如最常用的printf，所以需要参数的入栈顺序是从右往左。</p>
+<h2 id="5-static的用法和作用？"><a href="#5-static的用法和作用？" class="headerlink" title="5. static的用法和作用？"></a>5. static的用法和作用？</h2><p>1.先来介绍它的第一条也是最重要的一条：隐藏。（static函数，static变量均可）</p>
+<p>当同时编译多个文件时，所有未加static前缀的全局变量和函数都具有全局可见性。</p>
+<p>2.static的第二个作用是保持变量内容的持久。（static变量中的记忆功能和全局生存期）存储在静态数据区的变量会在程序刚开始运行时就完成初始化，也是唯一的一次初始化。共有两种变量存储在静态存储区：全局变量和static变量，只不过和全局变量比起来，static可以控制变量的可见范围，说到底static还是用来隐藏的。</p>
+<p>3.static的第三个作用是默认初始化为0（static变量）</p>
+<p>其实全局变量也具备这一属性，因为全局变量也存储在静态数据区。在静态数据区，内存中所有的字节默认值都是0x00，某些时候这一特点可以减少程序员的工作量。</p>
+<p>4.static的第四个作用：C++中的类成员声明static</p>
+<ol>
+<li><p>函数体内static变量的作用范围为该函数体，不同于auto变量，该变量的内存只被分配一次，因此其值在下次调用时仍维持上次的值；</p>
+</li>
+<li><p>在模块内的static全局变量可以被模块内所用函数访问，但不能被模块外其它函数访问；</p>
+</li>
+<li><p>在模块内的static函数只可被这一模块内的其它函数调用，这个函数的使用范围被限制在声明它的模块内；</p>
+</li>
+<li><p>在类中的static成员变量属于整个类所拥有，对类的所有对象只有一份拷贝；</p>
+</li>
+<li><p>在类中的static成员函数属于整个类所拥有，这个函数不接收this指针，因而只能访问类的static成员变量。</p>
+</li>
+</ol>
+<p>类内：</p>
+<ol start="6">
+<li><p>static类对象必须要在类外进行初始化，static修饰的变量先于对象存在，所以static修饰的变量要在类外初始化；</p>
+</li>
+<li><p>由于static修饰的类成员属于类，不属于对象，因此static类成员函数是没有this指针的，this指针是指向本对象的指针。正因为没有this指针，所以static类成员函数不能访问非static的类成员，只能访问 static修饰的类成员；</p>
+</li>
+<li><p>static成员函数不能被virtual修饰，static成员不属于任何对象或实例，所以加上virtual没有任何实际意义；静态成员函数没有this指针，虚函数的实现是为每一个对象分配一个vptr指针，而vptr是通过this指针调用的，所以不能为virtual；虚函数的调用关系，this-&gt;vptr-&gt;ctable-&gt;virtual function</p>
+</li>
+</ol>
+<h2 id="8-const成员函数的理解和应用？"><a href="#8-const成员函数的理解和应用？" class="headerlink" title="8. const成员函数的理解和应用？"></a>8. const成员函数的理解和应用？</h2><p>① const Stock &amp; Stock::topval (②const Stock &amp; s) ③const</p>
+<p>①处const：确保返回的Stock对象在以后的使用中不能被修改</p>
+<p>②处const：确保此方法不修改传递的参数 S</p>
+<p>③处const：保证此方法不修改调用它的对象，const对象只能调用const成员函数,不能调用非const函数</p>
+<h2 id="11-extern用法？"><a href="#11-extern用法？" class="headerlink" title="11. extern用法？"></a>11. extern用法？</h2><ol>
+<li>extern修饰变量的声明</li>
+</ol>
+<p>如果文件a.c需要引用b.c中变量int v，就可以在a.c中声明extern int v，然后就可以引用变量v。</p>
+<ol start="2">
+<li>extern修饰函数的声明</li>
+</ol>
+<p>如果文件a.c需要引用b.c中的函数，比如在b.c中原型是int fun(int mu)，那么就可以在a.c中声明extern int fun（int mu），然后就能使用fun来做任何事情。就像变量的声明一样，extern int fun（int mu）可以放在a.c中任何地方，而不一定非要放在a.c的文件作用域的范围中。</p>
+<ol start="3">
+<li>extern修饰符可用于指示C或者C＋＋函数的调用规范。</li>
+</ol>
+<p>比如在C＋＋中调用C库函数，就需要在C＋＋程序中用extern “C”声明要引用的函数。这是给链接器用的，告诉链接器在链接的时候用C函数规范来链接。主要原因是C＋＋和C程序编译完成后在目标代码中命名规则不同。</p>
+<h2 id="21-构造函数和析构函数可以调用虚函数吗，为什么"><a href="#21-构造函数和析构函数可以调用虚函数吗，为什么" class="headerlink" title="21. 构造函数和析构函数可以调用虚函数吗，为什么"></a>21. 构造函数和析构函数可以调用虚函数吗，为什么</h2><ol>
+<li><p>在C++中，提倡不在构造函数和析构函数中调用虚函数；</p>
+</li>
+<li><p>构造函数和析构函数调用虚函数时都不使用动态联编，如果在构造函数或析构函数中调用虚函数，则运行的是为构造函数或析构函数自身类型定义的版本；</p>
+</li>
+<li><p>因为父类对象会在子类之前进行构造，此时子类部分的数据成员还未初始化，因此调用子类的虚函数时不安全的，故而C++不会进行动态联编；</p>
+</li>
+<li><p>析构函数是用来销毁一个对象的，在销毁一个对象时，先调用子类的析构函数，然后再调用基类的析构函数。所以在调用基类的析构函数时，派生类对象的数据成员已经销毁，这个时候再调用子类的虚函数没有任何意义。</p>
+</li>
+</ol>
+<p>参考：</p>
+<p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/143177919">https://zhuanlan.zhihu.com/p/143177919</a></p>
+
+      
+    </div>
+    <div class="article-footer">
+      <blockquote class="mt-2x">
+  <ul class="post-copyright list-unstyled">
+    
+    <li class="post-copyright-link hidden-xs">
+      <strong>本文链接：</strong>
+      <a href="https://marblemm.github.io/2021/08/10/cpp%E9%9D%A2%E8%AF%95%E6%80%BB%E7%BB%93%EF%BC%88%E4%BA%8C%EF%BC%89/" title="c++面试总结（二）" target="_blank" rel="external">https://marblemm.github.io/2021/08/10/cpp面试总结（二）/</a>
+    </li>
+    
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong> 本博客所有文章除特别声明外，均采用 <a href="http://creativecommons.org/licenses/by/4.0/deed.zh" target="_blank" rel="external">CC BY 4.0 CN协议</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+</blockquote>
+
+
+<div class="panel panel-default panel-badger">
+  <div class="panel-body">
+    <figure class="media">
+      <div class="media-left">
+        <a href="https://github.com/marblemm" target="_blank" class="img-burn thumb-sm visible-lg">
+          <img src="/images/avatar.jpg" class="img-rounded w-full" alt="">
+        </a>
+      </div>
+      <div class="media-body">
+        <h3 class="media-heading"><a href="https://github.com/marblemm" target="_blank"><span class="text-dark">marble</span><small class="ml-1x">software Developer</small></a></h3>
+        <div>个人简介。</div>
+      </div>
+    </figure>
+  </div>
+</div>
+
+
+    </div>
+  </article>
+  
+    
+  <section id="comments">
+  	
+      <div id="vcomments"></div>
+    
+  </section>
+
+
+  
+</div>
+
+  <nav class="bar bar-footer clearfix" data-stick-bottom>
+  <div class="bar-inner">
+  
+  <ul class="pager pull-left">
+    
+    <li class="prev">
+      <a href="/2021/08/11/cpp%E7%BC%96%E7%A8%8B%E4%B9%A6%E7%B1%8D%E6%80%BB%E7%BB%93/" title="c++编程书籍总结"><i class="icon icon-angle-left" aria-hidden="true"></i><span>&nbsp;&nbsp;上一篇</span></a>
+    </li>
+    
+    
+    <li class="next">
+      <a href="/2021/08/09/cpp%E9%9D%A2%E8%AF%95%E6%80%BB%E7%BB%93%EF%BC%88%E4%B8%80%EF%BC%89/" title="c++面试总结（一）"><span>下一篇&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
+    </li>
+    
+    
+    <li class="toggle-toc">
+      <a class="toggle-btn collapsed" data-toggle="collapse" href="#collapseToc" aria-expanded="false" title="文章目录" role="button">
+        <span>[&nbsp;</span><span>文章目录</span>
+        <i class="text-collapsed icon icon-anchor"></i>
+        <i class="text-in icon icon-close"></i>
+        <span>]</span>
+      </a>
+    </li>
+    
+  </ul>
+  
+  
+  <!-- Button trigger modal -->
+  <button type="button" class="btn btn-fancy btn-donate pop-onhover bg-gradient-warning" data-toggle="modal" data-target="#donateModal"><span>赏</span></button>
+  <!-- <div class="wave-icon wave-icon-danger btn-donate" data-toggle="modal" data-target="#donateModal">
+    <div class="wave-circle"><span class="icon"><i class="icon icon-bill"></i></span></div>
+  </div> -->
+  
+  
+  <div class="bar-right">
+    
+    <div class="share-component" data-sites="weibo,qq,wechat" data-mobile-sites="weibo,qq,qzone"></div>
+    
+  </div>
+  </div>
+</nav>
+  
+<!-- Modal -->
+<div class="modal modal-center modal-small modal-xs-full fade" id="donateModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content donate">
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      <div class="modal-body">
+        <div class="donate-box">
+          <div class="donate-head">
+            <p>感谢您的支持，我会继续努力的!</p>
+          </div>
+          <div class="tab-content">
+            <div role="tabpanel" class="tab-pane fade active in" id="alipay">
+              <div class="donate-payimg">
+                <img src="/images/donate/alipayimg.png" alt="扫码支持" title="扫一扫" />
+              </div>
+              <p class="text-muted mv">扫码打赏，你说多少就多少</p>
+              <p class="text-grey">打开支付宝扫一扫，即可进行扫码打赏哦</p>
+            </div>
+            <div role="tabpanel" class="tab-pane fade" id="wechatpay">
+              <div class="donate-payimg">
+                <img src="/images/donate/wechatpayimg.png" alt="扫码支持" title="扫一扫" />
+              </div>
+              <p class="text-muted mv">扫码打赏，你说多少就多少</p>
+              <p class="text-grey">打开微信扫一扫，即可进行扫码打赏哦</p>
+            </div>
+          </div>
+          <div class="donate-footer">
+            <ul class="nav nav-tabs nav-justified" role="tablist">
+              <li role="presentation" class="active">
+                <a href="#alipay" id="alipay-tab" role="tab" data-toggle="tab" aria-controls="alipay" aria-expanded="true"><i class="icon icon-alipay"></i> 支付宝</a>
+              </li>
+              <li role="presentation" class="">
+                <a href="#wechatpay" role="tab" id="wechatpay-tab" data-toggle="tab" aria-controls="wechatpay" aria-expanded="false"><i class="icon icon-wepay"></i> 微信支付</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+</main>
+
+  <footer class="footer" itemscope itemtype="http://schema.org/WPFooter">
+	
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/marblemm" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+    </ul>
+
+    <div class="copyright">
+    	
+        <div class="publishby">
+        	Theme by <a href="https://github.com/cofess" target="_blank"> cofess </a>base on <a href="https://github.com/cofess/hexo-theme-pure" target="_blank">pure</a>.
+        </div>
+    </div>
+</footer>
+  <script src="//cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+<script>
+window.jQuery || document.write('<script src="js/jquery.min.js"><\/script>')
+</script>
+
+<script src="/js/plugin.min.js"></script>
+
+
+<script src="/js/application.js"></script>
+
+
+    <script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+
+
+
+
+
+   
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+   
+    
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/valine"></script>
+  <script type="text/javascript">
+  var GUEST = ['nick', 'mail', 'link'];
+  var meta = 'nick,mail,link';
+  meta = meta.split(',').filter(function(item) {
+    return GUEST.indexOf(item) > -1;
+  });
+  new Valine({
+    el: '#vcomments',
+    verify: false,
+    notify: false,
+    appId: 'vsxVYXKPSCaf1SOO9F2DEyXU-gzGzoHsz',
+    appKey: '1djOltTjcB8Ap3RrgA6zX8HF',
+    placeholder: 'Just go go',
+    avatar: 'mm',
+    meta: meta,
+    pageSize: '10' || 10,
+    visitor: false
+  });
+  </script>
+
+     
+
+
+
+
+
+
+
+</body>
+</html>

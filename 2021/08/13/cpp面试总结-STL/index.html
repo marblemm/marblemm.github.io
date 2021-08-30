@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="Cache-Control" content="no-transform" />
+  <meta http-equiv="Cache-Control" content="no-siteapp" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="format-detection" content="telephone=no,email=no,adress=no">
+  <!-- Color theme for statusbar -->
+  <meta name="theme-color" content="#000000" />
+  <!-- 强制页面在当前窗口以独立页面显示,防止别人在框架里调用页面 -->
+  <meta http-equiv="window-target" content="_top" />
+  
+  
+  <title>c++面试总结-STL | marble</title>
+  <meta name="description" content="STL常用的容器有哪些以及各自的特点是什么?12345678910111213141.vector:底层数据结构为数组 ，支持快速随机访问。2.list:底层数据结构为双向链表，支持快速增删。3.deque:底层数据结构为一个中央控制器和多个缓冲区，支持首尾（中间不能）快速增删，也支持随机访问。4.stack:底层一般用23实现，封闭头部即可，不用vector的原因应该是容量大小有限制，扩容耗时5">
+<meta property="og:type" content="article">
+<meta property="og:title" content="c++面试总结-STL">
+<meta property="og:url" content="https://marblemm.github.io/2021/08/13/cpp%E9%9D%A2%E8%AF%95%E6%80%BB%E7%BB%93-STL/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="STL常用的容器有哪些以及各自的特点是什么?12345678910111213141.vector:底层数据结构为数组 ，支持快速随机访问。2.list:底层数据结构为双向链表，支持快速增删。3.deque:底层数据结构为一个中央控制器和多个缓冲区，支持首尾（中间不能）快速增删，也支持随机访问。4.stack:底层一般用23实现，封闭头部即可，不用vector的原因应该是容量大小有限制，扩容耗时5">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-08-13T14:51:37.000Z">
+<meta property="article:modified_time" content="2021-08-27T14:41:37.811Z">
+<meta property="article:author" content="John Doe">
+<meta name="twitter:card" content="summary">
+  <!-- Canonical links -->
+  <link rel="canonical" href="https://marblemm.github.io/2021/08/13/cpp%E9%9D%A2%E8%AF%95%E6%80%BB%E7%BB%93-STL/index.html">
+  
+    <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png" type="image/x-icon">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+  
+  
+  
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body class="main-center theme-green" itemscope itemtype="http://schema.org/WebPage">
+  <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+  <div class="slimContent">
+    <div class="navbar-header">
+      
+      
+      <div class="profile-block text-center">
+        <a id="avatar" href="https://github.com/marblemm" target="_blank">
+          <img class="img-circle img-rotate" src="/images/avatar.jpg" width="200" height="200">
+        </a>
+        <h2 id="name" class="hidden-xs hidden-sm">marble</h2>
+        <h3 id="title" class="hidden-xs hidden-sm hidden-md">software Developer</h3>
+        <small id="location" class="text-muted hidden-xs hidden-sm"><i class="icon icon-map-marker"></i> wuhan, China</small>
+      </div>
+      
+      <div class="search" id="search-form-wrap">
+
+    <form class="search-form sidebar-form">
+        <div class="input-group">
+            <input type="text" class="search-form-input form-control" placeholder="搜索" />
+            <span class="input-group-btn">
+                <button type="submit" class="search-form-submit btn btn-flat" onclick="return false;"><i class="icon icon-search"></i></button>
+            </span>
+        </div>
+    </form>
+    <div class="ins-search">
+  <div class="ins-search-mask"></div>
+  <div class="ins-search-container">
+    <div class="ins-input-wrapper">
+      <input type="text" class="ins-search-input" placeholder="想要查找什么..." x-webkit-speech />
+      <button type="button" class="close ins-close ins-selectable" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+    </div>
+    <div class="ins-section-wrapper">
+      <div class="ins-section-container"></div>
+    </div>
+  </div>
+</div>
+
+
+</div>
+      <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <nav id="main-navbar" class="collapse navbar-collapse" itemscope itemtype="http://schema.org/SiteNavigationElement" role="navigation">
+      <ul class="nav navbar-nav main-nav ">
+        
+        
+        <li class="menu-item menu-item-home">
+          <a href="/.">
+            
+            <i class="icon icon-home-fill"></i>
+            
+            <span class="menu-title">首页</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives">
+            
+            <i class="icon icon-archives-fill"></i>
+            
+            <span class="menu-title">归档</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories">
+            
+            <i class="icon icon-folder"></i>
+            
+            <span class="menu-title">分类</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-links">
+          <a href="/links">
+            
+            <i class="icon icon-friendship"></i>
+            
+            <span class="menu-title">友链</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-pano">
+          <a href="/pano">
+            
+            <i class="icon icon-friendship"></i>
+            
+            <span class="menu-title">全景</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-pointcloud">
+          <a href="/pointcloud">
+            
+            <i class="icon icon-friendship"></i>
+            
+            <span class="menu-title">点云</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-game">
+          <a href="/2048">
+            
+            <i class="icon icon-friendship"></i>
+            
+            <span class="menu-title">游戏</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about">
+            
+            <i class="icon icon-cup-fill"></i>
+            
+            <span class="menu-title">关于</span>
+          </a>
+        </li>
+        
+      </ul>
+      
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/marblemm" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+    </ul>
+
+    </nav>
+  </div>
+</header>
+
+  
+    <aside class="sidebar" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    
+      <div class="widget">
+    <h3 class="widget-title">公告</h3>
+    <div class="widget-body">
+        <div id="board">
+            <div class="content">
+                <p>欢迎交流与分享经验!</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">分类</h3>
+    <div class="widget-body">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/c/">c++</a><span class="category-list-count">7</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/c-%E9%9D%A2%E8%AF%95/">c++面试</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/git/">git</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E4%B9%A6%E7%B1%8D/">书籍</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%A4%9A%E7%BA%BF%E7%A8%8B/">多线程</a><span class="category-list-count">5</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+
+    
+      
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget-body">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/08/">八月 2021</a><span class="archive-list-count">22</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget-body">
+      <ul class="recent-post-list list-unstyled no-thumbnail">
+        
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/c/">c++</a>
+              </p>
+              <p class="item-title">
+                <a href="/2021/08/29/%E5%AD%97%E7%AC%A6%E4%B8%B2BSTR/" class="title">字符串BSTR</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2021-08-29T15:57:04.000Z" itemprop="datePublished">2021-08-29</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/c/">c++</a>
+              </p>
+              <p class="item-title">
+                <a href="/2021/08/23/cpp11%E8%AE%A1%E6%97%B6%E5%99%A8-chrono/" class="title">cpp11计时器-chrono</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2021-08-23T15:21:16.000Z" itemprop="datePublished">2021-08-23</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/c/">c++</a>
+              </p>
+              <p class="item-title">
+                <a href="/2021/08/22/cpp%E5%8D%95%E4%BE%8B%E6%A8%A1%E5%BC%8F%E6%80%BB%E7%BB%93/" class="title">cpp单例模式总结</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2021-08-22T08:40:01.000Z" itemprop="datePublished">2021-08-22</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/c/">c++</a>
+              </p>
+              <p class="item-title">
+                <a href="/2021/08/22/cpp%E4%B8%ADstd-ref/" class="title">cpp中std::ref</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2021-08-22T07:07:29.000Z" itemprop="datePublished">2021-08-22</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                
+              </p>
+              <p class="item-title">
+                <a href="/2021/08/20/cpp%E4%B8%AD%E7%9A%84RAII%E6%9C%BA%E5%88%B6/" class="title">cpp中的RAII机制</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2021-08-20T15:52:47.000Z" itemprop="datePublished">2021-08-20</time>
+              </p>
+            </div>
+          </li>
+          
+      </ul>
+    </div>
+  </div>
+  
+
+    
+  </div>
+</aside>
+
+  
+  
+<aside class="sidebar sidebar-toc collapse" id="collapseToc" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    <nav id="toc" class="article-toc">
+      <h3 class="toc-title">文章目录</h3>
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#STL%E5%B8%B8%E7%94%A8%E7%9A%84%E5%AE%B9%E5%99%A8%E6%9C%89%E5%93%AA%E4%BA%9B%E4%BB%A5%E5%8F%8A%E5%90%84%E8%87%AA%E7%9A%84%E7%89%B9%E7%82%B9%E6%98%AF%E4%BB%80%E4%B9%88"><span class="toc-number">1.</span> <span class="toc-text">STL常用的容器有哪些以及各自的特点是什么?</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AF%B4%E8%AF%B4-vector-%E5%92%8C-list-%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="toc-number">2.</span> <span class="toc-text">说说 vector 和 list 的区别</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#map-%E5%92%8C-set-%E6%9C%89%E4%BB%80%E4%B9%88%E5%8C%BA%E5%88%AB"><span class="toc-number">3.</span> <span class="toc-text">map 和 set 有什么区别</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#unordered-map%E5%92%8Cmap-%E8%AF%B4%E8%AF%B4%E5%8C%BA%E5%88%AB"><span class="toc-number">4.</span> <span class="toc-text">unordered_map和map 说说区别</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#STL-%E4%B8%AD%E8%BF%AD%E4%BB%A3%E5%99%A8%E7%9A%84%E4%BD%9C%E7%94%A8%EF%BC%8C%E6%9C%89%E6%8C%87%E9%92%88%E4%B8%BA%E4%BD%95%E8%BF%98%E8%A6%81%E8%BF%AD%E4%BB%A3%E5%99%A8"><span class="toc-number">5.</span> <span class="toc-text">STL 中迭代器的作用，有指针为何还要迭代器</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#STL-%E8%BF%AD%E4%BB%A3%E5%99%A8%E6%98%AF%E6%80%8E%E4%B9%88%E5%88%A0%E9%99%A4%E5%85%83%E7%B4%A0%E7%9A%84%E5%91%A2"><span class="toc-number">6.</span> <span class="toc-text">STL 迭代器是怎么删除元素的呢</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B9%B3%E8%A1%A1%E4%BA%8C%E5%8F%89%E6%A0%91%EF%BC%88AVL%E6%A0%91%EF%BC%89%E5%92%8C%E7%BA%A2%E9%BB%91%E6%A0%91"><span class="toc-number">7.</span> <span class="toc-text">平衡二叉树（AVL树）和红黑树</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A0%88%E6%BA%A2%E5%87%BA%E7%9A%84%E5%8E%9F%E5%9B%A0"><span class="toc-number">8.</span> <span class="toc-text">栈溢出的原因</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A0%86%E5%92%8C%E6%A0%88%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="toc-number">9.</span> <span class="toc-text">堆和栈的区别</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%93%88%E5%B8%8C%E8%A1%A8%EF%BC%88hash%E8%A1%A8%EF%BC%89"><span class="toc-number">10.</span> <span class="toc-text">哈希表（hash表）</span></a></li></ol>
+    </nav>
+  </div>
+</aside>
+
+<main class="main" role="main">
+  <div class="content">
+  <article id="post-cpp面试总结-STL" class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
+    
+    <div class="article-header">
+      
+        
+  
+    <h1 class="article-title" itemprop="name">
+      c++面试总结-STL
+    </h1>
+  
+
+      
+      <div class="article-meta">
+        <span class="article-date">
+    <i class="icon icon-calendar-check"></i>
+	<a href="/2021/08/13/cpp%E9%9D%A2%E8%AF%95%E6%80%BB%E7%BB%93-STL/" class="article-date">
+	  <time datetime="2021-08-13T14:51:37.000Z" itemprop="datePublished">2021-08-13</time>
+	</a>
+</span>
+        
+  <span class="article-category">
+    <i class="icon icon-folder"></i>
+    <a class="article-category-link" href="/categories/c-%E9%9D%A2%E8%AF%95/">c++面试</a>
+  </span>
+
+        
+
+        
+	<span class="article-read hidden-xs">
+	    <i class="icon icon-eye-fill" aria-hidden="true"></i>
+	    <span id="busuanzi_container_page_pv">
+			<span id="busuanzi_value_page_pv">0</span>
+		</span>
+	</span>
+
+
+        <span class="post-comment"><i class="icon icon-comment"></i> <a href="/2021/08/13/cpp%E9%9D%A2%E8%AF%95%E6%80%BB%E7%BB%93-STL/#comments" class="article-comment-link">评论</a></span>
+        
+	
+		<span class="post-wordcount hidden-xs" itemprop="wordCount">字数统计: 3.1k(字)</span>
+	
+	
+		<span class="post-readcount hidden-xs" itemprop="timeRequired">阅读时长: 10(分)</span>
+	
+
+      </div>
+    </div>
+    <div class="article-entry marked-body" itemprop="articleBody">
+      
+        <h2 id="STL常用的容器有哪些以及各自的特点是什么"><a href="#STL常用的容器有哪些以及各自的特点是什么" class="headerlink" title="STL常用的容器有哪些以及各自的特点是什么?"></a>STL常用的容器有哪些以及各自的特点是什么?</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">1.vector:底层数据结构为数组 ，支持快速随机访问。</span><br><span class="line">2.list:底层数据结构为双向链表，支持快速增删。</span><br><span class="line">3.deque:底层数据结构为一个中央控制器和多个缓冲区，支持首尾（中间不能）快速增删，也支持随机访问。</span><br><span class="line">4.stack:底层一般用23实现，封闭头部即可，不用vector的原因应该是容量大小有限制，扩容耗时</span><br><span class="line">5.queue:底层一般用23实现，封闭头部即可，不用vector的原因应该是容量大小有限制，扩容耗时（stack和queue其实是适配器,而不叫容器，因为是对容器的再封装）</span><br><span class="line">6.priority_queue:的底层数据结构一般为vector为底层容器，堆heap为处理规则来管理底层容器实现</span><br><span class="line">7.set:底层数据结构为红黑树，有序，不重复。</span><br><span class="line">8.multiset:底层数据结构为红黑树，有序，可重复。 </span><br><span class="line">9.map:底层数据结构为红黑树，有序，不重复。</span><br><span class="line">10.multimap:底层数据结构为红黑树，有序，可重复。</span><br><span class="line">11.hash_set:底层数据结构为hash表，无序，不重复。</span><br><span class="line">12.hash_multiset:底层数据结构为hash表，无序，可重复 。</span><br><span class="line">13.hash_map :底层数据结构为hash表，无序，不重复。</span><br><span class="line">14.hash_multimap:底层数据结构为hash表，无序，可重复。 </span><br></pre></td></tr></table></figure>
+
+<p> 使用场景</p>
+<p>1、如果你需要高效的随机存取，而不在乎插入和删除的效率，使用vector</p>
+<p>2、如果你需要大量的插入和删除，而不关心随机存取，则应使用list</p>
+<p>3、如果你需要随机存取，而且关心两端数据的插入和删除，则应使用deque。</p>
+<p>4、如果你要存储一个数据字典，并要求方便地根据key找value，那么map是较好的选择</p>
+<p>5、如果你要查找一个元素是否在某集合内存中，则使用set存储这个集合比较好</p>
+<h2 id="说说-vector-和-list-的区别"><a href="#说说-vector-和-list-的区别" class="headerlink" title="说说 vector 和 list 的区别"></a>说说 vector 和 list 的区别</h2><p>1） vector， 连续存储的容器，动态数组，在堆上分配空间 ；</p>
+<p>底层实现：数组。</p>
+<p>如果没有剩余空间了，则会重新配置原有元素个数的两倍空间，然后将原空间元素通过复制的方式初始化新空间，再向新空间增加元素。</p>
+<p>适用场景：经常随机访问，且不经常对非尾节点进行插入删除。</p>
+<p>2）list，动态链表，在堆上分配空间，每插入一个元素都会分配空间，每删除一个元素都会释放空间。</p>
+<p>底层：双向链表</p>
+<p>访问：随机访问性能很差，只能快速访问头尾节点。</p>
+<p>适用场景：经常插入删除大量数据</p>
+<p>2） vector在中间节点进行插入删除会导致内存拷贝，list不会。</p>
+<p>3） vector一次性分配好内存，不够时才进行2倍扩容；list每次插入新节点都会进行内存申请。</p>
+<p>4） vector拥有一段连续的内存空间，因此支持随机访问，如果需要高效的随即访问，而不在乎插入和删除的效率，使用vector。</p>
+<p>list拥有一段不连续的内存空间，如果需要高效的插入和删除，而不关心随机访问，则应使用list。</p>
+<h2 id="map-和-set-有什么区别"><a href="#map-和-set-有什么区别" class="headerlink" title="map 和 set 有什么区别"></a>map 和 set 有什么区别</h2><p>1） map和set都是C++的关联容器，其底层实现都是红黑树（RB-Tree）。</p>
+<p>2） map中的元素是key-value（关键字—值）对：关键字起到索引的作用，值则表示与索引相关联的数据；Set与之相对就是关键字的简单集合，set中每个元素只包含一个关键字。</p>
+<p>3） set的迭代器是const的，不允许修改元素的值；map允许修改value，但不允许修改key。</p>
+<p>4） map支持下标操作，set不支持下标操作。map可以用key做下标，</p>
+<h2 id="unordered-map和map-说说区别"><a href="#unordered-map和map-说说区别" class="headerlink" title="unordered_map和map 说说区别"></a>unordered_map和map 说说区别</h2><p>内部实现机理</p>
+<p>map： map内部实现了一个红黑树，该结构具有自动排序的功能，因此map内部的所有元素都是有序的，红黑树的每一个节点都代表着map的一个元素，因此，对于map进行的查找，删除，添加等一系列的操作都相当于是对红黑树进行这样的操作，故红黑树的效率决定了map的效率。</p>
+<p>unordered_map: unordered_map内部实现了一个哈希表，因此其元素的排列顺序是杂乱的，无序的<br>优缺点以及适用处</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">map </span><br><span class="line">优点： </span><br><span class="line">有序性，这是map结构最大的优点，其元素的有序性在很多应用中都会简化很多的操作</span><br><span class="line">红黑树，内部实现一个红黑书使得map的很多操作在的时间复杂度下就可以实现，因此效率非常的高</span><br><span class="line">缺点： </span><br><span class="line">适用处，对于那些有顺序要求的问题，用map会更高效一些</span><br><span class="line">空间占用率高，因为map内部实现了红黑树，虽然提高了运行效率，但是因为每一个节点都需要额外保存父节点，孩子节点以及红/黑性质，使得每一个节点都占用大量的空间</span><br><span class="line"></span><br><span class="line">unordered_map </span><br><span class="line">优点： </span><br><span class="line">因为内部实现了哈希表，因此其查找速度非常的快</span><br><span class="line">缺点： </span><br><span class="line">适用处，对于查找问题，unordered_map会更加高效一些，因此遇到查找问题，常会考虑一下用unordered_map</span><br><span class="line">哈希表的建立比较耗费时间</span><br></pre></td></tr></table></figure>
+<h2 id="STL-中迭代器的作用，有指针为何还要迭代器"><a href="#STL-中迭代器的作用，有指针为何还要迭代器" class="headerlink" title="STL 中迭代器的作用，有指针为何还要迭代器"></a>STL 中迭代器的作用，有指针为何还要迭代器</h2><p>1） Iterator（迭代器）模式又称Cursor（游标）模式，用于提供一种方法顺序访问一个聚合对象中各个元素, 而又不需暴露该对象的内部表示。</p>
+<p>2） 迭代器不是指针，是类模板，表现的像指针。他只是模拟了指针的一些功能，通过重载了指针的一些操作符，-&gt;、*、++、–等，相当于一种智能指针。</p>
+<p>3） 迭代器产生原因：</p>
+<p>Iterator类的访问方式就是把不同集合类的访问逻辑抽象出来，使得不用暴露集合内部的结构而达到循环遍历集合的效果。</p>
+<h2 id="STL-迭代器是怎么删除元素的呢"><a href="#STL-迭代器是怎么删除元素的呢" class="headerlink" title="STL 迭代器是怎么删除元素的呢"></a>STL 迭代器是怎么删除元素的呢</h2><p>1） 对于序列容器vector,deque来说，使用erase(itertor)后，后边的每个元素的迭代器都会失效，但是后边每个元素都会往前移动一个位置，但是erase会返回下一个有效的迭代器；</p>
+<p>2） 对于关联容器map set来说，使用了erase(iterator)后，当前元素的迭代器失效，但是其结构是红黑树，删除当前元素的，不会影响到下一个元素的迭代器，所以在调用erase之前，记录下一个元素的迭代器即可。</p>
+<p>3） 对于list来说，它使用了不连续分配的内存，并且它的erase方法也会返回下一个有效的iterator，</p>
+<h2 id="平衡二叉树（AVL树）和红黑树"><a href="#平衡二叉树（AVL树）和红黑树" class="headerlink" title="平衡二叉树（AVL树）和红黑树"></a>平衡二叉树（AVL树）和红黑树</h2><p>1）平衡二叉树又称为AVL树，是一种特殊的二叉排序树。其左右子树都是平衡二叉树，且左右子树高度之差的绝对值不超过1。</p>
+<p>2）红黑树是一种二叉查找树，但在每个节点增加一个存储位表示节点的颜色，可以是红或黑（非红即黑），红黑树是一种弱平衡二叉树，相对于要求严格的AVL树来说，它的旋转次数少，所以对于搜索，插入，删除操作较多的情况下，通常使用红黑树。</p>
+<p>3）所以红黑树在查找，插入删除的性能都是O(logn)，且性能稳定，所以STL里面很多结构包括map底层实现都是使用的红黑树。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">请你回答一下map底层为什么用红黑树实现</span><br><span class="line">1、红黑树：</span><br><span class="line">红黑树是一种二叉查找树，但在每个节点增加一个存储位表示节点的颜色，可以是红或黑（非红即黑）。通过对任何一条从根到叶子的路径上各个节点着色的方式的限制，红黑树确保没有一条路径会比其它路径长出两倍，因此，红黑树是一种弱平衡二叉树，相对于要求严格的AVL树来说，它的旋转次数少，所以对于搜索，插入，删除操作较多的情况下，通常使用红黑树。</span><br><span class="line">性质：</span><br><span class="line">1. 每个节点非红即黑</span><br><span class="line">2. 根节点是黑的;</span><br><span class="line">3. 每个叶节点（叶节点即树尾端NULL指针或NULL节点）都是黑的;</span><br><span class="line">4. 如果一个节点是红色的，则它的子节点必须是黑色的。</span><br><span class="line">5. 对于任意节点而言，其到叶子点树NULL指针的每条路径都包含相同数目的黑节点;</span><br><span class="line">2、平衡二叉树（AVL树）：</span><br><span class="line">红黑树是在AVL树的基础上提出来的。</span><br><span class="line">平衡二叉树又称为AVL树，是一种特殊的二叉排序树。其左右子树都是平衡二叉树，且左右子树高度之差的绝对值不超过1。</span><br><span class="line">AVL树中所有结点为根的树的左右子树高度之差的绝对值不超过1。</span><br><span class="line">将二叉树上结点的左子树深度减去右子树深度的值称为平衡因子BF，那么平衡二叉树上的所有结点的平衡因子只可能是-1、0和1。只要二叉树上有一个结点的平衡因子的绝对值大于1，则该二叉树就是不平衡的。</span><br><span class="line">3、红黑树较AVL树的优点：</span><br><span class="line">AVL 树是高度平衡的，频繁的插入和删除，会引起频繁的rebalance，导致效率下降；红黑树不是高度平衡的，算是一种折中，插入最多两次旋转，删除最多三次旋转。</span><br><span class="line">所以红黑树在查找，插入删除的性能都是O(logn)，且性能稳定，所以STL里面很多结构包括map底层实现都是使用的红黑树。</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="栈溢出的原因"><a href="#栈溢出的原因" class="headerlink" title="栈溢出的原因"></a>栈溢出的原因</h2><p>栈溢出指的是程序向栈中某个变量中写入的字节数超过了这个变量本身所申请的字节数。</p>
+<p>1） 局部数组过大。当函数内部的数组过大时，有可能导致堆栈溢出，局部变量是存储在栈中的。</p>
+<p>2） 递归调用层次太多。</p>
+<p>3） 指针或数组越界。例如进行字符串拷贝，或处理用户输入等等。</p>
+<h2 id="堆和栈的区别"><a href="#堆和栈的区别" class="headerlink" title="堆和栈的区别"></a>堆和栈的区别</h2><p>C语言的内存模型分为5个区：栈区、堆区、静态区、常量区、代码区。</p>
+<p> 1）栈区：存放函数的参数值、局部变量等，由编译器自动分配和释放。栈由系统自动分配，速度快，但是程序员无法控制。</p>
+<p>2） 堆区：就是通过new、malloc、realloc分配的内存块，编译器不会负责它们的释放工作。一般是由程序员分配释放，未被释放可能引起内存泄漏。堆是有程序员自己分配，速度较慢，容易产生碎片，不过用起来方便。</p>
+<p>3）全局变量和静态变量的存储是放在一块的。</p>
+<p>4）常量区：常量存储在这里，不允许修改。</p>
+<p>5） 代码区：存放函数体的二进制代码。</p>
+<h2 id="哈希表（hash表）"><a href="#哈希表（hash表）" class="headerlink" title="哈希表（hash表）"></a>哈希表（hash表）</h2><p>哈希表的实现主要包括构造哈希和处理哈希冲突：构造哈希，主要包括直接地址法，除留余数法。</p>
+<p>处理哈希冲突：当哈希表关键字集合很大时，关键字值不同的元素可能会映射到哈希表的同一地址上，这样的现象称为哈希冲突。常用的解决方法有：</p>
+<p>1） 开放定址法，冲突时，用某种方法继续探测哈希表中的其他存储单元，直到找到空位置为止。（如，线性探测，平方探测）</p>
+<p>2） 再哈希法：当发生冲突时，用另一个哈希函数计算地址值，直到冲突不再发生。</p>
+<p>3） 链地址法：将所有哈希值相同的key通过链表存储，key按顺序插入链表中。</p>
+
+      
+    </div>
+    <div class="article-footer">
+      <blockquote class="mt-2x">
+  <ul class="post-copyright list-unstyled">
+    
+    <li class="post-copyright-link hidden-xs">
+      <strong>本文链接：</strong>
+      <a href="https://marblemm.github.io/2021/08/13/cpp%E9%9D%A2%E8%AF%95%E6%80%BB%E7%BB%93-STL/" title="c++面试总结-STL" target="_blank" rel="external">https://marblemm.github.io/2021/08/13/cpp面试总结-STL/</a>
+    </li>
+    
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong> 本博客所有文章除特别声明外，均采用 <a href="http://creativecommons.org/licenses/by/4.0/deed.zh" target="_blank" rel="external">CC BY 4.0 CN协议</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+</blockquote>
+
+
+<div class="panel panel-default panel-badger">
+  <div class="panel-body">
+    <figure class="media">
+      <div class="media-left">
+        <a href="https://github.com/marblemm" target="_blank" class="img-burn thumb-sm visible-lg">
+          <img src="/images/avatar.jpg" class="img-rounded w-full" alt="">
+        </a>
+      </div>
+      <div class="media-body">
+        <h3 class="media-heading"><a href="https://github.com/marblemm" target="_blank"><span class="text-dark">marble</span><small class="ml-1x">software Developer</small></a></h3>
+        <div>个人简介。</div>
+      </div>
+    </figure>
+  </div>
+</div>
+
+
+    </div>
+  </article>
+  
+    
+  <section id="comments">
+  	
+      <div id="vcomments"></div>
+    
+  </section>
+
+
+  
+</div>
+
+  <nav class="bar bar-footer clearfix" data-stick-bottom>
+  <div class="bar-inner">
+  
+  <ul class="pager pull-left">
+    
+    <li class="prev">
+      <a href="/2021/08/14/%E5%AD%97%E7%AC%A6%E7%B1%BB%E5%9E%8B%E6%80%BB%E7%BB%93%E5%8C%BA%E5%88%ABwchar_t%E5%92%8Cchar/" title="字符类型总结区别wchar_t和char"><i class="icon icon-angle-left" aria-hidden="true"></i><span>&nbsp;&nbsp;上一篇</span></a>
+    </li>
+    
+    
+    <li class="next">
+      <a href="/2021/08/13/string%E5%92%8Cchar-%E7%9A%84%E5%8C%BA%E5%88%AB/" title="string和char*的区别"><span>下一篇&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
+    </li>
+    
+    
+    <li class="toggle-toc">
+      <a class="toggle-btn collapsed" data-toggle="collapse" href="#collapseToc" aria-expanded="false" title="文章目录" role="button">
+        <span>[&nbsp;</span><span>文章目录</span>
+        <i class="text-collapsed icon icon-anchor"></i>
+        <i class="text-in icon icon-close"></i>
+        <span>]</span>
+      </a>
+    </li>
+    
+  </ul>
+  
+  
+  <!-- Button trigger modal -->
+  <button type="button" class="btn btn-fancy btn-donate pop-onhover bg-gradient-warning" data-toggle="modal" data-target="#donateModal"><span>赏</span></button>
+  <!-- <div class="wave-icon wave-icon-danger btn-donate" data-toggle="modal" data-target="#donateModal">
+    <div class="wave-circle"><span class="icon"><i class="icon icon-bill"></i></span></div>
+  </div> -->
+  
+  
+  <div class="bar-right">
+    
+    <div class="share-component" data-sites="weibo,qq,wechat" data-mobile-sites="weibo,qq,qzone"></div>
+    
+  </div>
+  </div>
+</nav>
+  
+<!-- Modal -->
+<div class="modal modal-center modal-small modal-xs-full fade" id="donateModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content donate">
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      <div class="modal-body">
+        <div class="donate-box">
+          <div class="donate-head">
+            <p>感谢您的支持，我会继续努力的!</p>
+          </div>
+          <div class="tab-content">
+            <div role="tabpanel" class="tab-pane fade active in" id="alipay">
+              <div class="donate-payimg">
+                <img src="/images/donate/alipayimg.png" alt="扫码支持" title="扫一扫" />
+              </div>
+              <p class="text-muted mv">扫码打赏，你说多少就多少</p>
+              <p class="text-grey">打开支付宝扫一扫，即可进行扫码打赏哦</p>
+            </div>
+            <div role="tabpanel" class="tab-pane fade" id="wechatpay">
+              <div class="donate-payimg">
+                <img src="/images/donate/wechatpayimg.png" alt="扫码支持" title="扫一扫" />
+              </div>
+              <p class="text-muted mv">扫码打赏，你说多少就多少</p>
+              <p class="text-grey">打开微信扫一扫，即可进行扫码打赏哦</p>
+            </div>
+          </div>
+          <div class="donate-footer">
+            <ul class="nav nav-tabs nav-justified" role="tablist">
+              <li role="presentation" class="active">
+                <a href="#alipay" id="alipay-tab" role="tab" data-toggle="tab" aria-controls="alipay" aria-expanded="true"><i class="icon icon-alipay"></i> 支付宝</a>
+              </li>
+              <li role="presentation" class="">
+                <a href="#wechatpay" role="tab" id="wechatpay-tab" data-toggle="tab" aria-controls="wechatpay" aria-expanded="false"><i class="icon icon-wepay"></i> 微信支付</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+</main>
+
+  <footer class="footer" itemscope itemtype="http://schema.org/WPFooter">
+	
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/marblemm" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+    </ul>
+
+    <div class="copyright">
+    	
+        <div class="publishby">
+        	Theme by <a href="https://github.com/cofess" target="_blank"> cofess </a>base on <a href="https://github.com/cofess/hexo-theme-pure" target="_blank">pure</a>.
+        </div>
+    </div>
+</footer>
+  <script src="//cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+<script>
+window.jQuery || document.write('<script src="js/jquery.min.js"><\/script>')
+</script>
+
+<script src="/js/plugin.min.js"></script>
+
+
+<script src="/js/application.js"></script>
+
+
+    <script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+
+
+
+
+
+   
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+   
+    
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/valine"></script>
+  <script type="text/javascript">
+  var GUEST = ['nick', 'mail', 'link'];
+  var meta = 'nick,mail,link';
+  meta = meta.split(',').filter(function(item) {
+    return GUEST.indexOf(item) > -1;
+  });
+  new Valine({
+    el: '#vcomments',
+    verify: false,
+    notify: false,
+    appId: 'vsxVYXKPSCaf1SOO9F2DEyXU-gzGzoHsz',
+    appKey: '1djOltTjcB8Ap3RrgA6zX8HF',
+    placeholder: 'Just go go',
+    avatar: 'mm',
+    meta: meta,
+    pageSize: '10' || 10,
+    visitor: false
+  });
+  </script>
+
+     
+
+
+
+
+
+
+
+</body>
+</html>

@@ -17,22 +17,22 @@
   <meta http-equiv="window-target" content="_top" />
   
   
-  <title>从新电脑根据hexo部署到github | marble</title>
-  <meta name="description" content="marblemm.github.io个人博客 http:&#x2F;&#x2F;marblemm.github.io hexo部署说明准备环境1、安装git 2、设置ssh keygithub设置添加SSH 3、安装nodejs   ——-windows：nodejs选择LTS版本就行了。 验证环境打开cmd窗口，输入命令 123git --versionnode -vnpm -v 如果出现，类似如下图所示，说明环境">
+  <title>字符串BSTR | marble</title>
+  <meta name="description" content="BSTR为什么需要BSTR　　COM是一种跨编程语言的平台，需要提供语言无关的数据类型。多数编程语言有自己的字符串表示。  C++ 字符串是以0结束的ASCII或Unicode字符数组。 Visual Basic字符串是一个ASCII字符数组加上表示长度的前缀。 Java字符串是以0结束的Unicode字符数组。  需要定义一种通用的字符串类型，可以很容易的匹配到不同编程语言。在C++中，就是BS">
 <meta property="og:type" content="article">
-<meta property="og:title" content="从新电脑根据hexo部署到github">
-<meta property="og:url" content="https://marblemm.github.io/2021/08/04/%E4%BB%8E%E6%96%B0%E7%94%B5%E8%84%91%E6%A0%B9%E6%8D%AEhexo%E9%83%A8%E7%BD%B2%E5%88%B0github/index.html">
+<meta property="og:title" content="字符串BSTR">
+<meta property="og:url" content="https://marblemm.github.io/2021/08/29/%E5%AD%97%E7%AC%A6%E4%B8%B2BSTR/index.html">
 <meta property="og:site_name" content="Hexo">
-<meta property="og:description" content="marblemm.github.io个人博客 http:&#x2F;&#x2F;marblemm.github.io hexo部署说明准备环境1、安装git 2、设置ssh keygithub设置添加SSH 3、安装nodejs   ——-windows：nodejs选择LTS版本就行了。 验证环境打开cmd窗口，输入命令 123git --versionnode -vnpm -v 如果出现，类似如下图所示，说明环境">
+<meta property="og:description" content="BSTR为什么需要BSTR　　COM是一种跨编程语言的平台，需要提供语言无关的数据类型。多数编程语言有自己的字符串表示。  C++ 字符串是以0结束的ASCII或Unicode字符数组。 Visual Basic字符串是一个ASCII字符数组加上表示长度的前缀。 Java字符串是以0结束的Unicode字符数组。  需要定义一种通用的字符串类型，可以很容易的匹配到不同编程语言。在C++中，就是BS">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://marblemm.github.io/2021/08/04/%E4%BB%8E%E6%96%B0%E7%94%B5%E8%84%91%E6%A0%B9%E6%8D%AEhexo%E9%83%A8%E7%BD%B2%E5%88%B0github/huanjing.png">
-<meta property="article:published_time" content="2021-08-04T14:07:48.000Z">
-<meta property="article:modified_time" content="2021-08-09T15:19:26.007Z">
+<meta property="og:image" content="https://marblemm.github.io/2021/08/29/%E5%AD%97%E7%AC%A6%E4%B8%B2BSTR/bstr.jpg">
+<meta property="article:published_time" content="2021-08-29T15:57:04.000Z">
+<meta property="article:modified_time" content="2021-08-30T11:15:41.239Z">
 <meta property="article:author" content="John Doe">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://marblemm.github.io/2021/08/04/%E4%BB%8E%E6%96%B0%E7%94%B5%E8%84%91%E6%A0%B9%E6%8D%AEhexo%E9%83%A8%E7%BD%B2%E5%88%B0github/huanjing.png">
+<meta name="twitter:image" content="https://marblemm.github.io/2021/08/29/%E5%AD%97%E7%AC%A6%E4%B8%B2BSTR/bstr.jpg">
   <!-- Canonical links -->
-  <link rel="canonical" href="https://marblemm.github.io/2021/08/04/%E4%BB%8E%E6%96%B0%E7%94%B5%E8%84%91%E6%A0%B9%E6%8D%AEhexo%E9%83%A8%E7%BD%B2%E5%88%B0github/index.html">
+  <link rel="canonical" href="https://marblemm.github.io/2021/08/29/%E5%AD%97%E7%AC%A6%E4%B8%B2BSTR/index.html">
   
     <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
   
@@ -329,21 +329,21 @@
   <div class="slimContent">
     <nav id="toc" class="article-toc">
       <h3 class="toc-title">文章目录</h3>
-      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#marblemm-github-io"><span class="toc-number">1.</span> <span class="toc-text">marblemm.github.io</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#hexo%E9%83%A8%E7%BD%B2%E8%AF%B4%E6%98%8E"><span class="toc-number">2.</span> <span class="toc-text">hexo部署说明</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%87%86%E5%A4%87%E7%8E%AF%E5%A2%83"><span class="toc-number">2.1.</span> <span class="toc-text">准备环境</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%AA%8C%E8%AF%81%E7%8E%AF%E5%A2%83"><span class="toc-number">2.2.</span> <span class="toc-text">验证环境</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9C%AC%E5%9C%B0%E5%8F%91%E5%B8%83"><span class="toc-number">2.3.</span> <span class="toc-text">本地发布</span></a></li></ol></li></ol>
+      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#BSTR"><span class="toc-number">1.</span> <span class="toc-text">BSTR</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E9%9C%80%E8%A6%81BSTR"><span class="toc-number">1.1.</span> <span class="toc-text">为什么需要BSTR</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%80%E4%B9%88%E6%98%AFBSTR"><span class="toc-number">1.2.</span> <span class="toc-text">什么是BSTR</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#BSTR%E7%9A%84%E7%89%B9%E6%AE%8A%E6%80%A7"><span class="toc-number">1.3.</span> <span class="toc-text">BSTR的特殊性</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#BSTR%E7%9B%B8%E5%85%B3%E5%87%BD%E6%95%B0%E6%97%8F"><span class="toc-number">1.4.</span> <span class="toc-text">BSTR相关函数族</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E6%95%B0%E4%B8%BA-out-%E7%9A%84BSTR%E6%B3%A8%E6%84%8F%E7%82%B9"><span class="toc-number">1.5.</span> <span class="toc-text">参数为[out]的BSTR注意点</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E6%95%B0%E4%B8%BA-in-%E7%9A%84BSTR%E6%B3%A8%E6%84%8F%E7%82%B9"><span class="toc-number">1.6.</span> <span class="toc-text">参数为[in]的BSTR注意点</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E6%95%B0%E4%B8%BA-out-%E7%9A%84%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%AD%E5%8C%85%E5%90%ABBSTR%E7%9A%84%E6%B3%A8%E6%84%8F%E7%82%B9"><span class="toc-number">1.7.</span> <span class="toc-text">参数为[out]的数据结构中包含BSTR的注意点</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#BSTR%E4%BD%9C%E4%B8%BASysAllocString%E6%88%96SysReAllocString%E7%9A%84%E5%8F%82%E6%95%B0%E6%97%B6%E7%9A%84%E6%B3%A8%E6%84%8F%E7%82%B9"><span class="toc-number">1.8.</span> <span class="toc-text">BSTR作为SysAllocString或SysReAllocString的参数时的注意点</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#ATL%E5%9F%BA%E7%A1%80BSTR-CComBSTR-SysAllocString"><span class="toc-number">2.</span> <span class="toc-text">ATL基础BSTR CComBSTR SysAllocString</span></a></li></ol>
     </nav>
   </div>
 </aside>
 
 <main class="main" role="main">
   <div class="content">
-  <article id="post-从新电脑根据hexo部署到github" class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
+  <article id="post-字符串BSTR" class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
     
     <div class="article-header">
       
         
   
     <h1 class="article-title" itemprop="name">
-      从新电脑根据hexo部署到github
+      字符串BSTR
     </h1>
   
 
@@ -351,14 +351,14 @@
       <div class="article-meta">
         <span class="article-date">
     <i class="icon icon-calendar-check"></i>
-	<a href="/2021/08/04/%E4%BB%8E%E6%96%B0%E7%94%B5%E8%84%91%E6%A0%B9%E6%8D%AEhexo%E9%83%A8%E7%BD%B2%E5%88%B0github/" class="article-date">
-	  <time datetime="2021-08-04T14:07:48.000Z" itemprop="datePublished">2021-08-04</time>
+	<a href="/2021/08/29/%E5%AD%97%E7%AC%A6%E4%B8%B2BSTR/" class="article-date">
+	  <time datetime="2021-08-29T15:57:04.000Z" itemprop="datePublished">2021-08-29</time>
 	</a>
 </span>
         
   <span class="article-category">
     <i class="icon icon-folder"></i>
-    <a class="article-category-link" href="/categories/git/">git</a>
+    <a class="article-category-link" href="/categories/c/">c++</a>
   </span>
 
         
@@ -372,33 +372,136 @@
 	</span>
 
 
-        <span class="post-comment"><i class="icon icon-comment"></i> <a href="/2021/08/04/%E4%BB%8E%E6%96%B0%E7%94%B5%E8%84%91%E6%A0%B9%E6%8D%AEhexo%E9%83%A8%E7%BD%B2%E5%88%B0github/#comments" class="article-comment-link">评论</a></span>
+        <span class="post-comment"><i class="icon icon-comment"></i> <a href="/2021/08/29/%E5%AD%97%E7%AC%A6%E4%B8%B2BSTR/#comments" class="article-comment-link">评论</a></span>
         
 	
-		<span class="post-wordcount hidden-xs" itemprop="wordCount">字数统计: 224(字)</span>
+		<span class="post-wordcount hidden-xs" itemprop="wordCount">字数统计: 2.2k(字)</span>
 	
 	
-		<span class="post-readcount hidden-xs" itemprop="timeRequired">阅读时长: 1(分)</span>
+		<span class="post-readcount hidden-xs" itemprop="timeRequired">阅读时长: 8(分)</span>
 	
 
       </div>
     </div>
     <div class="article-entry marked-body" itemprop="articleBody">
       
-        <h1 id="marblemm-github-io"><a href="#marblemm-github-io" class="headerlink" title="marblemm.github.io"></a>marblemm.github.io</h1><p>个人博客</p>
-<p><a href="http://marblemm.github.io/">http://marblemm.github.io</a></p>
-<h1 id="hexo部署说明"><a href="#hexo部署说明" class="headerlink" title="hexo部署说明"></a>hexo部署说明</h1><h2 id="准备环境"><a href="#准备环境" class="headerlink" title="准备环境"></a>准备环境</h2><p>1、安装git</p>
-<p>2、设置ssh key<br><a target="_blank" rel="noopener" href="https://www.cnblogs.com/ayseeing/p/3572582.html">github设置添加SSH</a></p>
-<p>3、安装nodejs   ——-windows：nodejs选择LTS版本就行了。</p>
-<h2 id="验证环境"><a href="#验证环境" class="headerlink" title="验证环境"></a>验证环境</h2><p>打开cmd窗口，输入命令</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">git --version</span><br><span class="line">node -v</span><br><span class="line">npm -v</span><br></pre></td></tr></table></figure>
-<p>如果出现，类似如下图所示，说明环境正确</p>
-<p><img src="huanjing.png"></p>
-<p>4、 安装hexo<br>前面git和nodejs安装好后，就可以安装hexo了，你可以先创建一个文件夹blog，然后cd到这个文件夹下（或者在这个文件夹下直接右键git bash打开）。输入命令</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">npm install -g cnpm --registry=https://registry.npm.taobao.org #使用淘宝镜像，国内速度会比较快</span><br><span class="line">npm install hexo-cli -g #安装hexo</span><br></pre></td></tr></table></figure>
-<p>然后用hexo -v查看一下版本，至此就全部安装完了。</p>
-<h2 id="本地发布"><a href="#本地发布" class="headerlink" title="本地发布"></a>本地发布</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">hexo g #生成静态主页</span><br><span class="line">hexo s #启动服务</span><br><span class="line">hexo d #部署静态页面推送到GitHub仓库</span><br></pre></td></tr></table></figure>
+        <h1 id="BSTR"><a href="#BSTR" class="headerlink" title="BSTR"></a>BSTR</h1><h2 id="为什么需要BSTR"><a href="#为什么需要BSTR" class="headerlink" title="为什么需要BSTR"></a>为什么需要BSTR</h2><p>　　COM是一种跨编程语言的平台，需要提供语言无关的数据类型。多数编程语言有自己的字符串表示。</p>
+<ul>
+<li>C++ 字符串是以0结束的ASCII或Unicode字符数组。</li>
+<li>Visual Basic字符串是一个ASCII字符数组加上表示长度的前缀。</li>
+<li>Java字符串是以0结束的Unicode字符数组。</li>
+</ul>
+<p>需要定义一种通用的字符串类型，可以很容易的匹配到不同编程语言。在C++中，就是BSTR。</p>
+<h2 id="什么是BSTR"><a href="#什么是BSTR" class="headerlink" title="什么是BSTR"></a>什么是BSTR</h2><p>　　BSTR是“Basic STRing”的简称，微软在COM/OLE中定义的标准字符串数据类型。</p>
+<pre><code>对于C++，Windows头文件wtypes.h中定义如下：
+typedef wchar_t WCHAR;
+typedef WCHAR OLECHAR;
+typedef OLECHAR __RPC_FAR *BSTR;;
+使用以Null结尾的简单字符串在COM component间传递不太方便。因此，标准BSTR是一个有长度前缀和null结束符的OLECHAR数组。BSTR的前4字节是一个表示字符串长度的前缀。BSTR长度域的值是字符串的字节数，并且不包括0结束符。
+由于是Unicode串，所以字符数是字节数的一半。这种方式的优点是允许程序员在BSTR串中间嵌入NULL字符。但是，BSTR的前四个字节表示长度，而OLECHAR数组的前四字节表示前两个字符。这种情况下，对于C++程序，如何实现BSTR和OLECHAR的交换？答案是COM提供了两个BSTR分配用的API：SysAllocString / SysReallocString。函数返回的指针指向BSTR的第一个字符，而不是BSTR在内存的第一个字节。
+</code></pre>
+<h2 id="BSTR的特殊性"><a href="#BSTR的特殊性" class="headerlink" title="BSTR的特殊性"></a>BSTR的特殊性</h2><pre><code>BSTR字符串可以内嵌零个或多个NULL，因为决定其长度的不是NULL，而是其前缀保存的数值，所以不能以NULL来判断字符串的结束。；
 
+必须用SysAllocString()和SysFreeString（）函数族来分配和释放，用SysStringLen()等取得字符串的长度；
+</code></pre>
+<h2 id="BSTR相关函数族"><a href="#BSTR相关函数族" class="headerlink" title="BSTR相关函数族"></a>BSTR相关函数族</h2><pre><code>内存分配和重分配函数
+SysAllocString
+SysAllocStringLen
+SysAllocStringByteLen
+SysReAllocString
+SysReAllocStringLen
+注：通过以上函数分配空间的同时将根据字符串实际占用的字节数填写前缀
+</code></pre>
+<p>字符串释放函数</p>
+<pre><code>SysFreeString
+注：这个函数的参数可以传入NULL，即在调用此函数时可以不用判断参数是否为NULL
+</code></pre>
+<p>字符串（占用空间）长度函数</p>
+<pre><code>SysStringLen
+SysStringByteLen
+</code></pre>
+<p>如何避免BSTR造成的内存泄漏</p>
+<pre><code>对于BSTR的管理（申请、释放和计算长度）严格使用上述对应的函数族，不要使用new、delete、CoTaskMemAlloc、CoTaskMemFree、sizeof 等。
+不要在BSTR字符串中嵌入NULL
+定义BSTR时要赋初值NULL
+BSTR bstr = NULL;
+调用SysFreeString后要给bstr赋NULL
+SysFreeString(bstr)；
+bstr = NULL;
+不要给BSTR直接初始化字符串
+BSTR bstr = L“kkkkkk”;//BSTR bstr = SysAllocString (L“kkkkkk”);
+</code></pre>
+<p>因为直接初始化字符串时前缀的值可能是一个随机数，这样的话，其他地方使用这个BSTR时将无法决定出字符串的长度，特别在跨进程传送数据时将会出现致命错误。</p>
+<pre><code>在给一个BSTR赋值前，如果不能确定它目前是否指向一个有效的空间，最好先调一下SysFreeString，如：
+SysFreeString（bstr）;
+bstr = SysAllocString(L“kkkkkk”);
+不要将一个BSTR通过“=”赋给另一个BSTR
+bstr1 = bstr2;//bstr1 = SysAllocString(bstr2);
+避免调用SysFreeString（bstr1）和SysFreeString（bstr2）对同一块内存空间释放两次。
+</code></pre>
+<h2 id="参数为-out-的BSTR注意点"><a href="#参数为-out-的BSTR注意点" class="headerlink" title="参数为[out]的BSTR注意点"></a>参数为[out]的BSTR注意点</h2><p>比如函数GetBSTR([out] BSTR* bstr)</p>
+<pre><code>对于客户端
+BSTR bstr = NULL；// 传入的bstr必须为NULL
+GetBSTR(&amp;bstr);
+。。。。。。
+SysFreeString（bstr）；// 使用完bstr后别忘了释放
+bstr = NULL;
+
+对于服务端
+HRESULT GetBSTR(BSTR* bstr)
+&#123;
+// 一般来说，传入的bstr不指向任何空间应该由客户端保证的，所以下面的判断和释放不是必须的，但有的话可能更安全。
+    if ( NULL != *bstr )
+            SysFreeString（*bstr）； 
+
+        // 创建成员变量的拷贝，不要将其值直接给出去（特别对于进程内组件）
+                *bstr = m_bstr;// *bstr = SysAllocString( m_str );
+&#125;
+</code></pre>
+<h2 id="参数为-in-的BSTR注意点"><a href="#参数为-in-的BSTR注意点" class="headerlink" title="参数为[in]的BSTR注意点"></a>参数为[in]的BSTR注意点</h2><pre><code>HRESULT SetBSTR(/*[in]*/  BSTR bstr)&#123;
+    // 如果服务器需要保存传入的bstr供以后使用，必须将成员变量释放，然后重新分配。
+    SysFreeString(m_bstr);
+    m_bstr = bstr; // m_bstr = SysAllocString( bstr );
+&#125;
+</code></pre>
+<h2 id="参数为-out-的数据结构中包含BSTR的注意点"><a href="#参数为-out-的数据结构中包含BSTR的注意点" class="headerlink" title="参数为[out]的数据结构中包含BSTR的注意点"></a>参数为[out]的数据结构中包含BSTR的注意点</h2><pre><code>typedef struct kk&#123;
+long i;
+BSTR bstr;
+&#125; KK;
+
+KK param;
+param.bstr = NULL;
+GetKK(&amp;param);
+。。。。。。
+SysFreeString（param .bstr）；// 这种内嵌在结构体内的BSTR非常容易忽略释放
+param .bstr = NULL;
+</code></pre>
+<h2 id="BSTR作为SysAllocString或SysReAllocString的参数时的注意点"><a href="#BSTR作为SysAllocString或SysReAllocString的参数时的注意点" class="headerlink" title="BSTR作为SysAllocString或SysReAllocString的参数时的注意点"></a>BSTR作为SysAllocString或SysReAllocString的参数时的注意点</h2><pre><code>如果bstr作为SysAllocString或SysReAllocString的参数传入，并且不确定这个传入的bstr是否包含内嵌NULL时，为保险起见，请务必改用下面两函数。
+SysAllocStringLen
+SysReAllocStringLen
+原因：因为上述4个函数的参数类型都是OLECHAR FAR* 而不是BSTR，但后两个函数多了传入数量的参数。
+
+BSTR的ATL封装类CCOMBSTR
+建议：必须在非常清楚CComBSTR各个函数（特别是赋值操作符和构造函数）如何使用和注意事项的情况下才使用它，否则建议使用BSTR，因为使用不慎非常容易造成内存泄漏。
+</code></pre>
+<p>　　BSTR是一个带长度前缀的字符串,主要由操作系统来管理的,所以要用api.主要用来和VB打交道的(VB里的string就是指它)要操作它的API函数有很多.比如SysAllocString,SysFreeString等等.</p>
+<p>　　vc里封装它的类如_bstr_t,及ATL中的CComBSTR等.</p>
+<p>　　一个 BSTR 由头部和字符串组成，头部包含了字符串的长度信息，字符串中可以包含嵌入的 null 值。<br>　　BSTR 是以指针的形式进行传递的。(指针是一个变量，包含另外一个变量的内存地址，而不是数据。) BSTR 是 Unicode 的，即每个字符需要两个字节。 BSTR 通常以两字节的 null 字符结束。 wstr是宽字符，以双字节表示一个字符 bstr是为了与原先的basic字符兼容，它的最前面的4个字节为其长度，以’\0’结束.</p>
+<h1 id="ATL基础BSTR-CComBSTR-SysAllocString"><a href="#ATL基础BSTR-CComBSTR-SysAllocString" class="headerlink" title="ATL基础BSTR CComBSTR SysAllocString"></a>ATL基础BSTR CComBSTR SysAllocString</h1><p>ATL提供了 BSTR 和 CComBSTR ，还有OLEAUTO32.DLL导出一个API叫SysAllocString。这些东西有什么意思？有什么用呢？</p>
+<p>BSTR 是一个typedef，你可以理解为 typedef WCHAR* BSTR<br>它就是一个指针。所以<br>        BSTR p = L”hello”;<br>编译是没问题的。不过不推荐这么做。因为按MSDN，BSTR应该只接收 SysAllocString 的返回值。</p>
+<p>就是说，第一，SysAllocString 的返回值是一个 BSTR 第二，如果我们看到一个BSTR，那它应该总从由一个 SysAllocString 得到的，它总是应该用 SysFreeString 释放。</p>
+<p>我们可以想像，SysAllocString 实际上做了一个malloc分配了一块内存，然后把内存长度放第一个DWORD，把这个DWORD后面位置作为BSTR返回。因为在BSTR减4的位置已经保存了块长度，所以对BSTR不应该用 wcslen 之类的方法来得到它的长度，要用 SysStringLen。这就是为什么不推荐用 BSTR p = L”hello”这种方法直接给BSTR赋值，因为这样得到到BSTR不符合减4位置有块长度的规范，也不能用 SysStringLen 得到长度，也不能用 SysFreeString 来释放。乱了规矩。</p>
+<p>又一个问题，为什么需要 SysAllocString ? 我用 new 或 malloc 不行吗？因为用ATL常常是为了写COM。而COM控件是跨语言的。你用C++写一个COM控件，可能被HTML中的一个VBSCRIPT或PHP调用。你返回的那个BSTR字串可能需要在VBSCRIPT中释放。而 new 或 malloc 等常规的C++分配内存函数，都要求内存在本模块内释放。所以，SysAllocString 分析的内存，是为了支持跨模块使用，并在外地free的。</p>
+<p>那么 CComBSTR 又是什么呢？上面讲了，BSTR只是一个指针，它太简单了。如果我要实现字串查找，字串合并等复杂的操作就要自己写代码了。于是就有了 CComBSTR这个类。它只有一个成员 BSTR m_str 但它有大量的方法函数，足够你所可能需要的所有字串操作。</p>
+<p>最后结论：<br>        * BSTR 只是一个指针，要小心使用，除了 SysAllocString 不要对它赋值。<br>        * 如果发现一个 BSTR， 那它一定是用 SysAllocString 得到的。一定要用 SysStringLen 来得到长度。一定要用 SysFreeString 来释放它<br>        * 如果需要对 BSTR 做字串操作，把它变成 CComBSTR ，总有一个现成的函数直接使用。<br>        * 这一系列东西，都是为了COM跨模块把字串当作返回值使用的。如果一个字串只在本模块内有效，还是用 new 或 malloc 或 CString 来得简单。</p>
+<p>SysAllocString,SysFreeString大致伪逻辑如下</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">WCHAR* SysAllocString(WCHAR *str)</span><br><span class="line">&#123;</span><br><span class="line">    size_t sz = 4 + wcslen(str)*sizeof(WCHAR);</span><br><span class="line">    WCHAR *lpstart = malloc();</span><br><span class="line">    *(int*)lpstart = sz;</span><br><span class="line">    wcscpy(lpstart+2,str);</span><br><span class="line">    return lpstart + 2;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">void SysFreeString(WCHAR *str)</span><br><span class="line">&#123;</span><br><span class="line">    str -= 2;</span><br><span class="line">    free(str);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><img src="bstr.jpg" alt="bstr"></p>
+<p>参考：</p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/shihuaguo/article/details/8541172">https://blog.csdn.net/shihuaguo/article/details/8541172</a></p>
+<p><a target="_blank" rel="noopener" href="https://bbs.pediy.com/thread-125705.htm">https://bbs.pediy.com/thread-125705.htm</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/qinfengxiaoyue/p/3428540.html">https://www.cnblogs.com/qinfengxiaoyue/p/3428540.html</a></p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_30478757/article/details/97589060">https://blog.csdn.net/weixin_30478757/article/details/97589060</a></p>
 
       
     </div>
@@ -408,7 +511,7 @@
     
     <li class="post-copyright-link hidden-xs">
       <strong>本文链接：</strong>
-      <a href="https://marblemm.github.io/2021/08/04/%E4%BB%8E%E6%96%B0%E7%94%B5%E8%84%91%E6%A0%B9%E6%8D%AEhexo%E9%83%A8%E7%BD%B2%E5%88%B0github/" title="从新电脑根据hexo部署到github" target="_blank" rel="external">https://marblemm.github.io/2021/08/04/从新电脑根据hexo部署到github/</a>
+      <a href="https://marblemm.github.io/2021/08/29/%E5%AD%97%E7%AC%A6%E4%B8%B2BSTR/" title="字符串BSTR" target="_blank" rel="external">https://marblemm.github.io/2021/08/29/字符串BSTR/</a>
     </li>
     
     <li class="post-copyright-license">
@@ -454,13 +557,9 @@
   
   <ul class="pager pull-left">
     
-    <li class="prev">
-      <a href="/2021/08/08/git%E5%91%BD%E4%BB%A4%E6%95%B4%E7%90%86-%E9%85%8D%E7%BD%AE/" title="git命令整理-配置"><i class="icon icon-angle-left" aria-hidden="true"></i><span>&nbsp;&nbsp;上一篇</span></a>
-    </li>
-    
     
     <li class="next">
-      <a href="/2021/08/04/cpp%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE-%E5%85%A5%E9%97%A8/" title="c++ 开源项目-入门"><span>下一篇&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
+      <a href="/2021/08/23/cpp11%E8%AE%A1%E6%97%B6%E5%99%A8-chrono/" title="cpp11计时器-chrono"><span>下一篇&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
     </li>
     
     
