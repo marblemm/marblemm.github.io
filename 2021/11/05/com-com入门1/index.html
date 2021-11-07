@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="Cache-Control" content="no-transform" />
+  <meta http-equiv="Cache-Control" content="no-siteapp" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="format-detection" content="telephone=no,email=no,adress=no">
+  <!-- Color theme for statusbar -->
+  <meta name="theme-color" content="#000000" />
+  <!-- 强制页面在当前窗口以独立页面显示,防止别人在框架里调用页面 -->
+  <meta http-equiv="window-target" content="_top" />
+  
+  
+  <title>com-com入门1 | marble</title>
+  <meta name="description" content="1. 什么是COMCOM全称是Component Object Model，中文译为组件对象模型。COM组件在物理上是一些DLL或EXE文件；COM组件实现二进制级别的代码重用；COM是与程序设计语言无关，理论上任何语言都可以开发和调用COM组件；COM组件用引用计数实现生命周期的自我管理；COM组件调用者能够查询它所支持的接口；COM组件的位置对调用者是透明的；COM组件依赖于注册表；COM组件">
+<meta property="og:type" content="article">
+<meta property="og:title" content="com-com入门1">
+<meta property="og:url" content="https://marblemm.github.io/2021/11/05/com-com%E5%85%A5%E9%97%A81/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="1. 什么是COMCOM全称是Component Object Model，中文译为组件对象模型。COM组件在物理上是一些DLL或EXE文件；COM组件实现二进制级别的代码重用；COM是与程序设计语言无关，理论上任何语言都可以开发和调用COM组件；COM组件用引用计数实现生命周期的自我管理；COM组件调用者能够查询它所支持的接口；COM组件的位置对调用者是透明的；COM组件依赖于注册表；COM组件">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://marblemm.github.io/2021/11/05/com-com%E5%85%A5%E9%97%A81/1.jpg">
+<meta property="og:image" content="https://marblemm.github.io/2021/11/05/com-com%E5%85%A5%E9%97%A81/2.jpg">
+<meta property="article:published_time" content="2021-11-05T15:57:06.000Z">
+<meta property="article:modified_time" content="2021-11-07T15:34:29.850Z">
+<meta property="article:author" content="John Doe">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://marblemm.github.io/2021/11/05/com-com%E5%85%A5%E9%97%A81/1.jpg">
+  <!-- Canonical links -->
+  <link rel="canonical" href="https://marblemm.github.io/2021/11/05/com-com%E5%85%A5%E9%97%A81/index.html">
+  
+    <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png" type="image/x-icon">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+  
+  
+  
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body class="main-center theme-green" itemscope itemtype="http://schema.org/WebPage">
+  <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+  <div class="slimContent">
+    <div class="navbar-header">
+      
+      
+      <div class="profile-block text-center">
+        <a id="avatar" href="https://github.com/marblemm" target="_blank">
+          <img class="img-circle img-rotate" src="/images/avatar.jpg" width="200" height="200">
+        </a>
+        <h2 id="name" class="hidden-xs hidden-sm">marble</h2>
+        <h3 id="title" class="hidden-xs hidden-sm hidden-md">software Developer</h3>
+        <small id="location" class="text-muted hidden-xs hidden-sm"><i class="icon icon-map-marker"></i> wuhan, China</small>
+      </div>
+      
+      <div class="search" id="search-form-wrap">
+
+    <form class="search-form sidebar-form">
+        <div class="input-group">
+            <input type="text" class="search-form-input form-control" placeholder="搜索" />
+            <span class="input-group-btn">
+                <button type="submit" class="search-form-submit btn btn-flat" onclick="return false;"><i class="icon icon-search"></i></button>
+            </span>
+        </div>
+    </form>
+    <div class="ins-search">
+  <div class="ins-search-mask"></div>
+  <div class="ins-search-container">
+    <div class="ins-input-wrapper">
+      <input type="text" class="ins-search-input" placeholder="想要查找什么..." x-webkit-speech />
+      <button type="button" class="close ins-close ins-selectable" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+    </div>
+    <div class="ins-section-wrapper">
+      <div class="ins-section-container"></div>
+    </div>
+  </div>
+</div>
+
+
+</div>
+      <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <nav id="main-navbar" class="collapse navbar-collapse" itemscope itemtype="http://schema.org/SiteNavigationElement" role="navigation">
+      <ul class="nav navbar-nav main-nav ">
+        
+        
+        <li class="menu-item menu-item-home">
+          <a href="/.">
+            
+            <i class="icon icon-home-fill"></i>
+            
+            <span class="menu-title">首页</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives">
+            
+            <i class="icon icon-archives-fill"></i>
+            
+            <span class="menu-title">归档</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories">
+            
+            <i class="icon icon-folder"></i>
+            
+            <span class="menu-title">分类</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-links">
+          <a href="/links">
+            
+            <i class="icon icon-friendship"></i>
+            
+            <span class="menu-title">友链</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-pano">
+          <a href="/pano">
+            
+            <i class="icon icon-friendship"></i>
+            
+            <span class="menu-title">全景</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-pointcloud">
+          <a href="/pointcloud">
+            
+            <i class="icon icon-friendship"></i>
+            
+            <span class="menu-title">点云</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-game">
+          <a href="/2048">
+            
+            <i class="icon icon-friendship"></i>
+            
+            <span class="menu-title">游戏</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about">
+            
+            <i class="icon icon-cup-fill"></i>
+            
+            <span class="menu-title">关于</span>
+          </a>
+        </li>
+        
+      </ul>
+      
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/marblemm" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="https://gitee.com/marblemm" target="_blank" title="Gitee" data-toggle=tooltip data-placement=top><i class="icon icon-gitee"></i></a></li>
+        
+    </ul>
+
+    </nav>
+  </div>
+</header>
+
+  
+    <aside class="sidebar" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    
+      <div class="widget">
+    <h3 class="widget-title">公告</h3>
+    <div class="widget-body">
+        <div id="board">
+            <div class="content">
+                <p>欢迎交流与分享经验!</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">分类</h3>
+    <div class="widget-body">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/c/">c++</a><span class="category-list-count">11</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/c-%E9%9D%A2%E8%AF%95/">c++面试</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/cmake/">cmake</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/com/">com</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/git/">git</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/tool/">tool</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E4%B9%A6%E7%B1%8D/">书籍</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%A4%9A%E7%BA%BF%E7%A8%8B/">多线程</a><span class="category-list-count">5</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget-body">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/cmake/" rel="tag">cmake</a><span class="tag-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget-body tagcloud">
+      <a href="/tags/cmake/" style="font-size: 13px;">cmake</a>
+    </div>
+  </div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget-body">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/11/">十一月 2021</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/10/">十月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/09/">九月 2021</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/08/">八月 2021</a><span class="archive-list-count">23</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget-body">
+      <ul class="recent-post-list list-unstyled no-thumbnail">
+        
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/com/">com</a>
+              </p>
+              <p class="item-title">
+                <a href="/2021/11/06/com-com%E5%85%A5%E9%97%A82/" class="title">com-com入门2</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2021-11-06T07:42:43.000Z" itemprop="datePublished">2021-11-06</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/com/">com</a>
+              </p>
+              <p class="item-title">
+                <a href="/2021/11/05/com-com%E5%85%A5%E9%97%A81/" class="title">com-com入门1</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2021-11-05T15:57:06.000Z" itemprop="datePublished">2021-11-05</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/com/">com</a>
+              </p>
+              <p class="item-title">
+                <a href="/2021/10/27/com-%E4%B8%BA%E4%BB%80%E4%B9%88%E9%9C%80%E8%A6%81com/" class="title">com-为什么需要com</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2021-10-27T15:51:52.000Z" itemprop="datePublished">2021-10-27</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/cmake/">cmake</a>
+              </p>
+              <p class="item-title">
+                <a href="/2021/09/11/CMake%E6%95%99%E7%A8%8B/" class="title">CMake教程</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2021-09-11T06:40:23.000Z" itemprop="datePublished">2021-09-11</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/tool/">tool</a>
+              </p>
+              <p class="item-title">
+                <a href="/2021/09/07/VS%E4%B8%AD%E5%A4%B4%E6%96%87%E4%BB%B6stdafx-h%E7%9A%84%E4%BD%9C%E7%94%A8/" class="title">VS中头文件stdafx.h的作用</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2021-09-07T14:42:45.000Z" itemprop="datePublished">2021-09-07</time>
+              </p>
+            </div>
+          </li>
+          
+      </ul>
+    </div>
+  </div>
+  
+
+    
+  </div>
+</aside>
+
+  
+  
+<aside class="sidebar sidebar-toc collapse" id="collapseToc" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    <nav id="toc" class="article-toc">
+      <h3 class="toc-title">文章目录</h3>
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E4%BB%80%E4%B9%88%E6%98%AFCOM"><span class="toc-number">1.</span> <span class="toc-text">1. 什么是COM</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#com%E5%AF%B9%E8%B1%A1%E7%9A%84%E6%A0%87%E8%AF%86%E2%80%93CLSID"><span class="toc-number">1.1.</span> <span class="toc-text">com对象的标识–CLSID</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#com%E5%AF%B9%E8%B1%A1%E4%B8%8EC-%E5%AF%B9%E8%B1%A1%E7%9A%84%E6%AF%94%E8%BE%83"><span class="toc-number">1.2.</span> <span class="toc-text">com对象与C++对象的比较</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-IUnknown%E6%8E%A5%E5%8F%A3"><span class="toc-number">2.</span> <span class="toc-text">2. IUnknown接口</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-%E5%AE%9E%E7%8E%B0%E4%B8%80%E4%B8%AA%E6%9C%80%E6%9C%80%E7%AE%80%E5%8D%95%E7%9A%84COM%E7%BB%84%E4%BB%B6"><span class="toc-number">3.</span> <span class="toc-text">3. 实现一个最最简单的COM组件</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-%E6%B3%A8%E5%86%8CCOM%E7%BB%84%E4%BB%B6"><span class="toc-number">4.</span> <span class="toc-text">4. 注册COM组件</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-%E8%B0%83%E7%94%A8COM%E7%BB%84%E4%BB%B6"><span class="toc-number">5.</span> <span class="toc-text">5. 调用COM组件</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%BF%9B%E7%A8%8B%E5%86%85%E7%BB%84%E4%BB%B6%E5%92%8C%E8%BF%9B%E7%A8%8B%E5%A4%96%E7%BB%84%E4%BB%B6"><span class="toc-number">6.</span> <span class="toc-text">进程内组件和进程外组件</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%BF%9B%E7%A8%8B%E5%86%85%E7%BB%84%E4%BB%B6"><span class="toc-number">6.1.</span> <span class="toc-text">进程内组件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%BF%9B%E7%A8%8B%E5%A4%96%E7%BB%84%E4%BB%B6"><span class="toc-number">6.2.</span> <span class="toc-text">进程外组件</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B3%A8%E5%86%8C%E8%A1%A8%E7%AE%A1%E7%90%86"><span class="toc-number">7.</span> <span class="toc-text">注册表管理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%B1%BB%E5%8E%82"><span class="toc-number">8.</span> <span class="toc-text">类厂</span></a></li></ol>
+    </nav>
+  </div>
+</aside>
+
+<main class="main" role="main">
+  <div class="content">
+  <article id="post-com-com入门1" class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
+    
+    <div class="article-header">
+      
+        
+  
+    <h1 class="article-title" itemprop="name">
+      com-com入门1
+    </h1>
+  
+
+      
+      <div class="article-meta">
+        <span class="article-date">
+    <i class="icon icon-calendar-check"></i>
+	<a href="/2021/11/05/com-com%E5%85%A5%E9%97%A81/" class="article-date">
+	  <time datetime="2021-11-05T15:57:06.000Z" itemprop="datePublished">2021-11-05</time>
+	</a>
+</span>
+        
+  <span class="article-category">
+    <i class="icon icon-folder"></i>
+    <a class="article-category-link" href="/categories/com/">com</a>
+  </span>
+
+        
+
+        
+	<span class="article-read hidden-xs">
+	    <i class="icon icon-eye-fill" aria-hidden="true"></i>
+	    <span id="busuanzi_container_page_pv">
+			<span id="busuanzi_value_page_pv">0</span>
+		</span>
+	</span>
+
+
+        <span class="post-comment"><i class="icon icon-comment"></i> <a href="/2021/11/05/com-com%E5%85%A5%E9%97%A81/#comments" class="article-comment-link">评论</a></span>
+        
+	
+		<span class="post-wordcount hidden-xs" itemprop="wordCount">字数统计: 3.9k(字)</span>
+	
+	
+		<span class="post-readcount hidden-xs" itemprop="timeRequired">阅读时长: 14(分)</span>
+	
+
+      </div>
+    </div>
+    <div class="article-entry marked-body" itemprop="articleBody">
+      
+        <h2 id="1-什么是COM"><a href="#1-什么是COM" class="headerlink" title="1. 什么是COM"></a>1. 什么是COM</h2><p>COM全称是Component Object Model，中文译为组件对象模型。COM组件在物理上是一些DLL或EXE文件；COM组件实现二进制级别的代码重用；COM是与程序设计语言无关，理论上任何语言都可以开发和调用COM组件；COM组件用引用计数实现生命周期的自我管理；COM组件调用者能够查询它所支持的接口；COM组件的位置对调用者是透明的；COM组件依赖于注册表；COM组件都要直接或间接的实现IUnknown接口……</p>
+<h3 id="com对象的标识–CLSID"><a href="#com对象的标识–CLSID" class="headerlink" title="com对象的标识–CLSID"></a>com对象的标识–CLSID</h3><p>com组件的位置对客户来说是透明的，因为客户并不直接去访问com组件，客户程序通过一个全局标识符进行对象的创建和初始化工作，com规范采用128位全局唯一标识符GUID来标识组件对象，这是个随机数，并不需要专门机构进行分配和管理，手工构造128位guid或者编写程序来产生guid是件很麻烦的事，为此Microsoft VisualC++提供了两个工具实现这样的目的：UUIDGen.exe和GUIDGen.exe，前者是一个命令行程序，后者是一个基于对话框的应用程序。<br>com库为我们提供了以下API函数可以产生GUID:<br>HRESULT CoCreateGuid(GUID *pguid);<br>CLSID是用来标识com对象的GUID，因此CLSID在结构定义上与GUID一致</p>
+<h3 id="com对象与C-对象的比较"><a href="#com对象与C-对象的比较" class="headerlink" title="com对象与C++对象的比较"></a>com对象与C++对象的比较</h3><p>封装性</p>
+<p>com对象的数据是完全封装在对象内部的，外部不可能直接访问对象的数据属性，因为com对象和客户程序可能在不同的模块中甚至在不同的进程中或不同机器上，com对象的数据成员的封装以组件模块为最终边界，对于对象用户是完全透明的、不可见的；</p>
+<p>c++对象的封装性只是语义上的封装，通过对类的成员访问进行控制，使用者有可能直接访问对象中的数据成员，</p>
+<p>可重用性</p>
+<p>可重用性事面向对象的重要特性，com对象的可重用性表现在com对象的包容和聚合，一个对象可以完全使用另一个对象的所有功能；而c++对象的可重用性表现在C++类的继承性，派生类可以调用其父类的非私有成员函数。<br>com对象A如果要使用另一个com对象B的功能，则可以通过包容和聚合来实现，而且当对象B更新了版本或者增强了功能时，对象A自动使用新版本的对象B，而根本不需要重新编译或者重新设置，因此com对象的重用是动态的；<br>c++对象的重用性表现在源代码一级的重用性上，当类A的实现做了修改时，则类B必须重新编译或者需要修改相应的代码，才能适应新的类A。</p>
+<h2 id="2-IUnknown接口"><a href="#2-IUnknown接口" class="headerlink" title="2. IUnknown接口"></a>2. IUnknown接口</h2><p>所有COM组件都直接或间接实现IUnknown接口，IUnknown接口是COM的根接口，其声明为：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">interface IUnknown</span><br><span class="line">&#123;</span><br><span class="line">    virtual HRESULT STDMETHODCALLTYPE QueryInterface(REFIID riid, VOID** ppv) = 0;</span><br><span class="line">    virtual ULONG STDMETHODCALLTYPE AddRef(VOID) = 0;</span><br><span class="line">    virtual ULONG STDMETHODCALLTYPE Release(void)= 0;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>标准C++中没有interface关键字，这里的interface是typedef struct interface。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">STDMETHODCALLTYPE等价于__stdcall</span><br></pre></td></tr></table></figure>
+<p>COM规定，调用函数的方式必须为__stdcall，这是pascal语言缺省的调用函数的方式：函数的参数从右到左依次压栈，函数退出时自己清空占用的堆栈，大多数的系统API也都使用这种调用习惯；<br>与之相对的为__cdecl，这是C/C++语言缺省的调用函数的方式：函数的参数从右到左依次压栈，函数退出时，由调用者清空函数占用的堆栈，主要是可以实现可变参数的特性（例如printf函数）</p>
+<p>QueryInterface函数，客户通过该函数查询COM实现的接口；riid是接口的标识，为GUID形式；返回值标识查询的接口是否实现，如果实现了，则返回S_OK，并且ppv指向接口的实例，否则返回E_NOINTERFACE，ppv指向的内容无效。QueryInterface函数隔离了不同编程语言构造对象实例的差异。</p>
+<p>AddRef和Release函数实现了COM对象生命周期的自我管理。实现该接口的类需要有一个ULONG型成员记录其实例的引用计数，如果AddRef一次，引用计数加1，否则引用计数减1，如果引用计数为0时，就释放该实例。这两个函数隔离了不同变成语言释放对象实例的差异。</p>
+<h2 id="3-实现一个最最简单的COM组件"><a href="#3-实现一个最最简单的COM组件" class="headerlink" title="3. 实现一个最最简单的COM组件"></a>3. 实现一个最最简单的COM组件</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br></pre></td><td class="code"><pre><span class="line">//BeginningCOM.h</span><br><span class="line">#ifndef __BEGINNINGCOM_H__</span><br><span class="line">#define __BEGINNINGCOM_H__</span><br><span class="line"></span><br><span class="line">#pragma once</span><br><span class="line">#include &lt;windows.h&gt;</span><br><span class="line"></span><br><span class="line">// &#123;7BB69A25-68E4-427a-BE4B-B06ED17531AA&#125;</span><br><span class="line">CLSID CLSID_BeginningCOM =</span><br><span class="line">&#123; 0x7bb69a25, 0x68e4, 0x427a, &#123; 0xbe, 0x4b, 0xb0, 0x6e, 0xd1, 0x75, 0x31, 0xaa &#125; &#125;;</span><br><span class="line"></span><br><span class="line">#endif //__BEGINNINGCOM_H__</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">//BeginningCOM.cpp</span><br><span class="line">#include &quot;BeginningCOM.h&quot;</span><br><span class="line"></span><br><span class="line">class BeginningCOM : public IUnknown</span><br><span class="line">&#123;</span><br><span class="line">public:</span><br><span class="line">    BeginningCOM(VOID);</span><br><span class="line">    STDMETHODIMP QueryInterface(REFIID riid, VOID** ppv);</span><br><span class="line">    STDMETHODIMP_(ULONG) AddRef(VOID);</span><br><span class="line">    STDMETHODIMP_(ULONG) Release(VOID);</span><br><span class="line"></span><br><span class="line">protected:</span><br><span class="line">    ULONG m_ulRefCount;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">BeginningCOM::BeginningCOM(VOID) : m_ulRefCount(0)</span><br><span class="line">&#123;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">STDMETHODIMP BeginningCOM::QueryInterface(REFIID riid, VOID** ppv)</span><br><span class="line">&#123;</span><br><span class="line">    if(riid == IID_IUnknown)</span><br><span class="line">    &#123;</span><br><span class="line">        *ppv = static_cast&lt;IUnknown*&gt;(this);</span><br><span class="line">    &#125;</span><br><span class="line">    else</span><br><span class="line">    &#123;</span><br><span class="line">        *ppv = NULL;</span><br><span class="line"></span><br><span class="line">        return E_NOINTERFACE;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    reinterpret_cast&lt;IUnknown*&gt;(*ppv) -&gt; AddRef();</span><br><span class="line">    return S_OK;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">STDMETHODIMP_(ULONG) BeginningCOM::AddRef(VOID)</span><br><span class="line">&#123;</span><br><span class="line">    return InterlockedIncrement(&amp;m_ulRefCount);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">STDMETHODIMP_(ULONG) BeginningCOM::Release(VOID)</span><br><span class="line">&#123;</span><br><span class="line">    ULONG tmp = InterlockedDecrement(&amp;m_ulRefCount);</span><br><span class="line"></span><br><span class="line">    if(tmp == 0)</span><br><span class="line">    &#123;</span><br><span class="line">        delete this;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    return tmp;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// DLL entry point.</span><br><span class="line">BOOL APIENTRY DllMain( HMODULE hModule,</span><br><span class="line">                      DWORD  ul_reason_for_call,</span><br><span class="line">                      LPVOID lpReserved</span><br><span class="line">                      )</span><br><span class="line">&#123;</span><br><span class="line">    switch (ul_reason_for_call)</span><br><span class="line">    &#123;</span><br><span class="line">    case DLL_PROCESS_ATTACH:</span><br><span class="line">    case DLL_THREAD_ATTACH:</span><br><span class="line">    case DLL_THREAD_DETACH:</span><br><span class="line">    case DLL_PROCESS_DETACH:</span><br><span class="line">        break;</span><br><span class="line">    &#125;</span><br><span class="line">    return TRUE;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">STDAPI DllGetClassObject(REFCLSID rclsid, REFIID riid, void **ppv)</span><br><span class="line">&#123;</span><br><span class="line">    if(rclsid == CLSID_BeginningCOM)</span><br><span class="line">    &#123;</span><br><span class="line">        BeginningCOM *pbc = new BeginningCOM;</span><br><span class="line"></span><br><span class="line">        if(pbc == NULL)</span><br><span class="line">        &#123;</span><br><span class="line">            return E_OUTOFMEMORY;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        return pbc -&gt; QueryInterface(riid, ppv);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    *ppv = 0;</span><br><span class="line"></span><br><span class="line">    return CLASS_E_CLASSNOTAVAILABLE;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>BeginningCOM.h中，先定义一个GUID作为实现接口的class的ID。BeginningCOM.cpp中实现IUnknown接口。<br>DllGetClassObject是客户调用COM组件的入口，需要导出这个函数：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">//BeginningCOM.def</span><br><span class="line">LIBRARY    &quot;BeginningCOM&quot;</span><br><span class="line">EXPORTS</span><br><span class="line">    DllGetClassObject private</span><br></pre></td></tr></table></figure>
+<h2 id="4-注册COM组件"><a href="#4-注册COM组件" class="headerlink" title="4. 注册COM组件"></a>4. 注册COM组件</h2><p>在HKEY_CLASSES_ROOT\CLSID键下注册COM组件的class信息。创建一个reg文件，导入注册表即可。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">//regsvr.reg</span><br><span class="line">Windows Registry Editor Version 5.00</span><br><span class="line"></span><br><span class="line">[HKEY_CLASSES_ROOT\CLSID\&#123;7BB69A25-68E4-427a-BE4B-B06ED17531AA&#125;]</span><br><span class="line">@=&quot;BeginningCOM&quot;</span><br><span class="line"></span><br><span class="line">[HKEY_CLASSES_ROOT\CLSID\&#123;7BB69A25-68E4-427a-BE4B-B06ED17531AA&#125;\InprocServer32]</span><br><span class="line">@=&quot;E:\\Projects\\BeginningCOM\\Debug\\BeginningCOM.dll&quot;</span><br><span class="line">&quot;ThreadingModel&quot;=&quot;Both&quot;</span><br></pre></td></tr></table></figure>
+<p>@=”BeginningCOM”是class的描述信息，可忽略。<br>“ThreadingModel”=”Both”是COM组件的套件类型，后面介绍。</p>
+<p>相应的卸载COM组件的reg文件内容应该为：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">//unregsvr.reg</span><br><span class="line">Windows Registry Editor Version 5.00</span><br><span class="line"></span><br><span class="line">[-HKEY_CLASSES_ROOT\CLSID\&#123;7BB69A25-68E4-427a-BE4B-B06ED17531AA&#125;]</span><br><span class="line">@=&quot;BeginningCOM&quot;</span><br></pre></td></tr></table></figure>
+<p>需要注意的是，在Win64中，如果COM组件编译选择的是X86，那么注册表会进行重定向，读取位置变为HKEY_CLASSES_ROOT\Wow6432Node\CLSID，因此，注册时，键值应该写在这个路径下。</p>
+<h2 id="5-调用COM组件"><a href="#5-调用COM组件" class="headerlink" title="5. 调用COM组件"></a>5. 调用COM组件</h2><p>要调用COM组件，必须向客户公布接口ID，class ID等，我们这里把需要公布的信息放到BeginningCOM.h中。<br>下面的代码用于调用刚创建的COM组件。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">#include &lt;Windows.h&gt;</span><br><span class="line">#include &lt;tchar.h&gt;</span><br><span class="line">#include &lt;iostream&gt;</span><br><span class="line">#include &quot;../BeginningCOM/BeginningCOM.h&quot;</span><br><span class="line">using namespace std;</span><br><span class="line"></span><br><span class="line">int _tmain(int argc, _TCHAR* argv[])</span><br><span class="line">&#123;</span><br><span class="line">    CoInitialize(NULL);</span><br><span class="line"></span><br><span class="line">    HRESULT hr = NULL;</span><br><span class="line">    IUnknown *puk;</span><br><span class="line"></span><br><span class="line">    hr = CoGetClassObject(CLSID_BeginningCOM, CLSCTX_INPROC_SERVER, NULL, IID_IUnknown, (void**)&amp;puk);</span><br><span class="line"></span><br><span class="line">    if(SUCCEEDED(hr))</span><br><span class="line">    &#123;</span><br><span class="line">        //do nothing</span><br><span class="line">        puk -&gt; Release();</span><br><span class="line">    &#125;</span><br><span class="line">    else</span><br><span class="line">    &#123;</span><br><span class="line">        cout &lt;&lt; &quot;Failed to create object&quot;&lt;&lt;endl;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    CoUninitialize();</span><br><span class="line"></span><br><span class="line">    return 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在使用COM组件前，需要初始化COM调用环境，CoInitialize初始化单线程套间，只有一个保留的参数，CoInitializeEx除了一个保留的参数，还可以指定初始化的套件类型。</p>
+<h2 id="进程内组件和进程外组件"><a href="#进程内组件和进程外组件" class="headerlink" title="进程内组件和进程外组件"></a>进程内组件和进程外组件</h2><p>com的实现与操作系统平台密切相关，因为com最初源于Microsoft Windows平台，所以com的实现部分很多地方直接用到了windows系统的一些特性，比如系统注册表、动态链接库等，但实际上，com是一个与平台无关的组件软件模型</p>
+<h3 id="进程内组件"><a href="#进程内组件" class="headerlink" title="进程内组件"></a>进程内组件</h3><p>进程内组件和客户程序运行在同一个进程地址空间中，所以一旦客户程序与组件程序建立起通信关系之后，客户程序得到的接口指针直接指向组件程序中接口的虚表，客户代码可以直接调用这些成员函数，所以其效率非常高</p>
+<h3 id="进程外组件"><a href="#进程外组件" class="headerlink" title="进程外组件"></a>进程外组件</h3><p>我们也可以让组件程序独占一个进程，而不使用客户程序的进程空间，因为它运行在客户进程的外面，所以我们把这种组件程序称为进程外组件程序，有时也称为进程外服务程序<br>因为进程外组件程序和客户程序位于不同的进程空间之中，它们使用不同的地址空间，所以组件和客户之间的通信必须跨越进程边界，这就涉及到以下一些问题：<br>1、一个进程如何调用另一个进程中的函数<br>2、参数如何从一个进程被传递到另一个进程中<br>Windows平台上，在不同进程之间进行通信的办法很多，包括动态数据交换（DDE）, 命名管道（named pipe）,或者共享内存等等，COM采用了本地过程调用LPC(Local Procedure Call)和远程过程调用RPC(Remote Procedure Call)来进行进程之间的通信。</p>
+<p>运行在同一个操作系统上的进程之间进行通信是经常发生的事情，系统本身有许多服务是跨越进程实现的，应用程序在调用系统服务时也可能要跨越进程，所以跨进程通信是操作系统实现的重要部分，而且，在系统底层实现跨进程操作更为便利，因为在系统级，它可以控制应用进程的资源分配，包括逻辑内存空间到物理内存的映射、CPU时间的调度等，从控制能力来讲，操作系统可以调用任何一个进程中的函数。</p>
+<p>首先我们来分析一下应用程序调用其他进程中系统服务的过程。比如，应用程序A通过系统API函数调用系统提供的服务f，因为系统服务（是在另一个进程中实现的，所以这个调用过程不是直接进行的，调用过程中要涉及到跨进程操作，实际上也就是要用到LPC</p>
+<p>从图1可以看出，应用A实际上调用的是系统模块DLL，在这里我们把该DLL称为存根（stub）模块，因为它是动态连接库模块，所以这个调用是直接进行的。在存根DL中，它把应用的请求再通过IPC的方式调用到了进程B中的服务f，当f完成服务之后，它也通过LPC把结果信息返回到存根DLL中，最后由存根DLL，把结果返回给A</p>
+<p>因为LPC是在存根模块DLL和服务「之间进行的，所以对于应用A来说，它并不需要进行LPC调用操作，它只需像一般的函数调用一样去调用系统提供的API函数即可。而操作系统当然知道该如何处理这样的系统调用，它不仅可以正确完成跨进程的调用，而且也会把参数和返回结果在进程之间传递。<br><img src="1.jpg" alt="1.jpg"></p>
+<p>客户程序和进程外组件之间的调用关系与此类似，如图2所示，客户程序只与同一进程中的代理对象打交道，组件程序只与同一进程中的存根DLL打交道，LPC调用只在代理对象和存根DLL之间进行，当客户程序需要调用组件提供的功能服务时，它需要执行图中所示的六个步骤才能完成一个函数调用，因此进程外组件的运行效率比进程内组件的效率要低，但是跨进程的调用也为客户程序带来了安全性，组件进程的严重错误不会使客户进程崩溃，这是其优越与进程内组件的地方<br><img src="2.jpg" alt="2.jpg"><br>代理 DLL和存根DLL除了完成LPC调用之外，它还需要对参数和返回值进行翻译和传递，客户程序调用的参数，首先经过代理DLL的处理，它把参数以及其他的一些调用信息组装成一个数据包传递给组件进程，这个过程称为参数列集（marshaling）；组件进程接收到数据包之后，要进行解包操作，把参数信息提取出来，这个过程被称为散集（unmarshal—ing）；然后再进行实际的接口功能调用。函数的返回值和输出参数在返回的过程中也要进行列集和散集操作，只是在存根DLL一端进行列集、在代理DLL一端进行散集，最后把散集后的结果值返回给客户程序，完成一次功能调用。</p>
+<p>现在我们了解了进程外组件的结构和参数的传递过程，除了实现组件程序外，还应该实现代理DLL和存根DLL两个程序模块。从上面的分析我们可以发现，代理DLL和存根DLL只与COM接口有关，它只负责接口成员函数调用过程中的中间处理工作，所以我们应该针对接口实现代理DLL和存根DLL。如果我们使用自定义的COM接口，则应该建立自己的DLL程序；如果我们使用COM预定义的标准接口或者OLE接口，则可以直接使用系统提供的DLL，COM库会为我们处理这些细节。</p>
+<h2 id="注册表管理"><a href="#注册表管理" class="headerlink" title="注册表管理"></a>注册表管理</h2><p>COM规范使用128位GUID来标识COM对象和接口，客户程序通过这些CUID值来创建COM对象并与对象进行交互。因为客户程序与组件程序是独立的，客户程序在创建对象时并不一定知道组件程序的确切位置，按照COM规范，客户程序通过COM库完成对象的创建工作。COM库通过系统注册表所提供的信息进行组件的创建工作，系统注册表是一个全操作系统范围公用的信息仓库，其中包含了所有的COM组件必要的信息以及其他一些信息。</p>
+<p>Windows注册表是一个树状的层次结构，根节点下包含了一些键和一些值，每个键又可以包含子键和值，com用到的注册表是HKEY_CLASSES_ROOT，最主要的是CLSID子键，列出了当前机器上所有组件的信息，<br>在每个CLSID键下面，包含了与该组件对象相关的一些信息，就目前来说我们最关心的是组件程序的路径，对于不同的组件程序类型，其信息也有所不同。</p>
+<p>如果是进程内组件，则组件的CLSID子键下包含了inprocServer32子键，该子键的缺省值为组件程序的全路径文件名；</p>
+<p>如果是进程外组件，则组件CISID子键下包含了LocalServer32子键，该子键的缺省值为组件程序的全路径文件名。</p>
+<p>在组件CLSID子键下还可以包含其他一些与组件相关的信息，例如，组件程序的版本、OLE组件的InprocHander32子键、组件程序的图标信息、组件程序的类型库等等</p>
+<h2 id="类厂"><a href="#类厂" class="headerlink" title="类厂"></a>类厂</h2><p><a target="_blank" rel="noopener" href="https://gitee.com/marblemm/test-com/tree/master/outofProc">https://gitee.com/marblemm/test-com/tree/master/outofProc</a></p>
+<p>参考：<br><a target="_blank" rel="noopener" href="https://www.cnblogs.com/zxjay/archive/2010/08/28/1811163.html">https://www.cnblogs.com/zxjay/archive/2010/08/28/1811163.html</a></p>
+
+      
+    </div>
+    <div class="article-footer">
+      <blockquote class="mt-2x">
+  <ul class="post-copyright list-unstyled">
+    
+    <li class="post-copyright-link hidden-xs">
+      <strong>本文链接：</strong>
+      <a href="https://marblemm.github.io/2021/11/05/com-com%E5%85%A5%E9%97%A81/" title="com-com入门1" target="_blank" rel="external">https://marblemm.github.io/2021/11/05/com-com入门1/</a>
+    </li>
+    
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong> 本博客所有文章除特别声明外，均采用 <a href="http://creativecommons.org/licenses/by/4.0/deed.zh" target="_blank" rel="external">CC BY 4.0 CN协议</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+</blockquote>
+
+
+<div class="panel panel-default panel-badger">
+  <div class="panel-body">
+    <figure class="media">
+      <div class="media-left">
+        <a href="https://github.com/marblemm" target="_blank" class="img-burn thumb-sm visible-lg">
+          <img src="/images/avatar.jpg" class="img-rounded w-full" alt="">
+        </a>
+      </div>
+      <div class="media-body">
+        <h3 class="media-heading"><a href="https://github.com/marblemm" target="_blank"><span class="text-dark">marble</span><small class="ml-1x">software Developer</small></a></h3>
+        <div>个人简介。</div>
+      </div>
+    </figure>
+  </div>
+</div>
+
+
+    </div>
+  </article>
+  
+    
+  <section id="comments">
+  	
+      <div id="vcomments"></div>
+    
+  </section>
+
+
+  
+</div>
+
+  <nav class="bar bar-footer clearfix" data-stick-bottom>
+  <div class="bar-inner">
+  
+  <ul class="pager pull-left">
+    
+    <li class="prev">
+      <a href="/2021/11/06/com-com%E5%85%A5%E9%97%A82/" title="com-com入门2"><i class="icon icon-angle-left" aria-hidden="true"></i><span>&nbsp;&nbsp;上一篇</span></a>
+    </li>
+    
+    
+    <li class="next">
+      <a href="/2021/10/27/com-%E4%B8%BA%E4%BB%80%E4%B9%88%E9%9C%80%E8%A6%81com/" title="com-为什么需要com"><span>下一篇&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
+    </li>
+    
+    
+    <li class="toggle-toc">
+      <a class="toggle-btn collapsed" data-toggle="collapse" href="#collapseToc" aria-expanded="false" title="文章目录" role="button">
+        <span>[&nbsp;</span><span>文章目录</span>
+        <i class="text-collapsed icon icon-anchor"></i>
+        <i class="text-in icon icon-close"></i>
+        <span>]</span>
+      </a>
+    </li>
+    
+  </ul>
+  
+  
+  <!-- Button trigger modal -->
+  <button type="button" class="btn btn-fancy btn-donate pop-onhover bg-gradient-warning" data-toggle="modal" data-target="#donateModal"><span>赏</span></button>
+  <!-- <div class="wave-icon wave-icon-danger btn-donate" data-toggle="modal" data-target="#donateModal">
+    <div class="wave-circle"><span class="icon"><i class="icon icon-bill"></i></span></div>
+  </div> -->
+  
+  
+  <div class="bar-right">
+    
+    <div class="share-component" data-sites="weibo,qq,wechat" data-mobile-sites="weibo,qq,qzone"></div>
+    
+  </div>
+  </div>
+</nav>
+  
+<!-- Modal -->
+<div class="modal modal-center modal-small modal-xs-full fade" id="donateModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content donate">
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      <div class="modal-body">
+        <div class="donate-box">
+          <div class="donate-head">
+            <p>感谢您的支持，我会继续努力的!</p>
+          </div>
+          <div class="tab-content">
+            <div role="tabpanel" class="tab-pane fade active in" id="alipay">
+              <div class="donate-payimg">
+                <img src="/images/donate/alipayimg.png" alt="扫码支持" title="扫一扫" />
+              </div>
+              <p class="text-muted mv">扫码打赏，你说多少就多少</p>
+              <p class="text-grey">打开支付宝扫一扫，即可进行扫码打赏哦</p>
+            </div>
+            <div role="tabpanel" class="tab-pane fade" id="wechatpay">
+              <div class="donate-payimg">
+                <img src="/images/donate/wechatpayimg.png" alt="扫码支持" title="扫一扫" />
+              </div>
+              <p class="text-muted mv">扫码打赏，你说多少就多少</p>
+              <p class="text-grey">打开微信扫一扫，即可进行扫码打赏哦</p>
+            </div>
+          </div>
+          <div class="donate-footer">
+            <ul class="nav nav-tabs nav-justified" role="tablist">
+              <li role="presentation" class="active">
+                <a href="#alipay" id="alipay-tab" role="tab" data-toggle="tab" aria-controls="alipay" aria-expanded="true"><i class="icon icon-alipay"></i> 支付宝</a>
+              </li>
+              <li role="presentation" class="">
+                <a href="#wechatpay" role="tab" id="wechatpay-tab" data-toggle="tab" aria-controls="wechatpay" aria-expanded="false"><i class="icon icon-wepay"></i> 微信支付</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+</main>
+
+  <footer class="footer" itemscope itemtype="http://schema.org/WPFooter">
+	
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/marblemm" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="https://gitee.com/marblemm" target="_blank" title="Gitee" data-toggle=tooltip data-placement=top><i class="icon icon-gitee"></i></a></li>
+        
+    </ul>
+
+    <div class="copyright">
+    	
+        <div class="publishby">
+        	Theme by <a href="https://github.com/cofess" target="_blank"> cofess </a>base on <a href="https://github.com/cofess/hexo-theme-pure" target="_blank">pure</a>.
+        </div>
+    </div>
+</footer>
+  <script src="//cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+<script>
+window.jQuery || document.write('<script src="js/jquery.min.js"><\/script>')
+</script>
+
+<script src="/js/plugin.min.js"></script>
+
+
+<script src="/js/application.js"></script>
+
+
+    <script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+
+
+
+
+
+   
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+   
+    
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/valine"></script>
+  <script type="text/javascript">
+  var GUEST = ['nick', 'mail', 'link'];
+  var meta = 'nick,mail,link';
+  meta = meta.split(',').filter(function(item) {
+    return GUEST.indexOf(item) > -1;
+  });
+  new Valine({
+    el: '#vcomments',
+    verify: false,
+    notify: false,
+    appId: 'vsxVYXKPSCaf1SOO9F2DEyXU-gzGzoHsz',
+    appKey: '1djOltTjcB8Ap3RrgA6zX8HF',
+    placeholder: 'Just go go',
+    avatar: 'mm',
+    meta: meta,
+    pageSize: '10' || 10,
+    visitor: false
+  });
+  </script>
+
+     
+
+
+
+
+
+
+
+</body>
+</html>

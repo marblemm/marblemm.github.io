@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="Cache-Control" content="no-transform" />
+  <meta http-equiv="Cache-Control" content="no-siteapp" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="format-detection" content="telephone=no,email=no,adress=no">
+  <!-- Color theme for statusbar -->
+  <meta name="theme-color" content="#000000" />
+  <!-- 强制页面在当前窗口以独立页面显示,防止别人在框架里调用页面 -->
+  <meta http-equiv="window-target" content="_top" />
+  
+  
+  <title>cpp类型转换 | marble</title>
+  <meta name="description" content="C++ 对类型转换进行了分类，并新增了四个关键字来予以支持，它们分别是：  static_cast    用于良性转换，一般不会导致意外发生，风险很低。 const_cast    用于 const 与非 const、volatile 与非 volatile 之间的转换。 reinterpret_cast    高度危险的转换，这种转换仅仅是对二进制位的重新解释，不会借助已有的转换规则对数据进行调">
+<meta property="og:type" content="article">
+<meta property="og:title" content="cpp类型转换">
+<meta property="og:url" content="https://marblemm.github.io/2021/09/04/cpp%E7%B1%BB%E5%9E%8B%E8%BD%AC%E6%8D%A2/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="C++ 对类型转换进行了分类，并新增了四个关键字来予以支持，它们分别是：  static_cast    用于良性转换，一般不会导致意外发生，风险很低。 const_cast    用于 const 与非 const、volatile 与非 volatile 之间的转换。 reinterpret_cast    高度危险的转换，这种转换仅仅是对二进制位的重新解释，不会借助已有的转换规则对数据进行调">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-09-04T04:34:42.000Z">
+<meta property="article:modified_time" content="2021-09-05T15:21:15.464Z">
+<meta property="article:author" content="John Doe">
+<meta name="twitter:card" content="summary">
+  <!-- Canonical links -->
+  <link rel="canonical" href="https://marblemm.github.io/2021/09/04/cpp%E7%B1%BB%E5%9E%8B%E8%BD%AC%E6%8D%A2/index.html">
+  
+    <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png" type="image/x-icon">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+  
+  
+  
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body class="main-center theme-green" itemscope itemtype="http://schema.org/WebPage">
+  <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+  <div class="slimContent">
+    <div class="navbar-header">
+      
+      
+      <div class="profile-block text-center">
+        <a id="avatar" href="https://github.com/marblemm" target="_blank">
+          <img class="img-circle img-rotate" src="/images/avatar.jpg" width="200" height="200">
+        </a>
+        <h2 id="name" class="hidden-xs hidden-sm">marble</h2>
+        <h3 id="title" class="hidden-xs hidden-sm hidden-md">software Developer</h3>
+        <small id="location" class="text-muted hidden-xs hidden-sm"><i class="icon icon-map-marker"></i> wuhan, China</small>
+      </div>
+      
+      <div class="search" id="search-form-wrap">
+
+    <form class="search-form sidebar-form">
+        <div class="input-group">
+            <input type="text" class="search-form-input form-control" placeholder="搜索" />
+            <span class="input-group-btn">
+                <button type="submit" class="search-form-submit btn btn-flat" onclick="return false;"><i class="icon icon-search"></i></button>
+            </span>
+        </div>
+    </form>
+    <div class="ins-search">
+  <div class="ins-search-mask"></div>
+  <div class="ins-search-container">
+    <div class="ins-input-wrapper">
+      <input type="text" class="ins-search-input" placeholder="想要查找什么..." x-webkit-speech />
+      <button type="button" class="close ins-close ins-selectable" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+    </div>
+    <div class="ins-section-wrapper">
+      <div class="ins-section-container"></div>
+    </div>
+  </div>
+</div>
+
+
+</div>
+      <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <nav id="main-navbar" class="collapse navbar-collapse" itemscope itemtype="http://schema.org/SiteNavigationElement" role="navigation">
+      <ul class="nav navbar-nav main-nav ">
+        
+        
+        <li class="menu-item menu-item-home">
+          <a href="/.">
+            
+            <i class="icon icon-home-fill"></i>
+            
+            <span class="menu-title">首页</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives">
+            
+            <i class="icon icon-archives-fill"></i>
+            
+            <span class="menu-title">归档</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories">
+            
+            <i class="icon icon-folder"></i>
+            
+            <span class="menu-title">分类</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-links">
+          <a href="/links">
+            
+            <i class="icon icon-friendship"></i>
+            
+            <span class="menu-title">友链</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-pano">
+          <a href="/pano">
+            
+            <i class="icon icon-friendship"></i>
+            
+            <span class="menu-title">全景</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-pointcloud">
+          <a href="/pointcloud">
+            
+            <i class="icon icon-friendship"></i>
+            
+            <span class="menu-title">点云</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-game">
+          <a href="/2048">
+            
+            <i class="icon icon-friendship"></i>
+            
+            <span class="menu-title">游戏</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about">
+            
+            <i class="icon icon-cup-fill"></i>
+            
+            <span class="menu-title">关于</span>
+          </a>
+        </li>
+        
+      </ul>
+      
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/marblemm" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="https://gitee.com/marblemm" target="_blank" title="Gitee" data-toggle=tooltip data-placement=top><i class="icon icon-gitee"></i></a></li>
+        
+    </ul>
+
+    </nav>
+  </div>
+</header>
+
+  
+    <aside class="sidebar" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    
+      <div class="widget">
+    <h3 class="widget-title">公告</h3>
+    <div class="widget-body">
+        <div id="board">
+            <div class="content">
+                <p>欢迎交流与分享经验!</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">分类</h3>
+    <div class="widget-body">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/c/">c++</a><span class="category-list-count">11</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/c-%E9%9D%A2%E8%AF%95/">c++面试</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/cmake/">cmake</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/com/">com</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/git/">git</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/tool/">tool</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E4%B9%A6%E7%B1%8D/">书籍</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%A4%9A%E7%BA%BF%E7%A8%8B/">多线程</a><span class="category-list-count">5</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget-body">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/cmake/" rel="tag">cmake</a><span class="tag-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget-body tagcloud">
+      <a href="/tags/cmake/" style="font-size: 13px;">cmake</a>
+    </div>
+  </div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget-body">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/11/">十一月 2021</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/10/">十月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/09/">九月 2021</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/08/">八月 2021</a><span class="archive-list-count">23</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget-body">
+      <ul class="recent-post-list list-unstyled no-thumbnail">
+        
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/com/">com</a>
+              </p>
+              <p class="item-title">
+                <a href="/2021/11/06/com-com%E5%85%A5%E9%97%A82/" class="title">com-com入门2</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2021-11-06T07:42:43.000Z" itemprop="datePublished">2021-11-06</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/com/">com</a>
+              </p>
+              <p class="item-title">
+                <a href="/2021/11/05/com-com%E5%85%A5%E9%97%A81/" class="title">com-com入门1</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2021-11-05T15:57:06.000Z" itemprop="datePublished">2021-11-05</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/com/">com</a>
+              </p>
+              <p class="item-title">
+                <a href="/2021/10/27/com-%E4%B8%BA%E4%BB%80%E4%B9%88%E9%9C%80%E8%A6%81com/" class="title">com-为什么需要com</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2021-10-27T15:51:52.000Z" itemprop="datePublished">2021-10-27</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/cmake/">cmake</a>
+              </p>
+              <p class="item-title">
+                <a href="/2021/09/11/CMake%E6%95%99%E7%A8%8B/" class="title">CMake教程</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2021-09-11T06:40:23.000Z" itemprop="datePublished">2021-09-11</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/tool/">tool</a>
+              </p>
+              <p class="item-title">
+                <a href="/2021/09/07/VS%E4%B8%AD%E5%A4%B4%E6%96%87%E4%BB%B6stdafx-h%E7%9A%84%E4%BD%9C%E7%94%A8/" class="title">VS中头文件stdafx.h的作用</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2021-09-07T14:42:45.000Z" itemprop="datePublished">2021-09-07</time>
+              </p>
+            </div>
+          </li>
+          
+      </ul>
+    </div>
+  </div>
+  
+
+    
+  </div>
+</aside>
+
+  
+  
+<aside class="sidebar sidebar-toc collapse" id="collapseToc" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    <nav id="toc" class="article-toc">
+      <h3 class="toc-title">文章目录</h3>
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#static-cast%E8%AF%A6%E8%A7%A3%EF%BC%9A"><span class="toc-number">1.</span> <span class="toc-text">static_cast详解：</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%9F%BA%E6%9C%AC%E7%B1%BB%E5%9E%8B%E6%95%B0%E6%8D%AE%E8%BD%AC%E6%8D%A2%E4%B8%BE%E4%BE%8B%E5%A6%82%E4%B8%8B%EF%BC%9A"><span class="toc-number">1.0.1.</span> <span class="toc-text">基本类型数据转换举例如下：</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%B1%BB%E4%B8%8A%E8%A1%8C%E5%92%8C%E4%B8%8B%E8%A1%8C%E8%BD%AC%E6%8D%A2%EF%BC%9A"><span class="toc-number">1.0.2.</span> <span class="toc-text">类上行和下行转换：</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#const-cast"><span class="toc-number">2.</span> <span class="toc-text">const_cast</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#reinterpret-cast-%E5%85%B3%E9%94%AE%E5%AD%97"><span class="toc-number">3.</span> <span class="toc-text">reinterpret_cast 关键字</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#dynamic-cast-%E5%85%B3%E9%94%AE%E5%AD%97"><span class="toc-number">4.</span> <span class="toc-text">dynamic_cast 关键字</span></a></li></ol>
+    </nav>
+  </div>
+</aside>
+
+<main class="main" role="main">
+  <div class="content">
+  <article id="post-cpp类型转换" class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
+    
+    <div class="article-header">
+      
+        
+  
+    <h1 class="article-title" itemprop="name">
+      cpp类型转换
+    </h1>
+  
+
+      
+      <div class="article-meta">
+        <span class="article-date">
+    <i class="icon icon-calendar-check"></i>
+	<a href="/2021/09/04/cpp%E7%B1%BB%E5%9E%8B%E8%BD%AC%E6%8D%A2/" class="article-date">
+	  <time datetime="2021-09-04T04:34:42.000Z" itemprop="datePublished">2021-09-04</time>
+	</a>
+</span>
+        
+  <span class="article-category">
+    <i class="icon icon-folder"></i>
+    <a class="article-category-link" href="/categories/c/">c++</a>
+  </span>
+
+        
+
+        
+	<span class="article-read hidden-xs">
+	    <i class="icon icon-eye-fill" aria-hidden="true"></i>
+	    <span id="busuanzi_container_page_pv">
+			<span id="busuanzi_value_page_pv">0</span>
+		</span>
+	</span>
+
+
+        <span class="post-comment"><i class="icon icon-comment"></i> <a href="/2021/09/04/cpp%E7%B1%BB%E5%9E%8B%E8%BD%AC%E6%8D%A2/#comments" class="article-comment-link">评论</a></span>
+        
+	
+		<span class="post-wordcount hidden-xs" itemprop="wordCount">字数统计: 2.4k(字)</span>
+	
+	
+		<span class="post-readcount hidden-xs" itemprop="timeRequired">阅读时长: 9(分)</span>
+	
+
+      </div>
+    </div>
+    <div class="article-entry marked-body" itemprop="articleBody">
+      
+        <p>C++ 对类型转换进行了分类，并新增了四个关键字来予以支持，它们分别是：</p>
+<ul>
+<li>static_cast    用于良性转换，一般不会导致意外发生，风险很低。</li>
+<li>const_cast    用于 const 与非 const、volatile 与非 volatile 之间的转换。</li>
+<li>reinterpret_cast    高度危险的转换，这种转换仅仅是对二进制位的重新解释，不会借助已有的转换规则对数据进行调整，但是可以实现最灵活的 C++ 类型转换。</li>
+<li>dynamic_cast    借助 RTTI，用于类型安全的向下转型（Downcasting）。</li>
+</ul>
+<h2 id="static-cast详解："><a href="#static-cast详解：" class="headerlink" title="static_cast详解："></a>static_cast详解：</h2><p>static_cast相当于传统的C语言里的强制转换，该运算符把expression转换为new_type类型，用来强迫隐式转换如non-const对象转为const对象，编译时检查，用于非多态的转换，可以转换指针及其他，但没有运行时类型检查来保证转换的安全性。它主要有如下几种用法：</p>
+<ul>
+<li>用于类层次结构中基类（父类）和派生类（子类）之间指针或引用的转换。<br>进行上行转换（把派生类的指针或引用转换成基类表示）是安全的；<br>进行下行转换（把基类指针或引用转换成派生类表示）时，由于没有动态类型检查，所以是不安全的。</li>
+<li>用于基本数据类型之间的转换，如把int转换成char，把int转换成enum。</li>
+<li>把空指针转换成目标类型的空指针。</li>
+<li>把任何类型的表达式转换成void类型。<br>注意：static_cast不能转换掉expression的const、volatile、或者__unaligned属性</li>
+</ul>
+<h4 id="基本类型数据转换举例如下："><a href="#基本类型数据转换举例如下：" class="headerlink" title="基本类型数据转换举例如下："></a>基本类型数据转换举例如下：</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">char a = &#x27;a&#x27;;</span><br><span class="line">int b = static_cast&lt;char&gt;(a);//正确，将char型数据转换成int型数据</span><br><span class="line"></span><br><span class="line">double *c = new double;</span><br><span class="line">void *d = static_cast&lt;void*&gt;(c);//正确，将double指针转换成void指针</span><br><span class="line"></span><br><span class="line">int e = 10;</span><br><span class="line">const int f = static_cast&lt;const int&gt;(e);//正确，将int型数据转换成const int型数据</span><br><span class="line"></span><br><span class="line">const int g = 20;</span><br><span class="line">int *h = static_cast&lt;int*&gt;(&amp;g);//编译错误，static_cast不能转换掉g的const属性</span><br></pre></td></tr></table></figure>
+
+<h4 id="类上行和下行转换："><a href="#类上行和下行转换：" class="headerlink" title="类上行和下行转换："></a>类上行和下行转换：</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">class Base</span><br><span class="line">&#123;&#125;;</span><br><span class="line"></span><br><span class="line">class Derived : public Base</span><br><span class="line">&#123;&#125;</span><br><span class="line"></span><br><span class="line">Base* pB = new Base();</span><br><span class="line">if(Derived* pD = static_cast&lt;Derived*&gt;(pB))</span><br><span class="line">&#123;&#125;//下行转换是不安全的(坚决抵制这种方法)</span><br><span class="line"></span><br><span class="line">Derived* pD = new Derived();</span><br><span class="line">if(Base* pB = static_cast&lt;Base*&gt;(pD))</span><br><span class="line">&#123;&#125;//上行转换是安全的</span><br></pre></td></tr></table></figure>
+
+<h2 id="const-cast"><a href="#const-cast" class="headerlink" title="const_cast"></a>const_cast</h2><p>const限定符通常被用来限定变量，用于表示该变量的值不能被修改。</p>
+<p>而const_cast则正是用于强制去掉这种不能被修改的常数特性，但需要特别注意的是const_cast不是用于去除变量的常量性，而是去除指向常数对象的指针或引用的常量性，其去除常量性的对象必须为指针或引用。</p>
+<p>用法：const_cast<type_id> (expression)</p>
+<pre><code>该运算符用来修改类型的const或volatile属性。除了const 或volatile修饰之外， type_id和expression的类型是一样的。
+常量指针被转化成非常量指针，并且仍然指向原来的对象；
+常量引用被转换成非常量引用，并且仍然指向原来的对象；常量对象被转换成非常量对象。
+</code></pre>
+<p>[例3]一个错误的例子：</p>
+<pre><code>const int a = 10;
+const int * p = &amp;a;
+*p = 20;                  //compile error
+int b = const_cast&lt;int&gt;(a);  //compile error
+</code></pre>
+<p>在本例中出现了两个编译错误，第一个编译错误是*p因为具有常量性，其值是不能被修改的；另一处错误是const_cast强制转换对象必须为指针或引用，而例3中为一个变量，这是不允许的！</p>
+<p>下面我们以 const 为例来说明 const_cast 的用法：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">#include &lt;iostream&gt;</span><br><span class="line">using namespace std;</span><br><span class="line"></span><br><span class="line">int main()&#123;</span><br><span class="line">    const int n = 100;</span><br><span class="line">    int *p = const_cast&lt;int*&gt;(&amp;n);</span><br><span class="line">    *p = 234;</span><br><span class="line">    cout&lt;&lt;&quot;n = &quot;&lt;&lt;n&lt;&lt;endl;</span><br><span class="line">    cout&lt;&lt;&quot;*p = &quot;&lt;&lt;*p&lt;&lt;endl;</span><br><span class="line"></span><br><span class="line">    return 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>运行结果：<br>    n = 100<br>    *p = 234</p>
+<p>&amp;n用来获取 n 的地址，它的类型为const int *，必须使用 const_cast 转换为int *类型后才能赋值给 p。由于 p 指向了 n，并且 n 占用的是栈内存，有写入权限，所以可以通过 p 修改 n 的值。</p>
+<p>有读者可能会问，为什么通过 n 和 *p 输出的值不一样呢？这是因为 C++ 对常量的处理更像是编译时期的#define，是一个值替换的过程，代码中所有使用 n 的地方在编译期间就被替换成了 100。换句话说，第 8 行代码被修改成了下面的形式：</p>
+<pre><code>cout&lt;&lt;&quot;n = &quot;&lt;&lt;100&lt;&lt;endl;
+</code></pre>
+<p>这样以来，即使程序在运行期间修改 n 的值，也不会影响 cout 语句了</p>
+<p>使用 const_cast 进行强制类型转换可以突破 C/C++ 的常数限制，修改常数的值，因此有一定的危险性；但是程序员如果这样做的话，基本上会意识到这个问题，因此也还有一定的安全性。</p>
+<h2 id="reinterpret-cast-关键字"><a href="#reinterpret-cast-关键字" class="headerlink" title="reinterpret_cast 关键字"></a>reinterpret_cast 关键字</h2><p>reinterpret 是“重新解释”的意思，顾名思义，reinterpret_cast 这种转换仅仅是对二进制位的重新解释，不会借助已有的转换规则对数据进行调整，非常简单粗暴，所以风险很高。</p>
+<p>reinterpret_cast 可以认为是 static_cast 的一种补充，一些 static_cast 不能完成的转换，就可以用 reinterpret_cast 来完成，例如两个具体类型指针之间的转换、int 和指针之间的转换（有些编译器只允许 int 转指针，不允许反过来）。</p>
+<p>下面的代码代码演示了 reinterpret_cast 的使用：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">#include &lt;iostream&gt;</span><br><span class="line">using namespace std;</span><br><span class="line"></span><br><span class="line">class A&#123;</span><br><span class="line">public:</span><br><span class="line">    A(int a = 0, int b = 0): m_a(a), m_b(b)&#123;&#125;</span><br><span class="line">private:</span><br><span class="line">    int m_a;</span><br><span class="line">    int m_b;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">int main()&#123;</span><br><span class="line">    //将 char* 转换为 float*</span><br><span class="line">    char str[]=&quot;http://c.biancheng.net&quot;;</span><br><span class="line">    float *p1 = reinterpret_cast&lt;float*&gt;(str);</span><br><span class="line">    cout&lt;&lt;*p1&lt;&lt;endl;</span><br><span class="line">    //将 int 转换为 int*</span><br><span class="line">    int *p = reinterpret_cast&lt;int*&gt;(100);</span><br><span class="line">    //将 A* 转换为 int*</span><br><span class="line">    p = reinterpret_cast&lt;int*&gt;(new A(25, 96));</span><br><span class="line">    cout&lt;&lt;*p&lt;&lt;endl;</span><br><span class="line">   </span><br><span class="line">    return 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>运行结果：</p>
+<pre><code>3.0262e+29
+25
+</code></pre>
+<p>可以想象，用一个 float 指针来操作一个 char 数组是一件多么荒诞和危险的事情，这样的转换方式不到万不得已的时候不要使用。将A<em>转换为int</em>，使用指针直接访问 private 成员刺穿了一个类的封装性，更好的办法是让类提供 get/set 函数，间接地访问成员变量。</p>
+<h2 id="dynamic-cast-关键字"><a href="#dynamic-cast-关键字" class="headerlink" title="dynamic_cast 关键字"></a>dynamic_cast 关键字</h2><p>dynamic_cast 用于在类的继承层次之间进行类型转换，它既允许向上转型（Upcasting），也允许向下转型（Downcasting）。向上转型是无条件的，不会进行任何检测，所以都能成功；向下转型的前提必须是安全的，要借助 RTTI 进行检测，所有只有一部分能成功。</p>
+<p>（1）其他三种都是编译时完成的，dynamic_cast是运行时处理的，运行时要进行类型检查。</p>
+<p>（2）不能用于内置的基本数据类型的强制转换。</p>
+<p>（3）dynamic_cast转换如果成功的话返回的是指向类的指针或引用，转换失败的话则会返回NULL。</p>
+<p>（4）使用dynamic_cast进行转换的，基类中一定要有虚函数，否则编译不通过。</p>
+<pre><code>    B中需要检测有虚函数的原因：类中存在虚函数，就说明它有想要让基类指针或引用指向派生类对象的情况，此时转换才有意义。
+
+   
+    这是由于运行时类型检查需要运行时类型信息，而这个信息存储在类的虚函数表（关于虚函数表的概念，详细可见&lt;Inside c++ object model&gt;）中，
+    只有定义了虚函数的类才有虚函数表。
+</code></pre>
+<p> （5）在类的转换时，在类层次间进行上行转换时，dynamic_cast和static_cast的效果是一样的。在进行下行转换时，dynamic_cast具有类型检查的功能，比static_cast更安全。</p>
+<pre><code>    向上转换，即为子类指针指向父类指针（一般不会出问题）；向下转换，即将父类指针转化子类指针。
+
+   向下转换的成功与否还与将要转换的类型有关，即要转换的指针指向的对象的实际类型与转换以后的对象类型一定要相同，否则转换失败。
+
+    在C++中，编译期的类型转换有可能会在运行时出现错误，特别是涉及到类对象的指针或引用操作时，更容易产生错误。Dynamic_cast操作符则可以在运行期对可能产生问题的类型转换进行测试。
+</code></pre>
+<p>（1）指针类型<br>举例，Base为包含至少一个虚函数的基类，Derived是Base的共有派生类，如果有一个指向Base的指针bp，我们可以在运行时将它转换成指向Derived的指针，代码如下：</p>
+<pre><code>if(Derived *dp = dynamic_cast&lt;Derived *&gt;(bp))&#123;
+//使用dp指向的Derived对象  
+&#125;
+else&#123;
+//使用bp指向的Base对象  
+&#125;
+</code></pre>
+<p>值得注意的是，在上述代码中，if语句中定义了dp，这样做的好处是可以在一个操作中同时完成类型转换和条件检查两项任务。</p>
+<p>（2）引用类型</p>
+<p>因为不存在所谓空引用，所以引用类型的dynamic_cast转换与指针类型不同，在引用转换失败时，会抛出std::bad_cast异常，该异常定义在头文件typeinfo中。</p>
+<pre><code>void f(const Base &amp;b)&#123;
+try&#123;
+const Derived &amp;d = dynamic_cast&lt;const Base &amp;&gt;(b);  
+//使用b引用的Derived对象
+&#125;
+catch(std::bad_cast)&#123;
+//处理类型转换失败的情况
+&#125;
+&#125;
+</code></pre>
+<p>转换注意事项：</p>
+<p>尽量少使用转型操作，尤其是dynamic_cast，耗时较高，会导致性能的下降，尽量使用其他方法替代。</p>
+
+      
+    </div>
+    <div class="article-footer">
+      <blockquote class="mt-2x">
+  <ul class="post-copyright list-unstyled">
+    
+    <li class="post-copyright-link hidden-xs">
+      <strong>本文链接：</strong>
+      <a href="https://marblemm.github.io/2021/09/04/cpp%E7%B1%BB%E5%9E%8B%E8%BD%AC%E6%8D%A2/" title="cpp类型转换" target="_blank" rel="external">https://marblemm.github.io/2021/09/04/cpp类型转换/</a>
+    </li>
+    
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong> 本博客所有文章除特别声明外，均采用 <a href="http://creativecommons.org/licenses/by/4.0/deed.zh" target="_blank" rel="external">CC BY 4.0 CN协议</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+</blockquote>
+
+
+<div class="panel panel-default panel-badger">
+  <div class="panel-body">
+    <figure class="media">
+      <div class="media-left">
+        <a href="https://github.com/marblemm" target="_blank" class="img-burn thumb-sm visible-lg">
+          <img src="/images/avatar.jpg" class="img-rounded w-full" alt="">
+        </a>
+      </div>
+      <div class="media-body">
+        <h3 class="media-heading"><a href="https://github.com/marblemm" target="_blank"><span class="text-dark">marble</span><small class="ml-1x">software Developer</small></a></h3>
+        <div>个人简介。</div>
+      </div>
+    </figure>
+  </div>
+</div>
+
+
+    </div>
+  </article>
+  
+    
+  <section id="comments">
+  	
+      <div id="vcomments"></div>
+    
+  </section>
+
+
+  
+</div>
+
+  <nav class="bar bar-footer clearfix" data-stick-bottom>
+  <div class="bar-inner">
+  
+  <ul class="pager pull-left">
+    
+    <li class="prev">
+      <a href="/2021/09/07/VS%E4%B8%AD%E5%A4%B4%E6%96%87%E4%BB%B6stdafx-h%E7%9A%84%E4%BD%9C%E7%94%A8/" title="VS中头文件stdafx.h的作用"><i class="icon icon-angle-left" aria-hidden="true"></i><span>&nbsp;&nbsp;上一篇</span></a>
+    </li>
+    
+    
+    <li class="next">
+      <a href="/2021/09/03/cpp%E7%B1%BB%E9%BB%98%E8%AE%A4%E7%9A%84%E5%85%AB%E7%A7%8D%E5%87%BD%E6%95%B0/" title="cpp类默认的八种函数"><span>下一篇&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
+    </li>
+    
+    
+    <li class="toggle-toc">
+      <a class="toggle-btn collapsed" data-toggle="collapse" href="#collapseToc" aria-expanded="false" title="文章目录" role="button">
+        <span>[&nbsp;</span><span>文章目录</span>
+        <i class="text-collapsed icon icon-anchor"></i>
+        <i class="text-in icon icon-close"></i>
+        <span>]</span>
+      </a>
+    </li>
+    
+  </ul>
+  
+  
+  <!-- Button trigger modal -->
+  <button type="button" class="btn btn-fancy btn-donate pop-onhover bg-gradient-warning" data-toggle="modal" data-target="#donateModal"><span>赏</span></button>
+  <!-- <div class="wave-icon wave-icon-danger btn-donate" data-toggle="modal" data-target="#donateModal">
+    <div class="wave-circle"><span class="icon"><i class="icon icon-bill"></i></span></div>
+  </div> -->
+  
+  
+  <div class="bar-right">
+    
+    <div class="share-component" data-sites="weibo,qq,wechat" data-mobile-sites="weibo,qq,qzone"></div>
+    
+  </div>
+  </div>
+</nav>
+  
+<!-- Modal -->
+<div class="modal modal-center modal-small modal-xs-full fade" id="donateModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content donate">
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      <div class="modal-body">
+        <div class="donate-box">
+          <div class="donate-head">
+            <p>感谢您的支持，我会继续努力的!</p>
+          </div>
+          <div class="tab-content">
+            <div role="tabpanel" class="tab-pane fade active in" id="alipay">
+              <div class="donate-payimg">
+                <img src="/images/donate/alipayimg.png" alt="扫码支持" title="扫一扫" />
+              </div>
+              <p class="text-muted mv">扫码打赏，你说多少就多少</p>
+              <p class="text-grey">打开支付宝扫一扫，即可进行扫码打赏哦</p>
+            </div>
+            <div role="tabpanel" class="tab-pane fade" id="wechatpay">
+              <div class="donate-payimg">
+                <img src="/images/donate/wechatpayimg.png" alt="扫码支持" title="扫一扫" />
+              </div>
+              <p class="text-muted mv">扫码打赏，你说多少就多少</p>
+              <p class="text-grey">打开微信扫一扫，即可进行扫码打赏哦</p>
+            </div>
+          </div>
+          <div class="donate-footer">
+            <ul class="nav nav-tabs nav-justified" role="tablist">
+              <li role="presentation" class="active">
+                <a href="#alipay" id="alipay-tab" role="tab" data-toggle="tab" aria-controls="alipay" aria-expanded="true"><i class="icon icon-alipay"></i> 支付宝</a>
+              </li>
+              <li role="presentation" class="">
+                <a href="#wechatpay" role="tab" id="wechatpay-tab" data-toggle="tab" aria-controls="wechatpay" aria-expanded="false"><i class="icon icon-wepay"></i> 微信支付</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+</main>
+
+  <footer class="footer" itemscope itemtype="http://schema.org/WPFooter">
+	
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/marblemm" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="https://gitee.com/marblemm" target="_blank" title="Gitee" data-toggle=tooltip data-placement=top><i class="icon icon-gitee"></i></a></li>
+        
+    </ul>
+
+    <div class="copyright">
+    	
+        <div class="publishby">
+        	Theme by <a href="https://github.com/cofess" target="_blank"> cofess </a>base on <a href="https://github.com/cofess/hexo-theme-pure" target="_blank">pure</a>.
+        </div>
+    </div>
+</footer>
+  <script src="//cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+<script>
+window.jQuery || document.write('<script src="js/jquery.min.js"><\/script>')
+</script>
+
+<script src="/js/plugin.min.js"></script>
+
+
+<script src="/js/application.js"></script>
+
+
+    <script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+
+
+
+
+
+   
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+   
+    
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/valine"></script>
+  <script type="text/javascript">
+  var GUEST = ['nick', 'mail', 'link'];
+  var meta = 'nick,mail,link';
+  meta = meta.split(',').filter(function(item) {
+    return GUEST.indexOf(item) > -1;
+  });
+  new Valine({
+    el: '#vcomments',
+    verify: false,
+    notify: false,
+    appId: 'vsxVYXKPSCaf1SOO9F2DEyXU-gzGzoHsz',
+    appKey: '1djOltTjcB8Ap3RrgA6zX8HF',
+    placeholder: 'Just go go',
+    avatar: 'mm',
+    meta: meta,
+    pageSize: '10' || 10,
+    visitor: false
+  });
+  </script>
+
+     
+
+
+
+
+
+
+
+</body>
+</html>

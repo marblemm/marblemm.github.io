@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="Cache-Control" content="no-transform" />
+  <meta http-equiv="Cache-Control" content="no-siteapp" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="format-detection" content="telephone=no,email=no,adress=no">
+  <!-- Color theme for statusbar -->
+  <meta name="theme-color" content="#000000" />
+  <!-- 强制页面在当前窗口以独立页面显示,防止别人在框架里调用页面 -->
+  <meta http-equiv="window-target" content="_top" />
+  
+  
+  <title>cpp智能指针总结 | marble</title>
+  <meta name="description" content="智能指针背后的设计思想我们先来看一个简单的例子： 12345678910void remodel(std::string &amp; str)&amp;#123;    std::string * ps &#x3D; new std::string(str);    ...    if (weird_thing())        throw exception();    str &#x3D; *ps;     delet">
+<meta property="og:type" content="article">
+<meta property="og:title" content="cpp智能指针总结">
+<meta property="og:url" content="https://marblemm.github.io/2021/09/02/cpp%E6%99%BA%E8%83%BD%E6%8C%87%E9%92%88%E6%80%BB%E7%BB%93/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="智能指针背后的设计思想我们先来看一个简单的例子： 12345678910void remodel(std::string &amp; str)&amp;#123;    std::string * ps &#x3D; new std::string(str);    ...    if (weird_thing())        throw exception();    str &#x3D; *ps;     delet">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-09-02T15:03:19.000Z">
+<meta property="article:modified_time" content="2021-09-02T15:21:20.800Z">
+<meta property="article:author" content="John Doe">
+<meta name="twitter:card" content="summary">
+  <!-- Canonical links -->
+  <link rel="canonical" href="https://marblemm.github.io/2021/09/02/cpp%E6%99%BA%E8%83%BD%E6%8C%87%E9%92%88%E6%80%BB%E7%BB%93/index.html">
+  
+    <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png" type="image/x-icon">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+  
+  
+  
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body class="main-center theme-green" itemscope itemtype="http://schema.org/WebPage">
+  <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+  <div class="slimContent">
+    <div class="navbar-header">
+      
+      
+      <div class="profile-block text-center">
+        <a id="avatar" href="https://github.com/marblemm" target="_blank">
+          <img class="img-circle img-rotate" src="/images/avatar.jpg" width="200" height="200">
+        </a>
+        <h2 id="name" class="hidden-xs hidden-sm">marble</h2>
+        <h3 id="title" class="hidden-xs hidden-sm hidden-md">software Developer</h3>
+        <small id="location" class="text-muted hidden-xs hidden-sm"><i class="icon icon-map-marker"></i> wuhan, China</small>
+      </div>
+      
+      <div class="search" id="search-form-wrap">
+
+    <form class="search-form sidebar-form">
+        <div class="input-group">
+            <input type="text" class="search-form-input form-control" placeholder="搜索" />
+            <span class="input-group-btn">
+                <button type="submit" class="search-form-submit btn btn-flat" onclick="return false;"><i class="icon icon-search"></i></button>
+            </span>
+        </div>
+    </form>
+    <div class="ins-search">
+  <div class="ins-search-mask"></div>
+  <div class="ins-search-container">
+    <div class="ins-input-wrapper">
+      <input type="text" class="ins-search-input" placeholder="想要查找什么..." x-webkit-speech />
+      <button type="button" class="close ins-close ins-selectable" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+    </div>
+    <div class="ins-section-wrapper">
+      <div class="ins-section-container"></div>
+    </div>
+  </div>
+</div>
+
+
+</div>
+      <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <nav id="main-navbar" class="collapse navbar-collapse" itemscope itemtype="http://schema.org/SiteNavigationElement" role="navigation">
+      <ul class="nav navbar-nav main-nav ">
+        
+        
+        <li class="menu-item menu-item-home">
+          <a href="/.">
+            
+            <i class="icon icon-home-fill"></i>
+            
+            <span class="menu-title">首页</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives">
+            
+            <i class="icon icon-archives-fill"></i>
+            
+            <span class="menu-title">归档</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories">
+            
+            <i class="icon icon-folder"></i>
+            
+            <span class="menu-title">分类</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-links">
+          <a href="/links">
+            
+            <i class="icon icon-friendship"></i>
+            
+            <span class="menu-title">友链</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-pano">
+          <a href="/pano">
+            
+            <i class="icon icon-friendship"></i>
+            
+            <span class="menu-title">全景</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-pointcloud">
+          <a href="/pointcloud">
+            
+            <i class="icon icon-friendship"></i>
+            
+            <span class="menu-title">点云</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-game">
+          <a href="/2048">
+            
+            <i class="icon icon-friendship"></i>
+            
+            <span class="menu-title">游戏</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about">
+            
+            <i class="icon icon-cup-fill"></i>
+            
+            <span class="menu-title">关于</span>
+          </a>
+        </li>
+        
+      </ul>
+      
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/marblemm" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="https://gitee.com/marblemm" target="_blank" title="Gitee" data-toggle=tooltip data-placement=top><i class="icon icon-gitee"></i></a></li>
+        
+    </ul>
+
+    </nav>
+  </div>
+</header>
+
+  
+    <aside class="sidebar" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    
+      <div class="widget">
+    <h3 class="widget-title">公告</h3>
+    <div class="widget-body">
+        <div id="board">
+            <div class="content">
+                <p>欢迎交流与分享经验!</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">分类</h3>
+    <div class="widget-body">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/c/">c++</a><span class="category-list-count">11</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/c-%E9%9D%A2%E8%AF%95/">c++面试</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/cmake/">cmake</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/com/">com</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/git/">git</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/tool/">tool</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E4%B9%A6%E7%B1%8D/">书籍</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%A4%9A%E7%BA%BF%E7%A8%8B/">多线程</a><span class="category-list-count">5</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget-body">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/cmake/" rel="tag">cmake</a><span class="tag-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget-body tagcloud">
+      <a href="/tags/cmake/" style="font-size: 13px;">cmake</a>
+    </div>
+  </div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget-body">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/11/">十一月 2021</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/10/">十月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/09/">九月 2021</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/08/">八月 2021</a><span class="archive-list-count">23</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget-body">
+      <ul class="recent-post-list list-unstyled no-thumbnail">
+        
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/com/">com</a>
+              </p>
+              <p class="item-title">
+                <a href="/2021/11/06/com-com%E5%85%A5%E9%97%A82/" class="title">com-com入门2</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2021-11-06T07:42:43.000Z" itemprop="datePublished">2021-11-06</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/com/">com</a>
+              </p>
+              <p class="item-title">
+                <a href="/2021/11/05/com-com%E5%85%A5%E9%97%A81/" class="title">com-com入门1</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2021-11-05T15:57:06.000Z" itemprop="datePublished">2021-11-05</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/com/">com</a>
+              </p>
+              <p class="item-title">
+                <a href="/2021/10/27/com-%E4%B8%BA%E4%BB%80%E4%B9%88%E9%9C%80%E8%A6%81com/" class="title">com-为什么需要com</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2021-10-27T15:51:52.000Z" itemprop="datePublished">2021-10-27</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/cmake/">cmake</a>
+              </p>
+              <p class="item-title">
+                <a href="/2021/09/11/CMake%E6%95%99%E7%A8%8B/" class="title">CMake教程</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2021-09-11T06:40:23.000Z" itemprop="datePublished">2021-09-11</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/tool/">tool</a>
+              </p>
+              <p class="item-title">
+                <a href="/2021/09/07/VS%E4%B8%AD%E5%A4%B4%E6%96%87%E4%BB%B6stdafx-h%E7%9A%84%E4%BD%9C%E7%94%A8/" class="title">VS中头文件stdafx.h的作用</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2021-09-07T14:42:45.000Z" itemprop="datePublished">2021-09-07</time>
+              </p>
+            </div>
+          </li>
+          
+      </ul>
+    </div>
+  </div>
+  
+
+    
+  </div>
+</aside>
+
+  
+  
+<aside class="sidebar sidebar-toc collapse" id="collapseToc" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    <nav id="toc" class="article-toc">
+      <h3 class="toc-title">文章目录</h3>
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%99%BA%E8%83%BD%E6%8C%87%E9%92%88%E8%83%8C%E5%90%8E%E7%9A%84%E8%AE%BE%E8%AE%A1%E6%80%9D%E6%83%B3"><span class="toc-number">1.</span> <span class="toc-text">智能指针背后的设计思想</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-C-%E6%99%BA%E8%83%BD%E6%8C%87%E9%92%88%E7%AE%80%E5%8D%95%E4%BB%8B%E7%BB%8D"><span class="toc-number">2.</span> <span class="toc-text">2. C++智能指针简单介绍</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-%E4%B8%BA%E4%BB%80%E4%B9%88%E6%91%92%E5%BC%83auto-ptr%EF%BC%9F"><span class="toc-number">3.</span> <span class="toc-text">3. 为什么摒弃auto_ptr？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-unique-ptr%E4%B8%BA%E4%BD%95%E4%BC%98%E4%BA%8Eauto-ptr%EF%BC%9F"><span class="toc-number">4.</span> <span class="toc-text">4. unique_ptr为何优于auto_ptr？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-%E5%A6%82%E4%BD%95%E9%80%89%E6%8B%A9%E6%99%BA%E8%83%BD%E6%8C%87%E9%92%88%EF%BC%9F"><span class="toc-number">5.</span> <span class="toc-text">5. 如何选择智能指针？</span></a></li></ol>
+    </nav>
+  </div>
+</aside>
+
+<main class="main" role="main">
+  <div class="content">
+  <article id="post-cpp智能指针总结" class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
+    
+    <div class="article-header">
+      
+        
+  
+    <h1 class="article-title" itemprop="name">
+      cpp智能指针总结
+    </h1>
+  
+
+      
+      <div class="article-meta">
+        <span class="article-date">
+    <i class="icon icon-calendar-check"></i>
+	<a href="/2021/09/02/cpp%E6%99%BA%E8%83%BD%E6%8C%87%E9%92%88%E6%80%BB%E7%BB%93/" class="article-date">
+	  <time datetime="2021-09-02T15:03:19.000Z" itemprop="datePublished">2021-09-02</time>
+	</a>
+</span>
+        
+  <span class="article-category">
+    <i class="icon icon-folder"></i>
+    <a class="article-category-link" href="/categories/c/">c++</a>
+  </span>
+
+        
+
+        
+	<span class="article-read hidden-xs">
+	    <i class="icon icon-eye-fill" aria-hidden="true"></i>
+	    <span id="busuanzi_container_page_pv">
+			<span id="busuanzi_value_page_pv">0</span>
+		</span>
+	</span>
+
+
+        <span class="post-comment"><i class="icon icon-comment"></i> <a href="/2021/09/02/cpp%E6%99%BA%E8%83%BD%E6%8C%87%E9%92%88%E6%80%BB%E7%BB%93/#comments" class="article-comment-link">评论</a></span>
+        
+	
+		<span class="post-wordcount hidden-xs" itemprop="wordCount">字数统计: 3.3k(字)</span>
+	
+	
+		<span class="post-readcount hidden-xs" itemprop="timeRequired">阅读时长: 13(分)</span>
+	
+
+      </div>
+    </div>
+    <div class="article-entry marked-body" itemprop="articleBody">
+      
+        <h2 id="智能指针背后的设计思想"><a href="#智能指针背后的设计思想" class="headerlink" title="智能指针背后的设计思想"></a>智能指针背后的设计思想</h2><p>我们先来看一个简单的例子：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">void remodel(std::string &amp; str)</span><br><span class="line">&#123;</span><br><span class="line">    std::string * ps = new std::string(str);</span><br><span class="line">    ...</span><br><span class="line">    if (weird_thing())</span><br><span class="line">        throw exception();</span><br><span class="line">    str = *ps; </span><br><span class="line">    delete ps;</span><br><span class="line">    return;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>当出现异常时（weird_thing()返回true），delete将不被执行，因此将导致内存泄露。</p>
+<p>如何避免这种问题？有人会说，这还不简单，直接在throw exception();之前加上delete ps;不就行了。是的，你本应如此，问题是很多人都会忘记在适当的地方加上delete语句（连上述代码中最后的那句delete语句也会有很多人忘记吧），如果你要对一个庞大的工程进行review，看是否有这种潜在的内存泄露问题，那就是一场灾难！<br>这时我们会想：当remodel这样的函数终止（不管是正常终止，还是由于出现了异常而终止），本地变量都将自动从栈内存中删除—因此指针ps占据的内存将被释放，如果ps指向的内存也被自动释放，那该有多好啊。<br>我们知道析构函数有这个功能。如果ps有一个析构函数，该析构函数将在ps过期时自动释放它指向的内存。但ps的问题在于，它只是一个常规指针，不是有析构凼数的类对象指针。如果它指向的是对象，则可以在对象过期时，让它的析构函数删除指向的内存。</p>
+<p>这正是 auto_ptr、unique_ptr和shared_ptr这几个智能指针背后的设计思想。我简单的总结下就是：将基本类型指针封装为类对象指针（这个类肯定是个模板，以适应不同基本类型的需求），并在析构函数里编写delete语句删除指针指向的内存空间。</p>
+<p>因此，要转换remodel()函数，应按下面3个步骤进行：</p>
+<ul>
+<li>包含头文件memory（智能指针所在的头文件）；</li>
+<li>将指向string的指针替换为指向string的智能指针对象；</li>
+<li>删除delete语句。</li>
+</ul>
+<p>下面是使用auto_ptr修改该函数的结果：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"># include &lt;memory&gt;</span><br><span class="line">void remodel (std::string &amp; str)</span><br><span class="line">&#123;</span><br><span class="line">    std::auto_ptr&lt;std::string&gt; ps (new std::string(str))；</span><br><span class="line">    ...</span><br><span class="line">    if (weird_thing ())</span><br><span class="line">        throw exception()； </span><br><span class="line">    str = *ps； </span><br><span class="line">    // delete ps； NO LONGER NEEDED</span><br><span class="line">    return;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="2-C-智能指针简单介绍"><a href="#2-C-智能指针简单介绍" class="headerlink" title="2. C++智能指针简单介绍"></a>2. C++智能指针简单介绍</h2><p>STL一共给我们提供了四种智能指针：auto_ptr、unique_ptr、shared_ptr和weak_ptr（本文章暂不讨论）。<br>模板auto_ptr是C++98提供的解决方案，C+11已将将其摒弃，并提供了另外两种解决方案。然而，虽然auto_ptr被摒弃，但它已使用了好多年：同时，如果您的编译器不支持其他两种解决力案，auto_ptr将是唯一的选择。</p>
+<p>使用注意点</p>
+<ul>
+<li><p>所有的智能指针类都有一个explicit构造函数，以指针作为参数。比如auto_ptr的类模板原型为：</p>
+<pre><code>  templet&lt;class T&gt;
+  class auto_ptr &#123;
+      explicit auto_ptr(X* p = 0) ; 
+      ...
+  &#125;;
+</code></pre>
+<p>  因此不能自动将指针转换为智能指针对象，必须显式调用：</p>
+<pre><code>  shared_ptr&lt;double&gt; pd; 
+  double *p_reg = new double;
+  pd = p_reg;                               // not allowed (implicit conversion)
+  pd = shared_ptr&lt;double&gt;(p_reg);           // allowed (explicit conversion)
+  shared_ptr&lt;double&gt; pshared = p_reg;       // not allowed (implicit conversion)
+  shared_ptr&lt;double&gt; pshared(p_reg);        // allowed (explicit conversion)
+</code></pre>
+</li>
+<li><p>对全部三种智能指针都应避免的一点：</p>
+<pre><code>  string vacation(&quot;I wandered lonely as a cloud.&quot;);
+  shared_ptr&lt;string&gt; pvac(&amp;vacation);   // No
+</code></pre>
+<p>  pvac过期时，程序将把delete运算符用于非堆内存，这是错误的。</p>
+</li>
+</ul>
+<p>使用举例</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line">#include &lt;iostream&gt;</span><br><span class="line">#include &lt;string&gt;</span><br><span class="line">#include &lt;memory&gt;</span><br><span class="line"></span><br><span class="line">class report</span><br><span class="line">&#123;</span><br><span class="line">private:</span><br><span class="line">    std::string str;</span><br><span class="line">public:</span><br><span class="line"> report(const std::string s) : str(s) &#123;</span><br><span class="line">  std::cout &lt;&lt; &quot;Object created.\n&quot;;</span><br><span class="line"> &#125;</span><br><span class="line"> ~report() &#123;</span><br><span class="line">  std::cout &lt;&lt; &quot;Object deleted.\n&quot;;</span><br><span class="line"> &#125;</span><br><span class="line"> void comment() const &#123;</span><br><span class="line">  std::cout &lt;&lt; str &lt;&lt; &quot;\n&quot;;</span><br><span class="line"> &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">int main() &#123;</span><br><span class="line"> &#123;</span><br><span class="line">  std::auto_ptr&lt;report&gt; ps(new report(&quot;using auto ptr&quot;));</span><br><span class="line">  ps-&gt;comment();</span><br><span class="line"> &#125;</span><br><span class="line"></span><br><span class="line"> &#123;</span><br><span class="line">  std::shared_ptr&lt;report&gt; ps(new report(&quot;using shared ptr&quot;));</span><br><span class="line">  ps-&gt;comment();</span><br><span class="line"> &#125;</span><br><span class="line"></span><br><span class="line"> &#123;</span><br><span class="line">  std::unique_ptr&lt;report&gt; ps(new report(&quot;using unique ptr&quot;));</span><br><span class="line">  ps-&gt;comment();</span><br><span class="line"> &#125;</span><br><span class="line"> return 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="3-为什么摒弃auto-ptr？"><a href="#3-为什么摒弃auto-ptr？" class="headerlink" title="3. 为什么摒弃auto_ptr？"></a>3. 为什么摒弃auto_ptr？</h2><p>先来看下面的赋值语句:</p>
+<pre><code>auto_ptr&lt; string&gt; ps (new string (&quot;I reigned lonely as a cloud.”）;
+auto_ptr&lt;string&gt; vocation; 
+vocaticn = ps;
+</code></pre>
+<p>上述赋值语句将完成什么工作呢？如果ps和vocation是常规指针，则两个指针将指向同一个string对象。这是不能接受的，因为程序将试图删除同一个对象两次——一次是ps过期时，另一次是vocation过期时。要避免这种问题，方法有多种：</p>
+<ul>
+<li>定义陚值运算符，使之执行深复制。这样两个指针将指向不同的对象，其中的一个对象是另一个对象的副本，缺点是浪费空间，所以智能指针都未采用此方案。</li>
+<li>建立所有权（ownership）概念。对于特定的对象，只能有一个智能指针可拥有，这样只有拥有对象的智能指针的构造函数会删除该对象。然后让赋值操作转让所有权。这就是用于auto_ptr和uniqiie_ptr 的策略，但unique_ptr的策略更严格。</li>
+<li>创建智能更高的指针，跟踪引用特定对象的智能指针数。这称为引用计数。例如，赋值时，计数将加1，而指针过期时，计数将减1,。当减为0时才调用delete。这是shared_ptr采用的策略。</li>
+</ul>
+<p>当然，同样的策略也适用于复制构造函数。<br>每种方法都有其用途，但为何说要摒弃auto_ptr呢？<br>下面举个例子来说明。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">#include &lt;iostream&gt;</span><br><span class="line">#include &lt;string&gt;</span><br><span class="line">#include &lt;memory&gt;</span><br><span class="line">using namespace std;</span><br><span class="line"></span><br><span class="line">int main() &#123;</span><br><span class="line">  auto_ptr&lt;string&gt; films[5] =</span><br><span class="line"> &#123;</span><br><span class="line">  auto_ptr&lt;string&gt; (new string(&quot;Fowl Balls&quot;)),</span><br><span class="line">  auto_ptr&lt;string&gt; (new string(&quot;Duck Walks&quot;)),</span><br><span class="line">  auto_ptr&lt;string&gt; (new string(&quot;Chicken Runs&quot;)),</span><br><span class="line">  auto_ptr&lt;string&gt; (new string(&quot;Turkey Errors&quot;)),</span><br><span class="line">  auto_ptr&lt;string&gt; (new string(&quot;Goose Eggs&quot;))</span><br><span class="line"> &#125;;</span><br><span class="line"> auto_ptr&lt;string&gt; pwin;</span><br><span class="line"> pwin = films[2]; // films[2] loses ownership. 将所有权从films[2]转让给pwin，此时films[2]不再引用该字符串从而变成空指针</span><br><span class="line"></span><br><span class="line"> cout &lt;&lt; &quot;The nominees for best avian baseballl film are\n&quot;;</span><br><span class="line"> for(int i = 0; i &lt; 5; ++i)</span><br><span class="line">  cout &lt;&lt; *films[i] &lt;&lt; endl;</span><br><span class="line"> cout &lt;&lt; &quot;The winner is &quot; &lt;&lt; *pwin &lt;&lt; endl;</span><br><span class="line"> cin.get();</span><br><span class="line"></span><br><span class="line"> return 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>运行下发现程序崩溃了，原因在上面注释已经说的很清楚，films[2]已经是空指针了，下面输出访问空指针当然会崩溃了。但这里如果把auto_ptr换成shared_ptr或unique_ptr后，程序就不会崩溃，原因如下：</p>
+<ul>
+<li><p>使用shared_ptr时运行正常，因为shared_ptr采用引用计数，pwin和films[2]都指向同一块内存，在释放空间时因为事先要判断引用计数值的大小因此不会出现多次删除一个对象的错误。</p>
+</li>
+<li><p>使用unique_ptr时编译出错，与auto_ptr一样，unique_ptr也采用所有权模型，但在使用unique_ptr时，程序不会等到运行阶段崩溃，而在编译器因下述代码行出现错误：</p>
+<p>  unique_ptr<string> pwin;<br>  pwin = films[2]; // films[2] loses ownership.<br>指导你发现潜在的内存错误。<br>这就是为何要摒弃auto_ptr的原因，一句话总结就是：避免潜在的内存崩溃问题。</p>
+</li>
+</ul>
+<h2 id="4-unique-ptr为何优于auto-ptr？"><a href="#4-unique-ptr为何优于auto-ptr？" class="headerlink" title="4. unique_ptr为何优于auto_ptr？"></a>4. unique_ptr为何优于auto_ptr？</h2><p>可能大家认为前面的例子已经说明了unique_ptr为何优于auto_ptr，也就是安全问题，下面再叙述的清晰一点。<br>请看下面的语句:</p>
+<pre><code>auto_ptr&lt;string&gt; p1(new string (&quot;auto&quot;) ； //#1
+auto_ptr&lt;string&gt; p2;                       //#2
+p2 = p1;                                   //#3
+</code></pre>
+<p>在语句#3中，p2接管string对象的所有权后，p1的所有权将被剥夺。前面说过，这是好事，可防止p1和p2的析构函数试图刪同—个对象；</p>
+<p>但如果程序随后试图使用p1，这将是件坏事，因为p1不再指向有效的数据。</p>
+<p>下面来看使用unique_ptr的情况：</p>
+<pre><code>unique_ptr&lt;string&gt; p3 (new string (&quot;auto&quot;);   //#4
+unique_ptr&lt;string&gt; p4；                       //#5
+p4 = p3;                                      //#6
+</code></pre>
+<p>编译器认为语句#6非法，避免了p3不再指向有效数据的问题。因此，unique_ptr比auto_ptr更安全。</p>
+<p>但unique_ptr还有更聪明的地方。<br>有时候，会将一个智能指针赋给另一个并不会留下危险的悬挂指针。假设有如下函数定义：</p>
+<pre><code>unique_ptr&lt;string&gt; demo(const char * s)
+&#123;
+    unique_ptr&lt;string&gt; temp (new string (s))； 
+    return temp；
+&#125;
+</code></pre>
+<p>并假设编写了如下代码：</p>
+<pre><code>unique_ptr&lt;string&gt; ps;
+ps = demo(&#39;Uniquely special&quot;)；
+</code></pre>
+<p>demo()返回一个临时unique_ptr，然后ps接管了原本归返回的unique_ptr所有的对象，而返回时临时的 unique_ptr 被销毁，也就是说没有机会使用 unique_ptr 来访问无效的数据，换句话来说，这种赋值是不会出现任何问题的，即没有理由禁止这种赋值。实际上，编译器确实允许这种赋值，这正是unique_ptr更聪明的地方。</p>
+<p>总之，党程序试图将一个 unique_ptr 赋值给另一个时，如果源 unique_ptr 是个临时右值，编译器允许这么做；如果源 unique_ptr 将存在一段时间，编译器将禁止这么做，比如：</p>
+<pre><code>unique_ptr&lt;string&gt; pu1(new string (&quot;hello world&quot;));
+unique_ptr&lt;string&gt; pu2;
+pu2 = pu1;                                      // #1 not allowed
+unique_ptr&lt;string&gt; pu3;
+pu3 = unique_ptr&lt;string&gt;(new string (&quot;You&quot;));   // #2 allowed
+</code></pre>
+<p>其中#1留下悬挂的unique_ptr(pu1)，这可能导致危害。而#2不会留下悬挂的unique_ptr，因为它调用 unique_ptr 的构造函数，该构造函数创建的临时对象在其所有权让给 pu3 后就会被销毁。这种随情况而已的行为表明，unique_ptr 优于允许两种赋值的auto_ptr 。</p>
+<p>当然，您可能确实想执行类似于#1的操作，仅当以非智能的方式使用摒弃的智能指针时（如解除引用时），这种赋值才不安全。要安全的重用这种指针，可给它赋新值。C++有一个标准库函数std::move()，让你能够将一个unique_ptr赋给另一个。下面是一个使用前述demo()函数的例子，该函数返回一个unique_ptr<string>对象：</p>
+<p>使用move后，原来的指针仍转让所有权变成空指针，可以对其重新赋值。</p>
+<pre><code>unique_ptr&lt;string&gt; ps1, ps2;
+ps1 = demo(&quot;hello&quot;);
+ps2 = move(ps1);
+ps1 = demo(&quot;alexia&quot;);
+cout &lt;&lt; *ps2 &lt;&lt; *ps1 &lt;&lt; endl;
+</code></pre>
+<h2 id="5-如何选择智能指针？"><a href="#5-如何选择智能指针？" class="headerlink" title="5. 如何选择智能指针？"></a>5. 如何选择智能指针？</h2><p>在掌握了这几种智能指针后，大家可能会想另一个问题：在实际应用中，应使用哪种智能指针呢？<br>下面给出几个使用指南。</p>
+<p>（1）如果程序要使用多个指向同一个对象的指针，应选择shared_ptr。这样的情况包括：</p>
+<p>有一个指针数组，并使用一些辅助指针来标示特定的元素，如最大的元素和最小的元素；<br>两个对象包含都指向第三个对象的指针；<br>STL容器包含指针。很多STL算法都支持复制和赋值操作，这些操作可用于shared_ptr，但不能用于unique_ptr（编译器发出warning）和auto_ptr（行为不确定）。如果你的编译器没有提供shared_ptr，可使用Boost库提供的shared_ptr。</p>
+<p>（2）如果程序不需要多个指向同一个对象的指针，则可使用unique_ptr。如果函数使用new分配内存，并返还指向该内存的指针，将其返回类型声明为unique_ptr是不错的选择。这样，所有权转让给接受返回值的unique_ptr，而该智能指针将负责调用delete。可将unique_ptr存储到STL容器在那个，只要不调用将一个unique_ptr复制或赋给另一个算法（如sort()）。例如，可在程序中使用类似于下面的代码段。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">unique_ptr&lt;int&gt; make_int(int n)</span><br><span class="line">&#123;</span><br><span class="line">    return unique_ptr&lt;int&gt;(new int(n));</span><br><span class="line">&#125;</span><br><span class="line">void show(unique_ptr&lt;int&gt; &amp;p1)</span><br><span class="line">&#123;</span><br><span class="line">    cout &lt;&lt; *a &lt;&lt; &#x27; &#x27;;</span><br><span class="line">&#125;</span><br><span class="line">int main()</span><br><span class="line">&#123;</span><br><span class="line">    ...</span><br><span class="line">    vector&lt;unique_ptr&lt;int&gt; &gt; vp(size);</span><br><span class="line">    for(int i = 0; i &lt; vp.size(); i++)</span><br><span class="line">        vp[i] = make_int(rand() % 1000);              // copy temporary unique_ptr</span><br><span class="line">    vp.push_back(make_int(rand() % 1000));     // ok because arg is temporary</span><br><span class="line">    for_each(vp.begin(), vp.end(), show);           // use for_each()</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>其中push_back调用没有问题，因为它返回一个临时unique_ptr，该unique_ptr被赋给vp中的一个unique_ptr。另外，如果按值而不是按引用给show()传递对象，for_each()将非法，因为这将导致使用一个来自vp的非临时unique_ptr初始化pi，而这是不允许的。前面说过，编译器将发现错误使用unique_ptr的企图。</p>
+<p>在unique_ptr为右值时，可将其赋给shared_ptr，这与将一个unique_ptr赋给一个需要满足的条件相同。与前面一样，在下面的代码中，make_int()的返回类型为unique_ptr<int>：</p>
+<pre><code>unique_ptr&lt;int&gt; pup(make_int(rand() % 1000));   // ok
+shared_ptr&lt;int&gt; spp(pup);                       // not allowed, pup as lvalue
+shared_ptr&lt;int&gt; spr(make_int(rand() % 1000));   // ok
+</code></pre>
+<p>模板shared_ptr包含一个显式构造函数，可用于将右值unique_ptr转换为shared_ptr。shared_ptr将接管原来归unique_ptr所有的对象。</p>
+<p>在满足unique_ptr要求的条件时，也可使用auto_ptr，但unique_ptr是更好的选择。如果你的编译器没有unique_ptr，可考虑使用Boost库提供的scoped_ptr，它与unique_ptr类似。</p>
+<p>参考：</p>
+<p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/lanxuezaipiao/p/4132096.html">https://www.cnblogs.com/lanxuezaipiao/p/4132096.html</a></p>
+
+      
+    </div>
+    <div class="article-footer">
+      <blockquote class="mt-2x">
+  <ul class="post-copyright list-unstyled">
+    
+    <li class="post-copyright-link hidden-xs">
+      <strong>本文链接：</strong>
+      <a href="https://marblemm.github.io/2021/09/02/cpp%E6%99%BA%E8%83%BD%E6%8C%87%E9%92%88%E6%80%BB%E7%BB%93/" title="cpp智能指针总结" target="_blank" rel="external">https://marblemm.github.io/2021/09/02/cpp智能指针总结/</a>
+    </li>
+    
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong> 本博客所有文章除特别声明外，均采用 <a href="http://creativecommons.org/licenses/by/4.0/deed.zh" target="_blank" rel="external">CC BY 4.0 CN协议</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+</blockquote>
+
+
+<div class="panel panel-default panel-badger">
+  <div class="panel-body">
+    <figure class="media">
+      <div class="media-left">
+        <a href="https://github.com/marblemm" target="_blank" class="img-burn thumb-sm visible-lg">
+          <img src="/images/avatar.jpg" class="img-rounded w-full" alt="">
+        </a>
+      </div>
+      <div class="media-body">
+        <h3 class="media-heading"><a href="https://github.com/marblemm" target="_blank"><span class="text-dark">marble</span><small class="ml-1x">software Developer</small></a></h3>
+        <div>个人简介。</div>
+      </div>
+    </figure>
+  </div>
+</div>
+
+
+    </div>
+  </article>
+  
+    
+  <section id="comments">
+  	
+      <div id="vcomments"></div>
+    
+  </section>
+
+
+  
+</div>
+
+  <nav class="bar bar-footer clearfix" data-stick-bottom>
+  <div class="bar-inner">
+  
+  <ul class="pager pull-left">
+    
+    <li class="prev">
+      <a href="/2021/09/03/cpp%E7%B1%BB%E9%BB%98%E8%AE%A4%E7%9A%84%E5%85%AB%E7%A7%8D%E5%87%BD%E6%95%B0/" title="cpp类默认的八种函数"><i class="icon icon-angle-left" aria-hidden="true"></i><span>&nbsp;&nbsp;上一篇</span></a>
+    </li>
+    
+    
+    <li class="next">
+      <a href="/2021/08/31/cpp%E5%85%B3%E9%94%AE%E5%AD%97explicit/" title="cpp关键字explicit"><span>下一篇&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
+    </li>
+    
+    
+    <li class="toggle-toc">
+      <a class="toggle-btn collapsed" data-toggle="collapse" href="#collapseToc" aria-expanded="false" title="文章目录" role="button">
+        <span>[&nbsp;</span><span>文章目录</span>
+        <i class="text-collapsed icon icon-anchor"></i>
+        <i class="text-in icon icon-close"></i>
+        <span>]</span>
+      </a>
+    </li>
+    
+  </ul>
+  
+  
+  <!-- Button trigger modal -->
+  <button type="button" class="btn btn-fancy btn-donate pop-onhover bg-gradient-warning" data-toggle="modal" data-target="#donateModal"><span>赏</span></button>
+  <!-- <div class="wave-icon wave-icon-danger btn-donate" data-toggle="modal" data-target="#donateModal">
+    <div class="wave-circle"><span class="icon"><i class="icon icon-bill"></i></span></div>
+  </div> -->
+  
+  
+  <div class="bar-right">
+    
+    <div class="share-component" data-sites="weibo,qq,wechat" data-mobile-sites="weibo,qq,qzone"></div>
+    
+  </div>
+  </div>
+</nav>
+  
+<!-- Modal -->
+<div class="modal modal-center modal-small modal-xs-full fade" id="donateModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content donate">
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      <div class="modal-body">
+        <div class="donate-box">
+          <div class="donate-head">
+            <p>感谢您的支持，我会继续努力的!</p>
+          </div>
+          <div class="tab-content">
+            <div role="tabpanel" class="tab-pane fade active in" id="alipay">
+              <div class="donate-payimg">
+                <img src="/images/donate/alipayimg.png" alt="扫码支持" title="扫一扫" />
+              </div>
+              <p class="text-muted mv">扫码打赏，你说多少就多少</p>
+              <p class="text-grey">打开支付宝扫一扫，即可进行扫码打赏哦</p>
+            </div>
+            <div role="tabpanel" class="tab-pane fade" id="wechatpay">
+              <div class="donate-payimg">
+                <img src="/images/donate/wechatpayimg.png" alt="扫码支持" title="扫一扫" />
+              </div>
+              <p class="text-muted mv">扫码打赏，你说多少就多少</p>
+              <p class="text-grey">打开微信扫一扫，即可进行扫码打赏哦</p>
+            </div>
+          </div>
+          <div class="donate-footer">
+            <ul class="nav nav-tabs nav-justified" role="tablist">
+              <li role="presentation" class="active">
+                <a href="#alipay" id="alipay-tab" role="tab" data-toggle="tab" aria-controls="alipay" aria-expanded="true"><i class="icon icon-alipay"></i> 支付宝</a>
+              </li>
+              <li role="presentation" class="">
+                <a href="#wechatpay" role="tab" id="wechatpay-tab" data-toggle="tab" aria-controls="wechatpay" aria-expanded="false"><i class="icon icon-wepay"></i> 微信支付</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+</main>
+
+  <footer class="footer" itemscope itemtype="http://schema.org/WPFooter">
+	
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/marblemm" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="https://gitee.com/marblemm" target="_blank" title="Gitee" data-toggle=tooltip data-placement=top><i class="icon icon-gitee"></i></a></li>
+        
+    </ul>
+
+    <div class="copyright">
+    	
+        <div class="publishby">
+        	Theme by <a href="https://github.com/cofess" target="_blank"> cofess </a>base on <a href="https://github.com/cofess/hexo-theme-pure" target="_blank">pure</a>.
+        </div>
+    </div>
+</footer>
+  <script src="//cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+<script>
+window.jQuery || document.write('<script src="js/jquery.min.js"><\/script>')
+</script>
+
+<script src="/js/plugin.min.js"></script>
+
+
+<script src="/js/application.js"></script>
+
+
+    <script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+
+
+
+
+
+   
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+   
+    
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/valine"></script>
+  <script type="text/javascript">
+  var GUEST = ['nick', 'mail', 'link'];
+  var meta = 'nick,mail,link';
+  meta = meta.split(',').filter(function(item) {
+    return GUEST.indexOf(item) > -1;
+  });
+  new Valine({
+    el: '#vcomments',
+    verify: false,
+    notify: false,
+    appId: 'vsxVYXKPSCaf1SOO9F2DEyXU-gzGzoHsz',
+    appKey: '1djOltTjcB8Ap3RrgA6zX8HF',
+    placeholder: 'Just go go',
+    avatar: 'mm',
+    meta: meta,
+    pageSize: '10' || 10,
+    visitor: false
+  });
+  </script>
+
+     
+
+
+
+
+
+
+
+</body>
+</html>

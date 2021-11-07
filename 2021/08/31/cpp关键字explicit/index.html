@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="Cache-Control" content="no-transform" />
+  <meta http-equiv="Cache-Control" content="no-siteapp" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="format-detection" content="telephone=no,email=no,adress=no">
+  <!-- Color theme for statusbar -->
+  <meta name="theme-color" content="#000000" />
+  <!-- 强制页面在当前窗口以独立页面显示,防止别人在框架里调用页面 -->
+  <meta http-equiv="window-target" content="_top" />
+  
+  
+  <title>cpp关键字explicit | marble</title>
+  <meta name="description" content="首先, C++中的explicit关键字只能用于修饰只有一个参数的类构造函数, 它的作用是表明该构造函数是显示的, 而非隐式的, 跟它相对应的另一个关键字是implicit, 意思是隐藏的,类构造函数默认情况下即声明为implicit(隐式). 那么显示声明的构造函数和隐式声明的有什么区别呢? 我们来看下面的例子: 12345678910111213141516171819202122232425">
+<meta property="og:type" content="article">
+<meta property="og:title" content="cpp关键字explicit">
+<meta property="og:url" content="https://marblemm.github.io/2021/08/31/cpp%E5%85%B3%E9%94%AE%E5%AD%97explicit/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="首先, C++中的explicit关键字只能用于修饰只有一个参数的类构造函数, 它的作用是表明该构造函数是显示的, 而非隐式的, 跟它相对应的另一个关键字是implicit, 意思是隐藏的,类构造函数默认情况下即声明为implicit(隐式). 那么显示声明的构造函数和隐式声明的有什么区别呢? 我们来看下面的例子: 12345678910111213141516171819202122232425">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-08-31T14:48:32.000Z">
+<meta property="article:modified_time" content="2021-08-31T15:37:11.253Z">
+<meta property="article:author" content="John Doe">
+<meta name="twitter:card" content="summary">
+  <!-- Canonical links -->
+  <link rel="canonical" href="https://marblemm.github.io/2021/08/31/cpp%E5%85%B3%E9%94%AE%E5%AD%97explicit/index.html">
+  
+    <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png" type="image/x-icon">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+  
+  
+  
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body class="main-center theme-green" itemscope itemtype="http://schema.org/WebPage">
+  <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+  <div class="slimContent">
+    <div class="navbar-header">
+      
+      
+      <div class="profile-block text-center">
+        <a id="avatar" href="https://github.com/marblemm" target="_blank">
+          <img class="img-circle img-rotate" src="/images/avatar.jpg" width="200" height="200">
+        </a>
+        <h2 id="name" class="hidden-xs hidden-sm">marble</h2>
+        <h3 id="title" class="hidden-xs hidden-sm hidden-md">software Developer</h3>
+        <small id="location" class="text-muted hidden-xs hidden-sm"><i class="icon icon-map-marker"></i> wuhan, China</small>
+      </div>
+      
+      <div class="search" id="search-form-wrap">
+
+    <form class="search-form sidebar-form">
+        <div class="input-group">
+            <input type="text" class="search-form-input form-control" placeholder="搜索" />
+            <span class="input-group-btn">
+                <button type="submit" class="search-form-submit btn btn-flat" onclick="return false;"><i class="icon icon-search"></i></button>
+            </span>
+        </div>
+    </form>
+    <div class="ins-search">
+  <div class="ins-search-mask"></div>
+  <div class="ins-search-container">
+    <div class="ins-input-wrapper">
+      <input type="text" class="ins-search-input" placeholder="想要查找什么..." x-webkit-speech />
+      <button type="button" class="close ins-close ins-selectable" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+    </div>
+    <div class="ins-section-wrapper">
+      <div class="ins-section-container"></div>
+    </div>
+  </div>
+</div>
+
+
+</div>
+      <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <nav id="main-navbar" class="collapse navbar-collapse" itemscope itemtype="http://schema.org/SiteNavigationElement" role="navigation">
+      <ul class="nav navbar-nav main-nav ">
+        
+        
+        <li class="menu-item menu-item-home">
+          <a href="/.">
+            
+            <i class="icon icon-home-fill"></i>
+            
+            <span class="menu-title">首页</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives">
+            
+            <i class="icon icon-archives-fill"></i>
+            
+            <span class="menu-title">归档</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories">
+            
+            <i class="icon icon-folder"></i>
+            
+            <span class="menu-title">分类</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-links">
+          <a href="/links">
+            
+            <i class="icon icon-friendship"></i>
+            
+            <span class="menu-title">友链</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-pano">
+          <a href="/pano">
+            
+            <i class="icon icon-friendship"></i>
+            
+            <span class="menu-title">全景</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-pointcloud">
+          <a href="/pointcloud">
+            
+            <i class="icon icon-friendship"></i>
+            
+            <span class="menu-title">点云</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-game">
+          <a href="/2048">
+            
+            <i class="icon icon-friendship"></i>
+            
+            <span class="menu-title">游戏</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about">
+            
+            <i class="icon icon-cup-fill"></i>
+            
+            <span class="menu-title">关于</span>
+          </a>
+        </li>
+        
+      </ul>
+      
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/marblemm" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="https://gitee.com/marblemm" target="_blank" title="Gitee" data-toggle=tooltip data-placement=top><i class="icon icon-gitee"></i></a></li>
+        
+    </ul>
+
+    </nav>
+  </div>
+</header>
+
+  
+    <aside class="sidebar" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    
+      <div class="widget">
+    <h3 class="widget-title">公告</h3>
+    <div class="widget-body">
+        <div id="board">
+            <div class="content">
+                <p>欢迎交流与分享经验!</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">分类</h3>
+    <div class="widget-body">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/c/">c++</a><span class="category-list-count">11</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/c-%E9%9D%A2%E8%AF%95/">c++面试</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/cmake/">cmake</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/com/">com</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/git/">git</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/tool/">tool</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E4%B9%A6%E7%B1%8D/">书籍</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%A4%9A%E7%BA%BF%E7%A8%8B/">多线程</a><span class="category-list-count">5</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget-body">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/cmake/" rel="tag">cmake</a><span class="tag-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget-body tagcloud">
+      <a href="/tags/cmake/" style="font-size: 13px;">cmake</a>
+    </div>
+  </div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget-body">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/11/">十一月 2021</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/10/">十月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/09/">九月 2021</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/08/">八月 2021</a><span class="archive-list-count">23</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget-body">
+      <ul class="recent-post-list list-unstyled no-thumbnail">
+        
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/com/">com</a>
+              </p>
+              <p class="item-title">
+                <a href="/2021/11/06/com-com%E5%85%A5%E9%97%A82/" class="title">com-com入门2</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2021-11-06T07:42:43.000Z" itemprop="datePublished">2021-11-06</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/com/">com</a>
+              </p>
+              <p class="item-title">
+                <a href="/2021/11/05/com-com%E5%85%A5%E9%97%A81/" class="title">com-com入门1</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2021-11-05T15:57:06.000Z" itemprop="datePublished">2021-11-05</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/com/">com</a>
+              </p>
+              <p class="item-title">
+                <a href="/2021/10/27/com-%E4%B8%BA%E4%BB%80%E4%B9%88%E9%9C%80%E8%A6%81com/" class="title">com-为什么需要com</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2021-10-27T15:51:52.000Z" itemprop="datePublished">2021-10-27</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/cmake/">cmake</a>
+              </p>
+              <p class="item-title">
+                <a href="/2021/09/11/CMake%E6%95%99%E7%A8%8B/" class="title">CMake教程</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2021-09-11T06:40:23.000Z" itemprop="datePublished">2021-09-11</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/tool/">tool</a>
+              </p>
+              <p class="item-title">
+                <a href="/2021/09/07/VS%E4%B8%AD%E5%A4%B4%E6%96%87%E4%BB%B6stdafx-h%E7%9A%84%E4%BD%9C%E7%94%A8/" class="title">VS中头文件stdafx.h的作用</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2021-09-07T14:42:45.000Z" itemprop="datePublished">2021-09-07</time>
+              </p>
+            </div>
+          </li>
+          
+      </ul>
+    </div>
+  </div>
+  
+
+    
+  </div>
+</aside>
+
+  
+  
+<aside class="sidebar sidebar-toc collapse" id="collapseToc" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    <nav id="toc" class="article-toc">
+      <h3 class="toc-title">文章目录</h3>
+      
+    </nav>
+  </div>
+</aside>
+
+<main class="main" role="main">
+  <div class="content">
+  <article id="post-cpp关键字explicit" class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
+    
+    <div class="article-header">
+      
+        
+  
+    <h1 class="article-title" itemprop="name">
+      cpp关键字explicit
+    </h1>
+  
+
+      
+      <div class="article-meta">
+        <span class="article-date">
+    <i class="icon icon-calendar-check"></i>
+	<a href="/2021/08/31/cpp%E5%85%B3%E9%94%AE%E5%AD%97explicit/" class="article-date">
+	  <time datetime="2021-08-31T14:48:32.000Z" itemprop="datePublished">2021-08-31</time>
+	</a>
+</span>
+        
+  <span class="article-category">
+    <i class="icon icon-folder"></i>
+    <a class="article-category-link" href="/categories/c/">c++</a>
+  </span>
+
+        
+
+        
+	<span class="article-read hidden-xs">
+	    <i class="icon icon-eye-fill" aria-hidden="true"></i>
+	    <span id="busuanzi_container_page_pv">
+			<span id="busuanzi_value_page_pv">0</span>
+		</span>
+	</span>
+
+
+        <span class="post-comment"><i class="icon icon-comment"></i> <a href="/2021/08/31/cpp%E5%85%B3%E9%94%AE%E5%AD%97explicit/#comments" class="article-comment-link">评论</a></span>
+        
+	
+		<span class="post-wordcount hidden-xs" itemprop="wordCount">字数统计: 1.6k(字)</span>
+	
+	
+		<span class="post-readcount hidden-xs" itemprop="timeRequired">阅读时长: 6(分)</span>
+	
+
+      </div>
+    </div>
+    <div class="article-entry marked-body" itemprop="articleBody">
+      
+        <p>首先, C++中的explicit关键字只能用于修饰只有一个参数的类构造函数, 它的作用是表明该构造函数是显示的, 而非隐式的, 跟它相对应的另一个关键字是implicit, 意思是隐藏的,类构造函数默认情况下即声明为implicit(隐式).</p>
+<p>那么显示声明的构造函数和隐式声明的有什么区别呢? 我们来看下面的例子:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line">class CxString  // 没有使用explicit关键字的类声明, 即默认为隐式声明  </span><br><span class="line">&#123;  </span><br><span class="line">public:  </span><br><span class="line">    char *_pstr;  </span><br><span class="line">    int _size;  </span><br><span class="line">    CxString(int size)  </span><br><span class="line">    &#123;  </span><br><span class="line">        _size = size;                // string的预设大小  </span><br><span class="line">        _pstr = malloc(size + 1);    // 分配string的内存  </span><br><span class="line">        memset(_pstr, 0, size + 1);  </span><br><span class="line">    &#125;  </span><br><span class="line">    CxString(const char *p)  </span><br><span class="line">    &#123;  </span><br><span class="line">        int size = strlen(p);  </span><br><span class="line">        _pstr = malloc(size + 1);    // 分配string的内存  </span><br><span class="line">        strcpy(_pstr, p);            // 复制字符串  </span><br><span class="line">        _size = strlen(_pstr);  </span><br><span class="line">    &#125;  </span><br><span class="line">    // 析构函数这里不讨论, 省略...  </span><br><span class="line">&#125;;  </span><br><span class="line">  </span><br><span class="line">    // 下面是调用:  </span><br><span class="line">  </span><br><span class="line">    CxString string1(24);     // 这样是OK的, 为CxString预分配24字节的大小的内存  </span><br><span class="line">    CxString string2 = 10;    // 这样是OK的, 为CxString预分配10字节的大小的内存  </span><br><span class="line">    CxString string3;         // 这样是不行的, 因为没有默认构造函数, 错误为: “CxString”: 没有合适的默认构造函数可用  </span><br><span class="line">    CxString string4(&quot;aaaa&quot;); // 这样是OK的  </span><br><span class="line">    CxString string5 = &quot;bbb&quot;; // 这样也是OK的, 调用的是CxString(const char *p)  </span><br><span class="line">    CxString string6 = &#x27;c&#x27;;   // 这样也是OK的, 其实调用的是CxString(int size), 且size等于&#x27;c&#x27;的ascii码  </span><br><span class="line">    string1 = 2;              // 这样也是OK的, 为CxString预分配2字节的大小的内存  </span><br><span class="line">    string2 = 3;              // 这样也是OK的, 为CxString预分配3字节的大小的内存  </span><br><span class="line">    string3 = string1;        // 这样也是OK的, 至少编译是没问题的, 但是如果析构函数里用free释放_pstr内存指针的时候可能会报错, 完整的代码必须重载运算符&quot;=&quot;, 并在其中处理内存释放</span><br></pre></td></tr></table></figure>
+<p>上面的代码中, “CxString string2 = 10;” 这句为什么是可以的呢? 在C++中, 如果的构造函数只有一个参数时, 那么在编译的时候就会有一个缺省的转换操作:将该构造函数对应数据类型的数据转换为该类对象. 也就是说 “CxString string2 = 10;” 这段代码, 编译器自动将整型转换为CxString类对象, 实际上等同于下面的操作:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">CxString string2(10);  </span><br><span class="line">或  </span><br><span class="line">CxString temp(10);  </span><br><span class="line">CxString string2 = temp;  </span><br></pre></td></tr></table></figure>
+<p>但是, 上面的代码中的_size代表的是字符串内存分配的大小, 那么调用的第二句 “CxString string2 = 10;” 和第六句 “CxString string6 = ‘c’;” 就显得不伦不类, 而且容易让人疑惑. 有什么办法阻止这种用法呢? 答案就是使用explicit关键字. 我们把上面的代码修改一下, 如下:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">class CxString  // 使用关键字explicit的类声明, 显示转换  </span><br><span class="line">&#123;  </span><br><span class="line">public:  </span><br><span class="line">    char *_pstr;  </span><br><span class="line">    int _size;  </span><br><span class="line">    explicit CxString(int size)  </span><br><span class="line">    &#123;  </span><br><span class="line">        _size = size;  </span><br><span class="line">        // 代码同上, 省略...  </span><br><span class="line">    &#125;  </span><br><span class="line">    CxString(const char *p)  </span><br><span class="line">    &#123;  </span><br><span class="line">        // 代码同上, 省略...  </span><br><span class="line">    &#125;  </span><br><span class="line">&#125;;  </span><br><span class="line">  </span><br><span class="line">    // 下面是调用:  </span><br><span class="line">  </span><br><span class="line">    CxString string1(24);     // 这样是OK的  </span><br><span class="line">    CxString string2 = 10;    // 这样是不行的, 因为explicit关键字取消了隐式转换  </span><br><span class="line">    CxString string3;         // 这样是不行的, 因为没有默认构造函数  </span><br><span class="line">    CxString string4(&quot;aaaa&quot;); // 这样是OK的  </span><br><span class="line">    CxString string5 = &quot;bbb&quot;; // 这样也是OK的, 调用的是CxString(const char *p)  </span><br><span class="line">    CxString string6 = &#x27;c&#x27;;   // 这样是不行的, 其实调用的是CxString(int size), 且size等于&#x27;c&#x27;的ascii码, 但explicit关键字取消了隐式转换  </span><br><span class="line">    string1 = 2;              // 这样也是不行的, 因为取消了隐式转换  </span><br><span class="line">    string2 = 3;              // 这样也是不行的, 因为取消了隐式转换  </span><br><span class="line">    string3 = string1;        // 这样也是不行的, 因为取消了隐式转换, 除非类实现操作符&quot;=&quot;的重载</span><br></pre></td></tr></table></figure>
+<p>explicit关键字的作用就是防止类构造函数的隐式自动转换.</p>
+<p>上面也已经说过了, explicit关键字只对有一个参数的类构造函数有效, 如果类构造函数参数大于或等于两个时, 是不会产生隐式转换的, 所以explicit关键字也就无效了. 例如: </p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">class CxString  // explicit关键字在类构造函数参数大于或等于两个时无效  </span><br><span class="line">&#123;  </span><br><span class="line">public:  </span><br><span class="line">    char *_pstr;  </span><br><span class="line">    int _age;  </span><br><span class="line">    int _size;  </span><br><span class="line">    explicit CxString(int age, int size)  </span><br><span class="line">    &#123;  </span><br><span class="line">        _age = age;  </span><br><span class="line">        _size = size;  </span><br><span class="line">        // 代码同上, 省略...  </span><br><span class="line">    &#125;  </span><br><span class="line">    CxString(const char *p)  </span><br><span class="line">    &#123;  </span><br><span class="line">        // 代码同上, 省略...  </span><br><span class="line">    &#125;  </span><br><span class="line">&#125;;  </span><br><span class="line">  </span><br><span class="line">    // 这个时候有没有explicit关键字都是一样的</span><br></pre></td></tr></table></figure>
+<p>但是, 也有一个例外, 就是当除了第一个参数以外的其他参数都有默认值的时候, explicit关键字依然有效, 此时, 当调用构造函数时只传入一个参数, 等效于只有一个参数的类构造函数, 例子如下:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">class CxString  // 使用关键字explicit声明  </span><br><span class="line">&#123;  </span><br><span class="line">public:  </span><br><span class="line">    int _age;  </span><br><span class="line">    int _size;  </span><br><span class="line">    explicit CxString(int age, int size = 0)  </span><br><span class="line">    &#123;  </span><br><span class="line">        _age = age;  </span><br><span class="line">        _size = size;  </span><br><span class="line">        // 代码同上, 省略...  </span><br><span class="line">    &#125;  </span><br><span class="line">    CxString(const char *p)  </span><br><span class="line">    &#123;  </span><br><span class="line">        // 代码同上, 省略...  </span><br><span class="line">    &#125;  </span><br><span class="line">&#125;;  </span><br><span class="line">  </span><br><span class="line">    // 下面是调用:  </span><br><span class="line">  </span><br><span class="line">    CxString string1(24);     // 这样是OK的  </span><br><span class="line">    CxString string2 = 10;    // 这样是不行的, 因为explicit关键字取消了隐式转换  </span><br><span class="line">    CxString string3;         // 这样是不行的, 因为没有默认构造函数  </span><br><span class="line">    string1 = 2;              // 这样也是不行的, 因为取消了隐式转换  </span><br><span class="line">    string2 = 3;              // 这样也是不行的, 因为取消了隐式转换  </span><br><span class="line">    string3 = string1;        // 这样也是不行的, 因为取消了隐式转换, 除非类实现操作符&quot;=&quot;的重载</span><br></pre></td></tr></table></figure>
+<p>总结：</p>
+<pre><code>explicit关键字只需用于类内的单参数构造函数前面。由于无参数的构造函数和多参数的构造函数总是显示调用，这种情况在构造函数前加explicit无意义。
+
+google的c++规范中提到explicit的优点是可以避免不合时宜的类型变换，缺点无。所以google约定所有单参数的构造函数都必须是显示的，只有极少数情况下拷贝构造函数可以不声明称explicit。例如作为其他类的透明包装器的类。
+
+effective c++中说：被声明为explicit的构造函数通常比其non-explicit兄弟更受欢迎。因为它们禁止编译器执行非预期（往往也不被期望）的类型转换。除非我有一个好理由允许构造函数被用于隐式类型转换，否则我会把它声明为explicit，鼓励大家遵循相同的政策。
+</code></pre>
+<p>参考：</p>
+<p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/rednodel/p/9299251.html">https://www.cnblogs.com/rednodel/p/9299251.html</a></p>
+
+      
+    </div>
+    <div class="article-footer">
+      <blockquote class="mt-2x">
+  <ul class="post-copyright list-unstyled">
+    
+    <li class="post-copyright-link hidden-xs">
+      <strong>本文链接：</strong>
+      <a href="https://marblemm.github.io/2021/08/31/cpp%E5%85%B3%E9%94%AE%E5%AD%97explicit/" title="cpp关键字explicit" target="_blank" rel="external">https://marblemm.github.io/2021/08/31/cpp关键字explicit/</a>
+    </li>
+    
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong> 本博客所有文章除特别声明外，均采用 <a href="http://creativecommons.org/licenses/by/4.0/deed.zh" target="_blank" rel="external">CC BY 4.0 CN协议</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+</blockquote>
+
+
+<div class="panel panel-default panel-badger">
+  <div class="panel-body">
+    <figure class="media">
+      <div class="media-left">
+        <a href="https://github.com/marblemm" target="_blank" class="img-burn thumb-sm visible-lg">
+          <img src="/images/avatar.jpg" class="img-rounded w-full" alt="">
+        </a>
+      </div>
+      <div class="media-body">
+        <h3 class="media-heading"><a href="https://github.com/marblemm" target="_blank"><span class="text-dark">marble</span><small class="ml-1x">software Developer</small></a></h3>
+        <div>个人简介。</div>
+      </div>
+    </figure>
+  </div>
+</div>
+
+
+    </div>
+  </article>
+  
+    
+  <section id="comments">
+  	
+      <div id="vcomments"></div>
+    
+  </section>
+
+
+  
+</div>
+
+  <nav class="bar bar-footer clearfix" data-stick-bottom>
+  <div class="bar-inner">
+  
+  <ul class="pager pull-left">
+    
+    <li class="prev">
+      <a href="/2021/09/02/cpp%E6%99%BA%E8%83%BD%E6%8C%87%E9%92%88%E6%80%BB%E7%BB%93/" title="cpp智能指针总结"><i class="icon icon-angle-left" aria-hidden="true"></i><span>&nbsp;&nbsp;上一篇</span></a>
+    </li>
+    
+    
+    <li class="next">
+      <a href="/2021/08/29/%E5%AD%97%E7%AC%A6%E4%B8%B2BSTR/" title="字符串BSTR"><span>下一篇&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
+    </li>
+    
+    
+    <li class="toggle-toc">
+      <a class="toggle-btn collapsed" data-toggle="collapse" href="#collapseToc" aria-expanded="false" title="文章目录" role="button">
+        <span>[&nbsp;</span><span>文章目录</span>
+        <i class="text-collapsed icon icon-anchor"></i>
+        <i class="text-in icon icon-close"></i>
+        <span>]</span>
+      </a>
+    </li>
+    
+  </ul>
+  
+  
+  <!-- Button trigger modal -->
+  <button type="button" class="btn btn-fancy btn-donate pop-onhover bg-gradient-warning" data-toggle="modal" data-target="#donateModal"><span>赏</span></button>
+  <!-- <div class="wave-icon wave-icon-danger btn-donate" data-toggle="modal" data-target="#donateModal">
+    <div class="wave-circle"><span class="icon"><i class="icon icon-bill"></i></span></div>
+  </div> -->
+  
+  
+  <div class="bar-right">
+    
+    <div class="share-component" data-sites="weibo,qq,wechat" data-mobile-sites="weibo,qq,qzone"></div>
+    
+  </div>
+  </div>
+</nav>
+  
+<!-- Modal -->
+<div class="modal modal-center modal-small modal-xs-full fade" id="donateModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content donate">
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      <div class="modal-body">
+        <div class="donate-box">
+          <div class="donate-head">
+            <p>感谢您的支持，我会继续努力的!</p>
+          </div>
+          <div class="tab-content">
+            <div role="tabpanel" class="tab-pane fade active in" id="alipay">
+              <div class="donate-payimg">
+                <img src="/images/donate/alipayimg.png" alt="扫码支持" title="扫一扫" />
+              </div>
+              <p class="text-muted mv">扫码打赏，你说多少就多少</p>
+              <p class="text-grey">打开支付宝扫一扫，即可进行扫码打赏哦</p>
+            </div>
+            <div role="tabpanel" class="tab-pane fade" id="wechatpay">
+              <div class="donate-payimg">
+                <img src="/images/donate/wechatpayimg.png" alt="扫码支持" title="扫一扫" />
+              </div>
+              <p class="text-muted mv">扫码打赏，你说多少就多少</p>
+              <p class="text-grey">打开微信扫一扫，即可进行扫码打赏哦</p>
+            </div>
+          </div>
+          <div class="donate-footer">
+            <ul class="nav nav-tabs nav-justified" role="tablist">
+              <li role="presentation" class="active">
+                <a href="#alipay" id="alipay-tab" role="tab" data-toggle="tab" aria-controls="alipay" aria-expanded="true"><i class="icon icon-alipay"></i> 支付宝</a>
+              </li>
+              <li role="presentation" class="">
+                <a href="#wechatpay" role="tab" id="wechatpay-tab" data-toggle="tab" aria-controls="wechatpay" aria-expanded="false"><i class="icon icon-wepay"></i> 微信支付</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+</main>
+
+  <footer class="footer" itemscope itemtype="http://schema.org/WPFooter">
+	
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/marblemm" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="https://gitee.com/marblemm" target="_blank" title="Gitee" data-toggle=tooltip data-placement=top><i class="icon icon-gitee"></i></a></li>
+        
+    </ul>
+
+    <div class="copyright">
+    	
+        <div class="publishby">
+        	Theme by <a href="https://github.com/cofess" target="_blank"> cofess </a>base on <a href="https://github.com/cofess/hexo-theme-pure" target="_blank">pure</a>.
+        </div>
+    </div>
+</footer>
+  <script src="//cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+<script>
+window.jQuery || document.write('<script src="js/jquery.min.js"><\/script>')
+</script>
+
+<script src="/js/plugin.min.js"></script>
+
+
+<script src="/js/application.js"></script>
+
+
+    <script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+
+
+
+
+
+   
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+   
+    
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/valine"></script>
+  <script type="text/javascript">
+  var GUEST = ['nick', 'mail', 'link'];
+  var meta = 'nick,mail,link';
+  meta = meta.split(',').filter(function(item) {
+    return GUEST.indexOf(item) > -1;
+  });
+  new Valine({
+    el: '#vcomments',
+    verify: false,
+    notify: false,
+    appId: 'vsxVYXKPSCaf1SOO9F2DEyXU-gzGzoHsz',
+    appKey: '1djOltTjcB8Ap3RrgA6zX8HF',
+    placeholder: 'Just go go',
+    avatar: 'mm',
+    meta: meta,
+    pageSize: '10' || 10,
+    visitor: false
+  });
+  </script>
+
+     
+
+
+
+
+
+
+
+</body>
+</html>

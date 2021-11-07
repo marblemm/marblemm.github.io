@@ -1,0 +1,948 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="Cache-Control" content="no-transform" />
+  <meta http-equiv="Cache-Control" content="no-siteapp" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="format-detection" content="telephone=no,email=no,adress=no">
+  <!-- Color theme for statusbar -->
+  <meta name="theme-color" content="#000000" />
+  <!-- 强制页面在当前窗口以独立页面显示,防止别人在框架里调用页面 -->
+  <meta http-equiv="window-target" content="_top" />
+  
+  
+  <title>CMake教程 | marble</title>
+  <meta name="description" content="cmake官网：www.cmake.org 优点： 1、开源代码，使用类BSD许可发布。 2、跨平台，并可以生成native编译配置文件，在linux&#x2F;Unix平台，生成makefile,在苹果平台可以生成Xcode,在windows平台，可以生成MSVC的工程文件。 3、能够管理大型项目。 4、简化编译构建过程和编译过程。cmake的工具链：cmake+make。 5、高效率，因为cmake在工">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CMake教程">
+<meta property="og:url" content="https://marblemm.github.io/2021/09/11/CMake%E6%95%99%E7%A8%8B/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="cmake官网：www.cmake.org 优点： 1、开源代码，使用类BSD许可发布。 2、跨平台，并可以生成native编译配置文件，在linux&#x2F;Unix平台，生成makefile,在苹果平台可以生成Xcode,在windows平台，可以生成MSVC的工程文件。 3、能够管理大型项目。 4、简化编译构建过程和编译过程。cmake的工具链：cmake+make。 5、高效率，因为cmake在工">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-09-11T06:40:23.000Z">
+<meta property="article:modified_time" content="2021-09-11T07:13:40.717Z">
+<meta property="article:author" content="John Doe">
+<meta property="article:tag" content="cmake">
+<meta name="twitter:card" content="summary">
+  <!-- Canonical links -->
+  <link rel="canonical" href="https://marblemm.github.io/2021/09/11/CMake%E6%95%99%E7%A8%8B/index.html">
+  
+    <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png" type="image/x-icon">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+  
+  
+  
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body class="main-center theme-green" itemscope itemtype="http://schema.org/WebPage">
+  <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+  <div class="slimContent">
+    <div class="navbar-header">
+      
+      
+      <div class="profile-block text-center">
+        <a id="avatar" href="https://github.com/marblemm" target="_blank">
+          <img class="img-circle img-rotate" src="/images/avatar.jpg" width="200" height="200">
+        </a>
+        <h2 id="name" class="hidden-xs hidden-sm">marble</h2>
+        <h3 id="title" class="hidden-xs hidden-sm hidden-md">software Developer</h3>
+        <small id="location" class="text-muted hidden-xs hidden-sm"><i class="icon icon-map-marker"></i> wuhan, China</small>
+      </div>
+      
+      <div class="search" id="search-form-wrap">
+
+    <form class="search-form sidebar-form">
+        <div class="input-group">
+            <input type="text" class="search-form-input form-control" placeholder="搜索" />
+            <span class="input-group-btn">
+                <button type="submit" class="search-form-submit btn btn-flat" onclick="return false;"><i class="icon icon-search"></i></button>
+            </span>
+        </div>
+    </form>
+    <div class="ins-search">
+  <div class="ins-search-mask"></div>
+  <div class="ins-search-container">
+    <div class="ins-input-wrapper">
+      <input type="text" class="ins-search-input" placeholder="想要查找什么..." x-webkit-speech />
+      <button type="button" class="close ins-close ins-selectable" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+    </div>
+    <div class="ins-section-wrapper">
+      <div class="ins-section-container"></div>
+    </div>
+  </div>
+</div>
+
+
+</div>
+      <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <nav id="main-navbar" class="collapse navbar-collapse" itemscope itemtype="http://schema.org/SiteNavigationElement" role="navigation">
+      <ul class="nav navbar-nav main-nav ">
+        
+        
+        <li class="menu-item menu-item-home">
+          <a href="/.">
+            
+            <i class="icon icon-home-fill"></i>
+            
+            <span class="menu-title">首页</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives">
+            
+            <i class="icon icon-archives-fill"></i>
+            
+            <span class="menu-title">归档</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories">
+            
+            <i class="icon icon-folder"></i>
+            
+            <span class="menu-title">分类</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-links">
+          <a href="/links">
+            
+            <i class="icon icon-friendship"></i>
+            
+            <span class="menu-title">友链</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-pano">
+          <a href="/pano">
+            
+            <i class="icon icon-friendship"></i>
+            
+            <span class="menu-title">全景</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-pointcloud">
+          <a href="/pointcloud">
+            
+            <i class="icon icon-friendship"></i>
+            
+            <span class="menu-title">点云</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-game">
+          <a href="/2048">
+            
+            <i class="icon icon-friendship"></i>
+            
+            <span class="menu-title">游戏</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about">
+            
+            <i class="icon icon-cup-fill"></i>
+            
+            <span class="menu-title">关于</span>
+          </a>
+        </li>
+        
+      </ul>
+      
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/marblemm" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="https://gitee.com/marblemm" target="_blank" title="Gitee" data-toggle=tooltip data-placement=top><i class="icon icon-gitee"></i></a></li>
+        
+    </ul>
+
+    </nav>
+  </div>
+</header>
+
+  
+    <aside class="sidebar" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    
+      <div class="widget">
+    <h3 class="widget-title">公告</h3>
+    <div class="widget-body">
+        <div id="board">
+            <div class="content">
+                <p>欢迎交流与分享经验!</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">分类</h3>
+    <div class="widget-body">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/c/">c++</a><span class="category-list-count">11</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/c-%E9%9D%A2%E8%AF%95/">c++面试</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/cmake/">cmake</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/com/">com</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/git/">git</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/tool/">tool</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E4%B9%A6%E7%B1%8D/">书籍</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%A4%9A%E7%BA%BF%E7%A8%8B/">多线程</a><span class="category-list-count">5</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget-body">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/cmake/" rel="tag">cmake</a><span class="tag-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget-body tagcloud">
+      <a href="/tags/cmake/" style="font-size: 13px;">cmake</a>
+    </div>
+  </div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget-body">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/11/">十一月 2021</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/10/">十月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/09/">九月 2021</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/08/">八月 2021</a><span class="archive-list-count">23</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget-body">
+      <ul class="recent-post-list list-unstyled no-thumbnail">
+        
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/com/">com</a>
+              </p>
+              <p class="item-title">
+                <a href="/2021/11/06/com-com%E5%85%A5%E9%97%A82/" class="title">com-com入门2</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2021-11-06T07:42:43.000Z" itemprop="datePublished">2021-11-06</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/com/">com</a>
+              </p>
+              <p class="item-title">
+                <a href="/2021/11/05/com-com%E5%85%A5%E9%97%A81/" class="title">com-com入门1</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2021-11-05T15:57:06.000Z" itemprop="datePublished">2021-11-05</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/com/">com</a>
+              </p>
+              <p class="item-title">
+                <a href="/2021/10/27/com-%E4%B8%BA%E4%BB%80%E4%B9%88%E9%9C%80%E8%A6%81com/" class="title">com-为什么需要com</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2021-10-27T15:51:52.000Z" itemprop="datePublished">2021-10-27</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/cmake/">cmake</a>
+              </p>
+              <p class="item-title">
+                <a href="/2021/09/11/CMake%E6%95%99%E7%A8%8B/" class="title">CMake教程</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2021-09-11T06:40:23.000Z" itemprop="datePublished">2021-09-11</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/tool/">tool</a>
+              </p>
+              <p class="item-title">
+                <a href="/2021/09/07/VS%E4%B8%AD%E5%A4%B4%E6%96%87%E4%BB%B6stdafx-h%E7%9A%84%E4%BD%9C%E7%94%A8/" class="title">VS中头文件stdafx.h的作用</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2021-09-07T14:42:45.000Z" itemprop="datePublished">2021-09-07</time>
+              </p>
+            </div>
+          </li>
+          
+      </ul>
+    </div>
+  </div>
+  
+
+    
+  </div>
+</aside>
+
+  
+  
+<aside class="sidebar sidebar-toc collapse" id="collapseToc" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    <nav id="toc" class="article-toc">
+      <h3 class="toc-title">文章目录</h3>
+      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#cmake"><span class="toc-number">1.</span> <span class="toc-text">cmake</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-1-%E6%8C%87%E5%AE%9Acmake%E7%9A%84%E6%9C%80%E5%B0%8F%E7%89%88%E6%9C%AC"><span class="toc-number">1.1.</span> <span class="toc-text">1.1 指定cmake的最小版本</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-2-%E5%AE%9A%E4%B9%89%E5%B7%A5%E7%A8%8B%E5%90%8D%E7%A7%B0"><span class="toc-number">1.2.</span> <span class="toc-text">1.2 定义工程名称</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-3-%E6%98%BE%E7%A4%BA%E5%AE%9A%E4%B9%89%E5%8F%98%E9%87%8F"><span class="toc-number">1.3.</span> <span class="toc-text">1.3 显示定义变量</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-4-%E8%AE%BE%E7%BD%AE%E7%BC%96%E8%AF%91%E7%B1%BB%E5%9E%8B"><span class="toc-number">1.4.</span> <span class="toc-text">1.4 设置编译类型</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-5-%E6%8C%87%E5%AE%9A%E9%9D%99%E6%80%81%E5%BA%93%E6%88%96%E8%80%85%E5%8A%A8%E6%80%81%E5%BA%93%E7%BC%96%E8%AF%91%E8%BE%93%E5%87%BA%E7%9B%AE%E5%BD%95"><span class="toc-number">1.5.</span> <span class="toc-text">1.5 指定静态库或者动态库编译输出目录</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-6-%E6%8C%87%E5%AE%9A%E5%8F%AF%E6%89%A7%E8%A1%8C%E7%A8%8B%E5%BA%8F%E7%BC%96%E8%AF%91%E8%BE%93%E5%87%BA%E7%9B%AE%E5%BD%95"><span class="toc-number">1.6.</span> <span class="toc-text">1.6 指定可执行程序编译输出目录</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-7-%E8%AE%BE%E7%BD%AE%E9%93%BE%E6%8E%A5%E5%BA%93%E6%90%9C%E7%B4%A2%E7%9B%AE%E5%BD%95"><span class="toc-number">1.7.</span> <span class="toc-text">1.7 设置链接库搜索目录</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-8-%E8%AE%BE%E7%BD%AE%E5%8C%85%E5%90%AB%E7%9B%AE%E5%BD%95"><span class="toc-number">1.8.</span> <span class="toc-text">1.8 设置包含目录</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-9-%E8%AE%BE%E7%BD%AE%E5%AE%8F%E5%AE%9A%E4%B9%89"><span class="toc-number">1.9.</span> <span class="toc-text">1.9 设置宏定义</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-10-%E9%93%BE%E6%8E%A5%E9%9D%99%E6%80%81%E5%BA%93"><span class="toc-number">1.10.</span> <span class="toc-text">1.10 链接静态库</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-11-%E9%93%BE%E6%8E%A5%E5%8A%A8%E6%80%81%E5%BA%93"><span class="toc-number">1.11.</span> <span class="toc-text">1.11 链接动态库</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-12-link-libraries-%E5%92%8C-target-link-libraries-%E5%8C%BA%E5%88%AB"><span class="toc-number">1.12.</span> <span class="toc-text">1.12 link_libraries 和 target_link_libraries 区别</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-13-file%E8%AF%AD%E6%B3%95"><span class="toc-number">1.13.</span> <span class="toc-text">1.13 file语法</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-13-1-%E5%B0%86%E6%96%87%E4%BB%B6%E5%A4%B9%E6%89%80%E6%9C%89%E7%9A%84%E7%B1%BB%E5%9E%8B%E7%9A%84%E6%96%87%E4%BB%B6%E6%B7%BB%E5%8A%A0%E5%88%B0%E6%96%87%E4%BB%B6%E5%88%97%E8%A1%A8"><span class="toc-number">1.13.1.</span> <span class="toc-text">1.13.1 将文件夹所有的类型的文件添加到文件列表</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-13-2-%E9%80%92%E5%BD%92%E6%90%9C%E7%B4%A2%E8%AF%A5%E6%96%87%E4%BB%B6%E5%A4%B9%EF%BC%8C%E5%B0%86%E6%96%87%E4%BB%B6%E5%A4%B9%E4%B8%8B%EF%BC%88%E5%8C%85%E5%90%AB%E5%AD%90%E7%9B%AE%E5%BD%95%EF%BC%89%E7%AC%A6%E5%90%88%E7%B1%BB%E5%9E%8B%E7%9A%84%E6%96%87%E4%BB%B6%E6%B7%BB%E5%8A%A0%E5%88%B0%E6%96%87%E4%BB%B6%E5%88%97%E8%A1%A8"><span class="toc-number">1.13.2.</span> <span class="toc-text">1.13.2 递归搜索该文件夹，将文件夹下（包含子目录）符合类型的文件添加到文件列表</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-14-List%E6%93%8D%E4%BD%9C"><span class="toc-number">1.14.</span> <span class="toc-text">1.14 List操作</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-14-1-List%E7%A7%BB%E9%99%A4%E6%8C%87%E5%AE%9A%E9%A1%B9"><span class="toc-number">1.14.1.</span> <span class="toc-text">1.14.1 List移除指定项</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-14-2-%E5%B0%86%E4%B8%A4%E4%B8%AAList%E9%93%BE%E6%8E%A5%E8%B5%B7%E6%9D%A5"><span class="toc-number">1.14.2.</span> <span class="toc-text">1.14.2 将两个List链接起来</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-15-%E6%B7%BB%E5%8A%A0%E5%AD%90%E6%96%87%E4%BB%B6%E5%A4%B9"><span class="toc-number">1.15.</span> <span class="toc-text">1.15 添加子文件夹</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-16-message%E8%BE%93%E5%87%BA%E6%B6%88%E6%81%AF%E6%9C%BA%E5%88%B6"><span class="toc-number">1.16.</span> <span class="toc-text">1.16 message输出消息机制</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-17-%E5%AE%89%E8%A3%85"><span class="toc-number">1.17.</span> <span class="toc-text">1.17 安装</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-17-1-%E7%9B%AE%E6%A0%87%E6%96%87%E4%BB%B6%E5%AE%89%E8%A3%85"><span class="toc-number">1.17.1.</span> <span class="toc-text">1.17.1 目标文件安装</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-17-2-%E6%96%87%E4%BB%B6%E5%A4%B9%E5%AE%89%E8%A3%85"><span class="toc-number">1.17.2.</span> <span class="toc-text">1.17.2 文件夹安装</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-18-%E8%AE%BE%E7%BD%AE%E7%BC%96%E8%AF%91%E9%80%89%E9%A1%B9"><span class="toc-number">1.18.</span> <span class="toc-text">1.18 设置编译选项</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-19-%E9%A2%84%E5%AE%9A%E4%B9%89%E5%8F%98%E9%87%8F"><span class="toc-number">1.19.</span> <span class="toc-text">1.19 预定义变量</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-19-1-%E5%9F%BA%E6%9C%AC%E5%8F%98%E9%87%8F"><span class="toc-number">1.19.1.</span> <span class="toc-text">1.19.1 基本变量</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-19-2-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%8F%98%E9%87%8F"><span class="toc-number">1.19.2.</span> <span class="toc-text">1.19.2 操作系统变量</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-19-3-%E5%BC%80%E5%85%B3%E9%80%89%E9%A1%B9"><span class="toc-number">1.19.3.</span> <span class="toc-text">1.19.3 开关选项</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-19-4-%E7%8E%AF%E5%A2%83%E5%8F%98%E9%87%8F"><span class="toc-number">1.19.4.</span> <span class="toc-text">1.19.4 环境变量</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-19-5-CMAKE-INCLUDE-CURRENT-DIR"><span class="toc-number">1.19.5.</span> <span class="toc-text">1.19.5 CMAKE_INCLUDE_CURRENT_DIR</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-20-%E6%9D%A1%E4%BB%B6%E5%88%A4%E6%96%AD"><span class="toc-number">1.20.</span> <span class="toc-text">1.20 条件判断</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-20-1-%E9%80%BB%E8%BE%91%E5%88%A4%E6%96%AD%E5%92%8C%E6%AF%94%E8%BE%83"><span class="toc-number">1.20.1.</span> <span class="toc-text">1.20.1 逻辑判断和比较</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-20-2-%E6%95%B0%E5%AD%97%E6%AF%94%E8%BE%83"><span class="toc-number">1.20.2.</span> <span class="toc-text">1.20.2 数字比较</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-20-3-%E5%AD%97%E6%AF%8D%E8%A1%A8%E9%A1%BA%E5%BA%8F%E6%AF%94%E8%BE%83"><span class="toc-number">1.20.3.</span> <span class="toc-text">1.20.3 字母表顺序比较</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-21-%E5%BE%AA%E7%8E%AF"><span class="toc-number">1.21.</span> <span class="toc-text">1.21 循环</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-21-1-foreach"><span class="toc-number">1.21.1.</span> <span class="toc-text">1.21.1 foreach</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-21-2-while"><span class="toc-number">1.21.2.</span> <span class="toc-text">1.21.2 while</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-22-%E8%87%AA%E5%8A%A8%E6%A3%80%E6%B5%8B%E7%BC%96%E8%AF%91%E5%99%A8%E6%98%AF%E5%90%A6%E6%94%AF%E6%8C%81C-11"><span class="toc-number">1.22.</span> <span class="toc-text">1.22 自动检测编译器是否支持C++11</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-23-CMake%E7%94%9F%E6%88%90VS%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88%E5%B0%86%E9%A1%B9%E7%9B%AE%E6%94%BE%E7%BD%AE%E5%9C%A8%E8%AE%BE%E5%AE%9A%E6%96%87%E4%BB%B6%E5%A4%B9%E4%B8%8B"><span class="toc-number">1.23.</span> <span class="toc-text">1.23 CMake生成VS解决方案将项目放置在设定文件夹下</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#cmake%E6%9E%84%E5%BB%BA"><span class="toc-number">1.24.</span> <span class="toc-text">cmake构建</span></a></li></ol></li></ol>
+    </nav>
+  </div>
+</aside>
+
+<main class="main" role="main">
+  <div class="content">
+  <article id="post-CMake教程" class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
+    
+    <div class="article-header">
+      
+        
+  
+    <h1 class="article-title" itemprop="name">
+      CMake教程
+    </h1>
+  
+
+      
+      <div class="article-meta">
+        <span class="article-date">
+    <i class="icon icon-calendar-check"></i>
+	<a href="/2021/09/11/CMake%E6%95%99%E7%A8%8B/" class="article-date">
+	  <time datetime="2021-09-11T06:40:23.000Z" itemprop="datePublished">2021-09-11</time>
+	</a>
+</span>
+        
+  <span class="article-category">
+    <i class="icon icon-folder"></i>
+    <a class="article-category-link" href="/categories/cmake/">cmake</a>
+  </span>
+
+        
+  <span class="article-tag">
+    <i class="icon icon-tags"></i>
+	<a class="article-tag-link-link" href="/tags/cmake/" rel="tag">cmake</a>
+  </span>
+
+
+        
+	<span class="article-read hidden-xs">
+	    <i class="icon icon-eye-fill" aria-hidden="true"></i>
+	    <span id="busuanzi_container_page_pv">
+			<span id="busuanzi_value_page_pv">0</span>
+		</span>
+	</span>
+
+
+        <span class="post-comment"><i class="icon icon-comment"></i> <a href="/2021/09/11/CMake%E6%95%99%E7%A8%8B/#comments" class="article-comment-link">评论</a></span>
+        
+	
+		<span class="post-wordcount hidden-xs" itemprop="wordCount">字数统计: 3.2k(字)</span>
+	
+	
+		<span class="post-readcount hidden-xs" itemprop="timeRequired">阅读时长: 13(分)</span>
+	
+
+      </div>
+    </div>
+    <div class="article-entry marked-body" itemprop="articleBody">
+      
+        <h1 id="cmake"><a href="#cmake" class="headerlink" title="cmake"></a>cmake</h1><p>官网：<a target="_blank" rel="noopener" href="http://www.cmake.org/">www.cmake.org</a></p>
+<p>优点：</p>
+<pre><code>1、开源代码，使用类BSD许可发布。
+2、跨平台，并可以生成native编译配置文件，在linux/Unix平台，生成makefile,在苹果平台可以生成Xcode,在windows平台，可以生成MSVC的工程文件。
+3、能够管理大型项目。
+4、简化编译构建过程和编译过程。cmake的工具链：cmake+make。
+5、高效率，因为cmake在工具链中没有libtool。
+6、可扩展，可以为cmake编写特定功能的模块，扩展cmake功能。
+</code></pre>
+<p>缺点：</p>
+<pre><code>1、cmake只是看起来比较简单，使用并不简单；
+2、每个项目使用一个CMakeLists.txt（每个目录一个），使用的是cmake语法。
+3、cmake跟已有体系配合不是特别的理想，比如pkgconfig。
+</code></pre>
+<p>下面是cmake官网教程，共分为12章来讲解<br><a target="_blank" rel="noopener" href="https://cmake.org/cmake/help/latest/guide/tutorial/index.html">https://cmake.org/cmake/help/latest/guide/tutorial/index.html</a></p>
+<p>对应的代码在github地址<br><a target="_blank" rel="noopener" href="https://github.com/Kitware/CMake/tree/master/Help/guide/tutorial">https://github.com/Kitware/CMake/tree/master/Help/guide/tutorial</a></p>
+<p>接下来主要对cmake的一些常用语法进行总结</p>
+<h2 id="1-1-指定cmake的最小版本"><a href="#1-1-指定cmake的最小版本" class="headerlink" title="1.1 指定cmake的最小版本"></a>1.1 指定cmake的最小版本</h2><pre><code>cmake_minimum_required(version 版本号)
+</code></pre>
+<p>例如：</p>
+<pre><code>cmake_minimum_required(version 2.8)
+</code></pre>
+<h2 id="1-2-定义工程名称"><a href="#1-2-定义工程名称" class="headerlink" title="1.2 定义工程名称"></a>1.2 定义工程名称</h2><p>#定义工程名称 </p>
+<pre><code>project(项目名称)
+</code></pre>
+<p>例如：</p>
+<pre><code>project(MyTest)
+</code></pre>
+<h2 id="1-3-显示定义变量"><a href="#1-3-显示定义变量" class="headerlink" title="1.3 显示定义变量"></a>1.3 显示定义变量</h2><pre><code>set(var [value])
+</code></pre>
+<p>例如：</p>
+<pre><code># 第一种用法，生成代码文件列表
+#先直接设置SRC_LIST的值
+set(SRC_LIST add.h add.cpp)
+#然后再在SRC_LIST中追加main.cpp 
+set(SRC_LIST $&#123;SRC_LIST&#125; main.cpp)
+
+# 第二中用法，设置库生成目录或者可执行文件生成目录
+set( LIBRARY_OUTPUT_PATH $&#123;PROJECT_SOURCE_DIR&#125;/lib/linux) 
+set( EXECUTABLE_OUTPUT_PATH $&#123;PROJECT_SOURCE_DIR&#125;/bin)
+</code></pre>
+<h2 id="1-4-设置编译类型"><a href="#1-4-设置编译类型" class="headerlink" title="1.4 设置编译类型"></a>1.4 设置编译类型</h2><pre><code># 编译静态库
+add_library(库名称 STATIC 代码文件名称) 
+
+# 编译动态库
+add_library(库名称 SHARED 代码文件名称) 
+
+# 编译可执行程序
+add_executable(可执行程序名 代码文件名称)
+</code></pre>
+<p>例如：</p>
+<pre><code># 编译静态库
+add_library(add STATIC add.h add.cpp)
+add_library(add STATIC $&#123;ADD_SRC&#125; $&#123;ADD_HDR&#125;)
+
+# 编译动态库
+add_library(add  SHARED add.h add.cpp) 
+add_library(add SHARED  $&#123;ADD_SRC&#125; $&#123;ADD_HDR&#125;)
+
+# 编译可执行程序
+add_executable(main add.h add.cpp mai.cpp)
+add_executable(main $&#123;MAIN_SRC&#125; $&#123;MAIN_HDR&#125;)
+</code></pre>
+<h2 id="1-5-指定静态库或者动态库编译输出目录"><a href="#1-5-指定静态库或者动态库编译输出目录" class="headerlink" title="1.5 指定静态库或者动态库编译输出目录"></a>1.5 指定静态库或者动态库编译输出目录</h2><p>例如将当前编译的静态库或者动态库输出到当前项目文件夹lib子目录下</p>
+<pre><code>set(LIBRARY_OUTPUT_PATH  $&#123;PROJECT_SOURCE_DIR&#125;/lib)
+</code></pre>
+<h2 id="1-6-指定可执行程序编译输出目录"><a href="#1-6-指定可执行程序编译输出目录" class="headerlink" title="1.6 指定可执行程序编译输出目录"></a>1.6 指定可执行程序编译输出目录</h2><p>例如将当前可执行程序输出到当前项目文件夹的bin子目录下</p>
+<pre><code>#设定可执行二进制文件的目录
+set( EXECUTABLE_OUTPUT_PATH $&#123;PROJECT_SOURCE_DIR&#125;/bin)
+</code></pre>
+<h2 id="1-7-设置链接库搜索目录"><a href="#1-7-设置链接库搜索目录" class="headerlink" title="1.7 设置链接库搜索目录"></a>1.7 设置链接库搜索目录</h2><p>例如将链接库搜索目录设置为当前项目文件夹下lib/linux文件夹</p>
+<pre><code>link_directories( $&#123;PROJECT_SOURCE_DIR&#125;/lib/linux)
+</code></pre>
+<h2 id="1-8-设置包含目录"><a href="#1-8-设置包含目录" class="headerlink" title="1.8 设置包含目录"></a>1.8 设置包含目录</h2><p>例如将包含目录设置为当前项目文件夹下include文件夹</p>
+<pre><code>include_directories($&#123;PROJECT_SOURCE_DIR&#125;/include)
+</code></pre>
+<h2 id="1-9-设置宏定义"><a href="#1-9-设置宏定义" class="headerlink" title="1.9 设置宏定义"></a>1.9 设置宏定义</h2><p>#预定义宏<br>    add_definitions(-D宏名称)<br>例如：</p>
+<pre><code>add_definitions(-DWINDOWS)
+add_definitions(-DLINUX)
+</code></pre>
+<h2 id="1-10-链接静态库"><a href="#1-10-链接静态库" class="headerlink" title="1.10 链接静态库"></a>1.10 链接静态库</h2><pre><code>link_libraries(
+    静态库1
+    静态库2
+    静态库3
+    ...
+)
+</code></pre>
+<p>注意，link_libraries中的静态库为全路径，常与1.7 link_directories 搭配使用，例如：</p>
+<pre><code>lib1.a lib2.a在目录$&#123;PROJECT_SOURCE_DIR&#125;/lib/linux下，则先设置链接目录，再链接相应的库
+
+#设置链接目录
+link_directories( $&#123;PROJECT_SOURCE_DIR&#125;/lib/linux)
+link_libraries(
+        lib1.a
+        lib2.a
+)
+</code></pre>
+<h2 id="1-11-链接动态库"><a href="#1-11-链接动态库" class="headerlink" title="1.11 链接动态库"></a>1.11 链接动态库</h2><p>target_link_libraries(所需生成的文件名称 所需链接的动态库名称)<br>例如</p>
+<pre><code>target_link_libraries(main dl)
+</code></pre>
+<h2 id="1-12-link-libraries-和-target-link-libraries-区别"><a href="#1-12-link-libraries-和-target-link-libraries-区别" class="headerlink" title="1.12 link_libraries 和 target_link_libraries 区别"></a>1.12 link_libraries 和 target_link_libraries 区别</h2><p>在cmake语法中，link_libraries和target_link_libraries是很重要的两个链接库的方式，虽然写法上很相似，但是功能上有很大区别：</p>
+<pre><code>(1) link_libraries用在add_executable之前，target_link_libraries用在add_executable之后
+(2) link_libraries用来链接静态库，target_link_libraries用来链接导入库，即按照header file + .lib + .dll方式隐式调用动态库的.lib库
+</code></pre>
+<h2 id="1-13-file语法"><a href="#1-13-file语法" class="headerlink" title="1.13 file语法"></a>1.13 file语法</h2><h3 id="1-13-1-将文件夹所有的类型的文件添加到文件列表"><a href="#1-13-1-将文件夹所有的类型的文件添加到文件列表" class="headerlink" title="1.13.1 将文件夹所有的类型的文件添加到文件列表"></a>1.13.1 将文件夹所有的类型的文件添加到文件列表</h3><p>例如将当前文件夹下所有.cpp文件的文件名加入到MAIN_SRC中，将当前文件夹下所有.h加入到MAIN_HDR中。</p>
+<pre><code>file(GLOB MAIN_SRC $&#123;CMAKE_CURRENT_SOURCE_DIR&#125;/*.cpp)
+file(GLOB MAIN_HDR $&#123;CMAKE_CURRENT_SOURCE_DIR&#125;/*.h)
+</code></pre>
+<p>例如将当前文件夹子目录src文件夹下所有.cpp文件的文件名加入到MAIN_SRC中，将当前文件夹子目录src文件夹下所有.h加入到MAIN_HDR中。</p>
+<pre><code>file(GLOB MAIN_SRC $&#123;CMAKE_CURRENT_SOURCE_DIR&#125;/src/*.cpp)
+file(GLOB MAIN_HDR $&#123;CMAKE_CURRENT_SOURCE_DIR&#125;/src/*.h)
+</code></pre>
+<h3 id="1-13-2-递归搜索该文件夹，将文件夹下（包含子目录）符合类型的文件添加到文件列表"><a href="#1-13-2-递归搜索该文件夹，将文件夹下（包含子目录）符合类型的文件添加到文件列表" class="headerlink" title="1.13.2 递归搜索该文件夹，将文件夹下（包含子目录）符合类型的文件添加到文件列表"></a>1.13.2 递归搜索该文件夹，将文件夹下（包含子目录）符合类型的文件添加到文件列表</h3><p>例如将当前文件夹下（包括子目录下）所有.cpp文件的文件名加入到MAIN_SRC中，所有.h加入到MAIN_HDR中</p>
+<pre><code>file(GLOB_RECURSE MAIN_SRC $&#123;CMAKE_CURRENT_SOURCE_DIR&#125;/*.cpp)
+file(GLOB_RECURSE MAIN_HDR $&#123;CMAKE_CURRENT_SOURCE_DIR&#125;/*.h)
+</code></pre>
+<h2 id="1-14-List操作"><a href="#1-14-List操作" class="headerlink" title="1.14 List操作"></a>1.14 List操作</h2><p>常见的List操作包括：</p>
+<pre><code>list(LENGTH &lt;list&gt; &lt;output variable&gt;) 
+list(GET &lt;list&gt; &lt;element index&gt; [&lt;element index&gt; ...]
+&lt;output variable&gt;)
+list(APPEND &lt;list&gt; [&lt;element&gt; ...])
+list(FIND &lt;list&gt; &lt;value&gt; &lt;output variable&gt;)
+list(INSERT &lt;list&gt; &lt;element_index&gt; &lt;element&gt; [&lt;element&gt; ...])
+list(REMOVE_ITEM &lt;list&gt; &lt;value&gt; [&lt;value&gt; ...])
+list(REMOVE_AT &lt;list&gt; &lt;index&gt; [&lt;index&gt; ...])
+list(REMOVE_DUPLICATES &lt;list&gt;)
+list(REVERSE &lt;list&gt;)
+list(SORT &lt;list&gt;)
+</code></pre>
+<h3 id="1-14-1-List移除指定项"><a href="#1-14-1-List移除指定项" class="headerlink" title="1.14.1 List移除指定项"></a>1.14.1 List移除指定项</h3><p>例如从MAIN_SRC移除指定项</p>
+<pre><code>list(REMOVE_ITEM MAIN_SRC $&#123;CMAKE_CURRENT_SOURCE_DIR&#125;/add.cpp)
+</code></pre>
+<h3 id="1-14-2-将两个List链接起来"><a href="#1-14-2-将两个List链接起来" class="headerlink" title="1.14.2 将两个List链接起来"></a>1.14.2 将两个List链接起来</h3><pre><code># 搜索当前目录
+file(GLOB  MAIN_SRC $&#123;CMAKE_CURRENT_SOURCE_DIR&#125;/*.cpp)
+file(GLOB  MAIN_HDR $&#123;CMAKE_CURRENT_SOURCE_DIR&#125;/*.h)
+
+# 递归搜索当前目录下src子目录
+file(GLOB_RECURSE MAIN_SRC_ELSE  $&#123;CMAKE_CURRENT_SOURCE_DIR&#125;/src/*.cpp)
+file(GLOB_RECURSE MAIN_HDR_ELSE  $&#123;CMAKE_CURRENT_SOURCE_DIR&#125;/src/*.h)
+
+# 将MAIN_SRC_ELSE中的值添加到MAIN_SRC 
+# 将MAIN_HDR_ELSE中的值添加到MAIN_HDR 
+list(APPEND MAIN_SRC $&#123;MAIN_SRC_ELSE&#125;)
+list(APPEND MAIN_HDR $&#123;MAIN_HDR_ELSE&#125;)
+</code></pre>
+<h2 id="1-15-添加子文件夹"><a href="#1-15-添加子文件夹" class="headerlink" title="1.15 添加子文件夹"></a>1.15 添加子文件夹</h2><p>例如</p>
+<pre><code>add_subdirectory(src)
+该语句会在执行完当前文件夹CMakeLists.txt之后执行src子目录下的CMakeLists.txt
+</code></pre>
+<h2 id="1-16-message输出消息机制"><a href="#1-16-message输出消息机制" class="headerlink" title="1.16 message输出消息机制"></a>1.16 message输出消息机制</h2><p>输出正常：</p>
+<pre><code>message(STATUS &quot;Enter cmake $&#123;CMAKE_CURRENT_LIST_DIR&#125;&quot;)
+输出警告
+
+message(WARNING &quot;Enter cmake $&#123;CMAKE_CURRENT_LIST_DIR&#125;&quot;)
+输出错误：
+
+message(FATAL_ERROR &quot;Enter cmake $&#123;CMAKE_CURRENT_LIST_DIR&#125;&quot;)
+</code></pre>
+<h2 id="1-17-安装"><a href="#1-17-安装" class="headerlink" title="1.17 安装"></a>1.17 安装</h2><p>install 指令用于定义安装规则，安装的内容包括二进制可执行文件、动态库、静态库以及文件、目录、脚本等。</p>
+<h3 id="1-17-1-目标文件安装"><a href="#1-17-1-目标文件安装" class="headerlink" title="1.17.1 目标文件安装"></a>1.17.1 目标文件安装</h3><p>例如：</p>
+<pre><code>install(TARGETS util
+RUNTIME DESTINATION bin
+LIBRARY DESTINATION lib
+ARCHIVE DESTINATION lib)
+</code></pre>
+<p>ARCHIVE指静态库，LIBRARY指动态库，RUNTIME指可执行目标二进制，上述示例的意思是：</p>
+<pre><code>如果目标util是可执行二进制目标，则安装到$&#123;CMAKE_INSTALL_PREFIX&#125;/bin目录 如果目标util是静态库，则安装到安装到$&#123;CMAKE_INSTALL_PREFIX&#125;/lib目录 如果目标util是动态库，则安装到安装到$&#123;CMAKE_INSTALL_PREFIX&#125;/lib目录
+</code></pre>
+<h3 id="1-17-2-文件夹安装"><a href="#1-17-2-文件夹安装" class="headerlink" title="1.17.2 文件夹安装"></a>1.17.2 文件夹安装</h3><pre><code>install(DIRECTORY include/ DESTINATION include/util)
+</code></pre>
+<p>这个语句的意思是将include/目录安装到include/util目录</p>
+<h2 id="1-18-设置编译选项"><a href="#1-18-设置编译选项" class="headerlink" title="1.18 设置编译选项"></a>1.18 设置编译选项</h2><p>设置编译选项可以通过add_compile_options命令，也可以通过set命令修改CMAKE_CXX_FLAGS或CMAKE_C_FLAGS。 </p>
+<p>方式1</p>
+<pre><code>set( CMAKE_CXX_FLAGS &quot;$&#123;CMAKE_CXX_FLAGS&#125; -std=c++11 -march=native -O3 -frtti -fpermissive -fexceptions -pthread&quot;)
+</code></pre>
+<p>方式2</p>
+<pre><code>add_compile_options(-march=native -O3 -fexceptions -pthread -fPIC)
+</code></pre>
+<p>这两种方式的区别在于：</p>
+<pre><code>add_compile_options命令添加的编译选项是针对所有编译器的(包括c和c++编译器)，而set命令设置CMAKE_C_FLAGS或CMAKE_CXX_FLAGS变量则是分别只针对c和c++编译器的。
+</code></pre>
+<h2 id="1-19-预定义变量"><a href="#1-19-预定义变量" class="headerlink" title="1.19 预定义变量"></a>1.19 预定义变量</h2><h3 id="1-19-1-基本变量"><a href="#1-19-1-基本变量" class="headerlink" title="1.19.1 基本变量"></a>1.19.1 基本变量</h3><pre><code>==PROJECT_SOURCE_DIR==-----------------------------------------我们使用cmake命令后紧跟的目录，一般是工程的根目录；
+==PROJECT_BINARY_DIR== ------------------------------------------执行cmake命令的目录,通常是$&#123;PROJECT_SOURCE_DIR&#125;/build；
+==CMAKE_INCLUDE_PATH==-----------------------------------------系统环境变量,非cmake变量；
+==CMAKE_LIBRARY_PATH==------------------------------------------系统环境变量,非cmake变量；
+==CMAKE_CURRENT_SOURCE_DIR==---------------------------当前处理的CMakeLists.txt所在的路径；
+==CMAKE_CURRENT_BINARY_DIR==-----------------------------target编译目录（使用ADD_SURDIRECTORY(src bin)可以更改此变量的值 ，SET(EXECUTABLE_OUTPUT_PATH &lt;新路径&gt;)并不会对此变量有影响,只是改变了最终目标文件的存储路径）；
+==CMAKE_CURRENT_LIST_FILE==--------------------------------输出调用这个变量的CMakeLists.txt的完整路径；
+==CMAKE_CURRENT_LIST_LINE==--------------------------------输出这个变量所在的行；
+==CMAKE_MODULE_PATH==-----------------------------------------定义自己的cmake模块所在的路径（这个变量用于定义自己的cmake模块所在的路径，如果你的工程比较复杂，有可能自己编写一些cmake模块，比如SET(CMAKE_MODULE_PATH $&#123;PROJECT_SOURCE_DIR&#125;/cmake),然后可以用INCLUDE命令来调用自己的模块）；
+==EXECUTABLE_OUTPUT_PATH==------------------------------重新定义目标二进制可执行文件的存放位置；
+==LIBRARY_OUTPUT_PATH==--------------------------------------重新定义目标链接库文件的存放位置；
+==PROJECT_NAME==-------------------------------------------------返回通过PROJECT指令定义的项目名称；
+==CMAKE_ALLOW_LOOSE_LOOP_CONSTRUCTS==—用来控制IF ELSE语句的书写方式；
+</code></pre>
+<h3 id="1-19-2-操作系统变量"><a href="#1-19-2-操作系统变量" class="headerlink" title="1.19.2 操作系统变量"></a>1.19.2 操作系统变量</h3><pre><code>==CMAKE_MAJOR_VERSION==-----------------------------cmake主版本号,如3.4.1中的3；
+==CMAKE_MINOR_VERSION==-----------------------------cmake次版本号,如3.4.1中的4；
+==CMAKE_PATCH_VERSION==-----------------------------cmake补丁等级,如3.4.1中的1；
+==CMAKE_SYSTEM==----------------------------------------操作系统名称，包括版本名，如Linux-2.6.22；
+==CAMKE_SYSTEM_NAME==-------------------------------操作系统名称，不包括版本名，如Linux；
+==CMAKE_SYSTEM_VERSION==--------------------------操作系统版本号,如2.6.22；
+==CMAKE_SYSTEM_PROCESSOR==--------------------电脑处理器名称，如i686；
+==UNIX==--------------------------------------------------------在所有的类UNIX平台为TRUE,包括OS X和cygwin，Linux/Unix操作系统；
+==WIN32==-----------------------------------------------------在所有的win32平台为TRUE,包括cygwin，Windows操作系统；
+==APPLE==----------------------------------------------------苹果操作系统；
+</code></pre>
+<p>例如操作系统判断方式一：</p>
+<pre><code>if(WIN32)
+    message(STATUS “This operating system is Windows.”)
+elseif(UNIX)
+    message(STATUS “This operating system is Linux.”)
+elseif(APPLE)
+    message(STATUS “This operating system is APPLE.”)
+endif(WIN32)
+</code></pre>
+<p>操作系统判断方式二：</p>
+<pre><code>if (CMAKE_SYSTEM_NAME MATCHES &quot;Linux&quot;)
+    message(STATUS &quot;current platform: Linux &quot;)
+elseif (CMAKE_SYSTEM_NAME MATCHES &quot;Windows&quot;)
+    message(STATUS &quot;current platform: Windows&quot;)
+elseif (CMAKE_SYSTEM_NAME MATCHES &quot;FreeBSD&quot;)
+    message(STATUS &quot;current platform: FreeBSD&quot;)
+else ()
+    message(STATUS &quot;other platform: $&#123;CMAKE_SYSTEM_NAME&#125;&quot;)
+endif (CMAKE_SYSTEM_NAME MATCHES &quot;Linux&quot;)
+</code></pre>
+<h3 id="1-19-3-开关选项"><a href="#1-19-3-开关选项" class="headerlink" title="1.19.3 开关选项"></a>1.19.3 开关选项</h3><pre><code>==BUILD_SHARED_LIBS==---------------------------------------------控制默认的库编译方式。如果未进行设置,使用ADD_LIBRARY时又没有指定库类型,默认编译生成的库都是静态库；
+==CMAKE_C_FLAGS==-------------------------------------------------设置C编译选项，也可以通过指令ADD_DEFINITIONS()添加；
+==CMAKE_CXX_FLAGS==----------------------------------------------设置C++编译选项，也可以通过指令ADD_DEFINITIONS()添加；
+==CMAKE_C_COMPILER==--------------------------------------------指定C编译器；
+==CMAKE_CXX_COMPILER==----------------------------------------指定C++编译器；
+==CMAKE_BUILD_TYPE==:：build 类型(Debug, Release, …)-CMAKE_BUILD_TYPE=Debug
+</code></pre>
+<h3 id="1-19-4-环境变量"><a href="#1-19-4-环境变量" class="headerlink" title="1.19.4 环境变量"></a>1.19.4 环境变量</h3><p>设置环境变量：</p>
+<pre><code>set(env&#123;name&#125; value)
+调用环境变量：
+
+$env&#123;name&#125;
+例如
+
+message(STATUS &quot;$env&#123;name&#125;&quot;)
+</code></pre>
+<h3 id="1-19-5-CMAKE-INCLUDE-CURRENT-DIR"><a href="#1-19-5-CMAKE-INCLUDE-CURRENT-DIR" class="headerlink" title="1.19.5 CMAKE_INCLUDE_CURRENT_DIR"></a>1.19.5 CMAKE_INCLUDE_CURRENT_DIR</h3><p>自动添加CMAKE_CURRENT_BINARY_DIR和CMAKE_CURRENT_SOURCE_DIR到当前处理 的CMakeLists.txt。 相当于在每个CMakeLists.txt加入：</p>
+<pre><code>include_directories($&#123;CMAKE_CURRENT_BINARY_DIR&#125; $&#123;CMAKE_CURRENT_SOURCE_DIR&#125;)
+</code></pre>
+<h2 id="1-20-条件判断"><a href="#1-20-条件判断" class="headerlink" title="1.20 条件判断"></a>1.20 条件判断</h2><h3 id="1-20-1-逻辑判断和比较"><a href="#1-20-1-逻辑判断和比较" class="headerlink" title="1.20.1 逻辑判断和比较"></a>1.20.1 逻辑判断和比较</h3><pre><code>==if (expression)==：expression 不为空时为真，false的值包括（0,N,NO,OFF,FALSE,NOTFOUND）；
+==if (not exp)==：与上面相反；
+==if (var1 AND var2)==：如果两个变量都为真时为真；
+==if (var1 OR var2)==：如果两个变量有一个为真时为真；
+==if (COMMAND cmd)==：如果 cmd 确实是命令并可调用为真；
+==if (EXISTS dir) if (EXISTS file)==：如果目录或文件存在为真；
+==if (file1 IS_NEWER_THAN file2)==：当 file1 比 file2 新，或 file1/file2 中有一个不存在时为真，文件名需使用全路径；
+==if (IS_DIRECTORY dir)==：当 dir 是目录时为真；
+==if (DEFINED var)==：如果变量被定义为真；
+==if (var MATCHES regex)==：给定的变量或者字符串能够匹配正则表达式 regex 时为真，此处 var 可以用 var 名，也可以用 $&#123;var&#125;；
+==if (string MATCHES regex)==：给定的字符串能够匹配正则表达式regex时为真。
+</code></pre>
+<h3 id="1-20-2-数字比较"><a href="#1-20-2-数字比较" class="headerlink" title="1.20.2 数字比较"></a>1.20.2 数字比较</h3><pre><code>==if (variable LESS number)==：如果variable小于number时为真；
+==if (string LESS number)==：如果string小于number时为真；
+==if (variable GREATER number)==：如果variable大于number时为真；
+==if (string GREATER number)==：如果string大于number时为真；
+==if (variable EQUAL number)==：如果variable等于number时为真；
+==if (string EQUAL number)==：如果string等于number时为真。
+</code></pre>
+<h3 id="1-20-3-字母表顺序比较"><a href="#1-20-3-字母表顺序比较" class="headerlink" title="1.20.3 字母表顺序比较"></a>1.20.3 字母表顺序比较</h3><pre><code>==if (variable STRLESS string)==
+==if (string STRLESS string)==
+==if (variable STRGREATER string)==
+==if (string STRGREATER string)==
+==if (variable STREQUAL string)==
+==if (string STREQUAL string)==
+</code></pre>
+<h2 id="1-21-循环"><a href="#1-21-循环" class="headerlink" title="1.21 循环"></a>1.21 循环</h2><h3 id="1-21-1-foreach"><a href="#1-21-1-foreach" class="headerlink" title="1.21.1 foreach"></a>1.21.1 foreach</h3><p>start 表示起始数，stop 表示终止数，step 表示步长</p>
+<pre><code>foreach(loop_var RANGE start stop [step])
+    ...
+endforeach(loop_var)
+</code></pre>
+<h3 id="1-21-2-while"><a href="#1-21-2-while" class="headerlink" title="1.21.2 while"></a>1.21.2 while</h3><pre><code>while(condition)
+    ...
+endwhile()
+</code></pre>
+<h2 id="1-22-自动检测编译器是否支持C-11"><a href="#1-22-自动检测编译器是否支持C-11" class="headerlink" title="1.22 自动检测编译器是否支持C++11"></a>1.22 自动检测编译器是否支持C++11</h2><pre><code>include(CheckCXXCompilerFlag)
+CHECK_CXX_COMPILER_FLAG(&quot;-std=c++11&quot; COMPILER_SUPPORTS_CXX11)
+CHECK_CXX_COMPILER_FLAG(&quot;-std=c++0x&quot; COMPILER_SUPPORTS_CXX0X)
+if(COMPILER_SUPPORTS_CXX11)
+    set(CMAKE_CXX_FLAGS &quot;$&#123;CMAKE_CXX_FLAGS&#125; -std=c++11&quot;)
+elseif(COMPILER_SUPPORTS_CXX0X)
+    set(CMAKE_CXX_FLAGS &quot;$&#123;CMAKE_CXX_FLAGS&#125; -std=c++0x&quot;)
+else()
+    message(STATUS &quot;The compiler $&#123;CMAKE_CXX_COMPILER&#125; has no C++11 support. Please use a different C++ compiler.&quot;)
+endif()
+</code></pre>
+<h2 id="1-23-CMake生成VS解决方案将项目放置在设定文件夹下"><a href="#1-23-CMake生成VS解决方案将项目放置在设定文件夹下" class="headerlink" title="1.23 CMake生成VS解决方案将项目放置在设定文件夹下"></a>1.23 CMake生成VS解决方案将项目放置在设定文件夹下</h2><p>例如，我们在工程中引用了许多的第三方开源库，这些库的源码与自己所写的代码需要进行区分和隔离，通常情况下会单独开一个third筛选器存储这些第三方库的项目，怎么做？</p>
+<pre><code>第一步：
+在第三方库的CMakeLists.txt中cmake_minimum_required(VERSION 2.6)中加上set_property(GLOBAL PROPERTY USE_FOLDERS On)
+
+第二步：在生成编译目标的语法之后，如：
+add_executable(demo demo.cpp) # 生成可执行文件
+add_library(common STATIC util.cpp) # 生成静态库
+add_library(common SHARED util.cpp) # 生成动态库或共享库
+加入一句
+
+set_target_properties($&#123;第三方库项目名称&#125; PROPERTIES FOLDER “目标文件夹名称”)
+</code></pre>
+<h2 id="cmake构建"><a href="#cmake构建" class="headerlink" title="cmake构建"></a>cmake构建</h2><pre><code>mkdir build
+cmake ..
+make
+</code></pre>
+<p>参考：</p>
+<p><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/6b7aabfbace0">https://www.jianshu.com/p/6b7aabfbace0</a><br><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/315768216">https://zhuanlan.zhihu.com/p/315768216</a><br><a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_38410730/article/details/102677143">https://blog.csdn.net/qq_38410730/article/details/102677143</a></p>
+
+      
+    </div>
+    <div class="article-footer">
+      <blockquote class="mt-2x">
+  <ul class="post-copyright list-unstyled">
+    
+    <li class="post-copyright-link hidden-xs">
+      <strong>本文链接：</strong>
+      <a href="https://marblemm.github.io/2021/09/11/CMake%E6%95%99%E7%A8%8B/" title="CMake教程" target="_blank" rel="external">https://marblemm.github.io/2021/09/11/CMake教程/</a>
+    </li>
+    
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong> 本博客所有文章除特别声明外，均采用 <a href="http://creativecommons.org/licenses/by/4.0/deed.zh" target="_blank" rel="external">CC BY 4.0 CN协议</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+</blockquote>
+
+
+<div class="panel panel-default panel-badger">
+  <div class="panel-body">
+    <figure class="media">
+      <div class="media-left">
+        <a href="https://github.com/marblemm" target="_blank" class="img-burn thumb-sm visible-lg">
+          <img src="/images/avatar.jpg" class="img-rounded w-full" alt="">
+        </a>
+      </div>
+      <div class="media-body">
+        <h3 class="media-heading"><a href="https://github.com/marblemm" target="_blank"><span class="text-dark">marble</span><small class="ml-1x">software Developer</small></a></h3>
+        <div>个人简介。</div>
+      </div>
+    </figure>
+  </div>
+</div>
+
+
+    </div>
+  </article>
+  
+    
+  <section id="comments">
+  	
+      <div id="vcomments"></div>
+    
+  </section>
+
+
+  
+</div>
+
+  <nav class="bar bar-footer clearfix" data-stick-bottom>
+  <div class="bar-inner">
+  
+  <ul class="pager pull-left">
+    
+    <li class="prev">
+      <a href="/2021/10/27/com-%E4%B8%BA%E4%BB%80%E4%B9%88%E9%9C%80%E8%A6%81com/" title="com-为什么需要com"><i class="icon icon-angle-left" aria-hidden="true"></i><span>&nbsp;&nbsp;上一篇</span></a>
+    </li>
+    
+    
+    <li class="next">
+      <a href="/2021/09/07/VS%E4%B8%AD%E5%A4%B4%E6%96%87%E4%BB%B6stdafx-h%E7%9A%84%E4%BD%9C%E7%94%A8/" title="VS中头文件stdafx.h的作用"><span>下一篇&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
+    </li>
+    
+    
+    <li class="toggle-toc">
+      <a class="toggle-btn collapsed" data-toggle="collapse" href="#collapseToc" aria-expanded="false" title="文章目录" role="button">
+        <span>[&nbsp;</span><span>文章目录</span>
+        <i class="text-collapsed icon icon-anchor"></i>
+        <i class="text-in icon icon-close"></i>
+        <span>]</span>
+      </a>
+    </li>
+    
+  </ul>
+  
+  
+  <!-- Button trigger modal -->
+  <button type="button" class="btn btn-fancy btn-donate pop-onhover bg-gradient-warning" data-toggle="modal" data-target="#donateModal"><span>赏</span></button>
+  <!-- <div class="wave-icon wave-icon-danger btn-donate" data-toggle="modal" data-target="#donateModal">
+    <div class="wave-circle"><span class="icon"><i class="icon icon-bill"></i></span></div>
+  </div> -->
+  
+  
+  <div class="bar-right">
+    
+    <div class="share-component" data-sites="weibo,qq,wechat" data-mobile-sites="weibo,qq,qzone"></div>
+    
+  </div>
+  </div>
+</nav>
+  
+<!-- Modal -->
+<div class="modal modal-center modal-small modal-xs-full fade" id="donateModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content donate">
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      <div class="modal-body">
+        <div class="donate-box">
+          <div class="donate-head">
+            <p>感谢您的支持，我会继续努力的!</p>
+          </div>
+          <div class="tab-content">
+            <div role="tabpanel" class="tab-pane fade active in" id="alipay">
+              <div class="donate-payimg">
+                <img src="/images/donate/alipayimg.png" alt="扫码支持" title="扫一扫" />
+              </div>
+              <p class="text-muted mv">扫码打赏，你说多少就多少</p>
+              <p class="text-grey">打开支付宝扫一扫，即可进行扫码打赏哦</p>
+            </div>
+            <div role="tabpanel" class="tab-pane fade" id="wechatpay">
+              <div class="donate-payimg">
+                <img src="/images/donate/wechatpayimg.png" alt="扫码支持" title="扫一扫" />
+              </div>
+              <p class="text-muted mv">扫码打赏，你说多少就多少</p>
+              <p class="text-grey">打开微信扫一扫，即可进行扫码打赏哦</p>
+            </div>
+          </div>
+          <div class="donate-footer">
+            <ul class="nav nav-tabs nav-justified" role="tablist">
+              <li role="presentation" class="active">
+                <a href="#alipay" id="alipay-tab" role="tab" data-toggle="tab" aria-controls="alipay" aria-expanded="true"><i class="icon icon-alipay"></i> 支付宝</a>
+              </li>
+              <li role="presentation" class="">
+                <a href="#wechatpay" role="tab" id="wechatpay-tab" data-toggle="tab" aria-controls="wechatpay" aria-expanded="false"><i class="icon icon-wepay"></i> 微信支付</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+</main>
+
+  <footer class="footer" itemscope itemtype="http://schema.org/WPFooter">
+	
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/marblemm" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="https://gitee.com/marblemm" target="_blank" title="Gitee" data-toggle=tooltip data-placement=top><i class="icon icon-gitee"></i></a></li>
+        
+    </ul>
+
+    <div class="copyright">
+    	
+        <div class="publishby">
+        	Theme by <a href="https://github.com/cofess" target="_blank"> cofess </a>base on <a href="https://github.com/cofess/hexo-theme-pure" target="_blank">pure</a>.
+        </div>
+    </div>
+</footer>
+  <script src="//cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+<script>
+window.jQuery || document.write('<script src="js/jquery.min.js"><\/script>')
+</script>
+
+<script src="/js/plugin.min.js"></script>
+
+
+<script src="/js/application.js"></script>
+
+
+    <script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+
+
+
+
+
+   
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+   
+    
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/valine"></script>
+  <script type="text/javascript">
+  var GUEST = ['nick', 'mail', 'link'];
+  var meta = 'nick,mail,link';
+  meta = meta.split(',').filter(function(item) {
+    return GUEST.indexOf(item) > -1;
+  });
+  new Valine({
+    el: '#vcomments',
+    verify: false,
+    notify: false,
+    appId: 'vsxVYXKPSCaf1SOO9F2DEyXU-gzGzoHsz',
+    appKey: '1djOltTjcB8Ap3RrgA6zX8HF',
+    placeholder: 'Just go go',
+    avatar: 'mm',
+    meta: meta,
+    pageSize: '10' || 10,
+    visitor: false
+  });
+  </script>
+
+     
+
+
+
+
+
+
+
+</body>
+</html>
