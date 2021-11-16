@@ -21,7 +21,7 @@
   <meta name="description" content="首先, C++中的explicit关键字只能用于修饰只有一个参数的类构造函数, 它的作用是表明该构造函数是显示的, 而非隐式的, 跟它相对应的另一个关键字是implicit, 意思是隐藏的,类构造函数默认情况下即声明为implicit(隐式). 那么显示声明的构造函数和隐式声明的有什么区别呢? 我们来看下面的例子: 12345678910111213141516171819202122232425">
 <meta property="og:type" content="article">
 <meta property="og:title" content="cpp关键字explicit">
-<meta property="og:url" content="https://marblemm.gitee.io/2021/08/31/cpp%E5%85%B3%E9%94%AE%E5%AD%97explicit/index.html">
+<meta property="og:url" content="https://marblemm.github.io/2021/08/31/cpp%E5%85%B3%E9%94%AE%E5%AD%97explicit/index.html">
 <meta property="og:site_name" content="Hexo">
 <meta property="og:description" content="首先, C++中的explicit关键字只能用于修饰只有一个参数的类构造函数, 它的作用是表明该构造函数是显示的, 而非隐式的, 跟它相对应的另一个关键字是implicit, 意思是隐藏的,类构造函数默认情况下即声明为implicit(隐式). 那么显示声明的构造函数和隐式声明的有什么区别呢? 我们来看下面的例子: 12345678910111213141516171819202122232425">
 <meta property="og:locale" content="zh_CN">
@@ -30,7 +30,7 @@
 <meta property="article:author" content="John Doe">
 <meta name="twitter:card" content="summary">
   <!-- Canonical links -->
-  <link rel="canonical" href="https://marblemm.gitee.io/2021/08/31/cpp%E5%85%B3%E9%94%AE%E5%AD%97explicit/index.html">
+  <link rel="canonical" href="https://marblemm.github.io/2021/08/31/cpp%E5%85%B3%E9%94%AE%E5%AD%97explicit/index.html">
   
     <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
   
@@ -212,7 +212,7 @@
   <div class="widget">
     <h3 class="widget-title">分类</h3>
     <div class="widget-body">
-      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/c/">c++</a><span class="category-list-count">11</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/c-%E9%9D%A2%E8%AF%95/">c++面试</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/cmake/">cmake</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/com/">com</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/git/">git</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/tool/">tool</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E4%B9%A6%E7%B1%8D/">书籍</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%A4%9A%E7%BA%BF%E7%A8%8B/">多线程</a><span class="category-list-count">5</span></li></ul>
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/c/">c++</a><span class="category-list-count">11</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/c-%E9%9D%A2%E8%AF%95/">c++面试</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/cmake/">cmake</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/com/">com</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/git/">git</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/tool/">tool</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/vs/">vs</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E4%B9%A6%E7%B1%8D/">书籍</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%A4%9A%E7%BA%BF%E7%A8%8B/">多线程</a><span class="category-list-count">5</span></li></ul>
     </div>
   </div>
 
@@ -241,7 +241,7 @@
   <div class="widget">
     <h3 class="widget-title">归档</h3>
     <div class="widget-body">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/11/">十一月 2021</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/10/">十月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/09/">九月 2021</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/08/">八月 2021</a><span class="archive-list-count">23</span></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/11/">十一月 2021</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/10/">十月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/09/">九月 2021</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/08/">八月 2021</a><span class="archive-list-count">23</span></li></ul>
     </div>
   </div>
 
@@ -429,7 +429,7 @@ effective c++中说：被声明为explicit的构造函数通常比其non-explici
     
     <li class="post-copyright-link hidden-xs">
       <strong>本文链接：</strong>
-      <a href="https://marblemm.gitee.io/2021/08/31/cpp%E5%85%B3%E9%94%AE%E5%AD%97explicit/" title="cpp关键字explicit" target="_blank" rel="external">https://marblemm.gitee.io/2021/08/31/cpp关键字explicit/</a>
+      <a href="https://marblemm.github.io/2021/08/31/cpp%E5%85%B3%E9%94%AE%E5%AD%97explicit/" title="cpp关键字explicit" target="_blank" rel="external">https://marblemm.github.io/2021/08/31/cpp关键字explicit/</a>
     </li>
     
     <li class="post-copyright-license">
@@ -476,7 +476,7 @@ effective c++中说：被声明为explicit的构造函数通常比其non-explici
   <ul class="pager pull-left">
     
     <li class="prev">
-      <a href="/2021/09/02/cpp%E6%99%BA%E8%83%BD%E6%8C%87%E9%92%88%E6%80%BB%E7%BB%93/" title="cpp智能指针总结"><i class="icon icon-angle-left" aria-hidden="true"></i><span>&nbsp;&nbsp;上一篇</span></a>
+      <a href="/2021/09/02/VS-%E5%A4%9A%E5%AD%97%E8%8A%82%E5%AD%97%E7%AC%A6%E9%9B%86%E5%92%8CUnicode%E5%AD%97%E7%AC%A6%E9%9B%86/" title="VS-多字节字符集和Unicode字符集"><i class="icon icon-angle-left" aria-hidden="true"></i><span>&nbsp;&nbsp;上一篇</span></a>
     </li>
     
     
