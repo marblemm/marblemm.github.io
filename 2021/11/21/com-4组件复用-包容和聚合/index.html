@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="Cache-Control" content="no-transform" />
+  <meta http-equiv="Cache-Control" content="no-siteapp" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="format-detection" content="telephone=no,email=no,adress=no">
+  <!-- Color theme for statusbar -->
+  <meta name="theme-color" content="#000000" />
+  <!-- 强制页面在当前窗口以独立页面显示,防止别人在框架里调用页面 -->
+  <meta http-equiv="window-target" content="_top" />
+  
+  
+  <title>com-4组件复用:包容和聚合 | marble</title>
+  <meta name="description" content="包容和聚合实际上是一个组件使用另一个组件的技术。对于这两个组件，可以把第一个组件称为外部组件，被使用组件称为内部组件。 1、包容简介 COM包容同C++包容是相似的。但是在COM中，同其他内容类似，包容也是在接口级完成的。外部组件包含指向内部组件接口的指针。此时外部组件只是内部组件的一个客户，它将使用内部组件的接口来实现自己的接口。 外边组件也可以通过将调用转发给内部组件的方法重新实现内部组件所支">
+<meta property="og:type" content="article">
+<meta property="og:title" content="com-4组件复用:包容和聚合">
+<meta property="og:url" content="https://marblemm.github.io/2021/11/21/com-4%E7%BB%84%E4%BB%B6%E5%A4%8D%E7%94%A8-%E5%8C%85%E5%AE%B9%E5%92%8C%E8%81%9A%E5%90%88/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="包容和聚合实际上是一个组件使用另一个组件的技术。对于这两个组件，可以把第一个组件称为外部组件，被使用组件称为内部组件。 1、包容简介 COM包容同C++包容是相似的。但是在COM中，同其他内容类似，包容也是在接口级完成的。外部组件包含指向内部组件接口的指针。此时外部组件只是内部组件的一个客户，它将使用内部组件的接口来实现自己的接口。 外边组件也可以通过将调用转发给内部组件的方法重新实现内部组件所支">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-11-21T02:11:48.000Z">
+<meta property="article:modified_time" content="2021-11-21T15:43:05.859Z">
+<meta property="article:author" content="John Doe">
+<meta name="twitter:card" content="summary">
+  <!-- Canonical links -->
+  <link rel="canonical" href="https://marblemm.github.io/2021/11/21/com-4%E7%BB%84%E4%BB%B6%E5%A4%8D%E7%94%A8-%E5%8C%85%E5%AE%B9%E5%92%8C%E8%81%9A%E5%90%88/index.html">
+  
+    <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png" type="image/x-icon">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+  
+  
+  
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body class="main-center theme-green" itemscope itemtype="http://schema.org/WebPage">
+  <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+  <div class="slimContent">
+    <div class="navbar-header">
+      
+      
+      <div class="profile-block text-center">
+        <a id="avatar" href="https://github.com/marblemm" target="_blank">
+          <img class="img-circle img-rotate" src="/images/avatar.jpg" width="200" height="200">
+        </a>
+        <h2 id="name" class="hidden-xs hidden-sm">marble</h2>
+        <h3 id="title" class="hidden-xs hidden-sm hidden-md">software Developer</h3>
+        <small id="location" class="text-muted hidden-xs hidden-sm"><i class="icon icon-map-marker"></i> wuhan, China</small>
+      </div>
+      
+      <div class="search" id="search-form-wrap">
+
+    <form class="search-form sidebar-form">
+        <div class="input-group">
+            <input type="text" class="search-form-input form-control" placeholder="搜索" />
+            <span class="input-group-btn">
+                <button type="submit" class="search-form-submit btn btn-flat" onclick="return false;"><i class="icon icon-search"></i></button>
+            </span>
+        </div>
+    </form>
+    <div class="ins-search">
+  <div class="ins-search-mask"></div>
+  <div class="ins-search-container">
+    <div class="ins-input-wrapper">
+      <input type="text" class="ins-search-input" placeholder="想要查找什么..." x-webkit-speech />
+      <button type="button" class="close ins-close ins-selectable" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+    </div>
+    <div class="ins-section-wrapper">
+      <div class="ins-section-container"></div>
+    </div>
+  </div>
+</div>
+
+
+</div>
+      <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <nav id="main-navbar" class="collapse navbar-collapse" itemscope itemtype="http://schema.org/SiteNavigationElement" role="navigation">
+      <ul class="nav navbar-nav main-nav ">
+        
+        
+        <li class="menu-item menu-item-home">
+          <a href="/.">
+            
+            <i class="icon icon-home-fill"></i>
+            
+            <span class="menu-title">首页</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives">
+            
+            <i class="icon icon-archives-fill"></i>
+            
+            <span class="menu-title">归档</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories">
+            
+            <i class="icon icon-folder"></i>
+            
+            <span class="menu-title">分类</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-links">
+          <a href="/links">
+            
+            <i class="icon icon-friendship"></i>
+            
+            <span class="menu-title">友链</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-pano">
+          <a href="/pano">
+            
+            <i class="icon icon-friendship"></i>
+            
+            <span class="menu-title">全景</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-pointcloud">
+          <a href="/pointcloud">
+            
+            <i class="icon icon-friendship"></i>
+            
+            <span class="menu-title">点云</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-game">
+          <a href="/2048">
+            
+            <i class="icon icon-friendship"></i>
+            
+            <span class="menu-title">游戏</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about">
+            
+            <i class="icon icon-cup-fill"></i>
+            
+            <span class="menu-title">关于</span>
+          </a>
+        </li>
+        
+      </ul>
+      
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/marblemm" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="https://gitee.com/marblemm" target="_blank" title="Gitee" data-toggle=tooltip data-placement=top><i class="icon icon-gitee"></i></a></li>
+        
+    </ul>
+
+    </nav>
+  </div>
+</header>
+
+  
+    <aside class="sidebar" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    
+      <div class="widget">
+    <h3 class="widget-title">公告</h3>
+    <div class="widget-body">
+        <div id="board">
+            <div class="content">
+                <p>欢迎交流与分享经验!</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">分类</h3>
+    <div class="widget-body">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/c/">c++</a><span class="category-list-count">11</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/c-%E9%9D%A2%E8%AF%95/">c++面试</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/cmake/">cmake</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/com/">com</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/git/">git</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/tool/">tool</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/vs/">vs</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E4%B9%A6%E7%B1%8D/">书籍</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%A4%9A%E7%BA%BF%E7%A8%8B/">多线程</a><span class="category-list-count">5</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget-body">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/cmake/" rel="tag">cmake</a><span class="tag-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget-body tagcloud">
+      <a href="/tags/cmake/" style="font-size: 13px;">cmake</a>
+    </div>
+  </div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget-body">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/11/">十一月 2021</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/10/">十月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/09/">九月 2021</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/08/">八月 2021</a><span class="archive-list-count">23</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget-body">
+      <ul class="recent-post-list list-unstyled no-thumbnail">
+        
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/com/">com</a>
+              </p>
+              <p class="item-title">
+                <a href="/2021/11/24/com-5%E8%B0%83%E7%94%A8com%E7%BB%84%E4%BB%B6%E7%9A%84%E6%96%B9%E6%B3%95%E6%80%BB%E7%BB%93/" class="title">com-5调用com组件的方法总结</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2021-11-24T15:28:53.000Z" itemprop="datePublished">2021-11-24</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/com/">com</a>
+              </p>
+              <p class="item-title">
+                <a href="/2021/11/21/com-4%E7%BB%84%E4%BB%B6%E5%A4%8D%E7%94%A8-%E5%8C%85%E5%AE%B9%E5%92%8C%E8%81%9A%E5%90%88/" class="title">com-4组件复用:包容和聚合</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2021-11-21T02:11:48.000Z" itemprop="datePublished">2021-11-21</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/com/">com</a>
+              </p>
+              <p class="item-title">
+                <a href="/2021/11/06/com-com%E5%85%A5%E9%97%A82/" class="title">com-com入门2</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2021-11-06T07:42:43.000Z" itemprop="datePublished">2021-11-06</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/com/">com</a>
+              </p>
+              <p class="item-title">
+                <a href="/2021/11/05/com-com%E5%85%A5%E9%97%A81/" class="title">com-com入门1</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2021-11-05T15:57:06.000Z" itemprop="datePublished">2021-11-05</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/com/">com</a>
+              </p>
+              <p class="item-title">
+                <a href="/2021/10/27/com-1%E4%B8%BA%E4%BB%80%E4%B9%88%E9%9C%80%E8%A6%81com/" class="title">com-1为什么需要com</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2021-10-27T15:51:52.000Z" itemprop="datePublished">2021-10-27</time>
+              </p>
+            </div>
+          </li>
+          
+      </ul>
+    </div>
+  </div>
+  
+
+    
+  </div>
+</aside>
+
+  
+  
+<aside class="sidebar sidebar-toc collapse" id="collapseToc" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    <nav id="toc" class="article-toc">
+      <h3 class="toc-title">文章目录</h3>
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8C%85%E5%AE%B9"><span class="toc-number">1.</span> <span class="toc-text">包容</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A4%96%E9%83%A8%E7%BB%84%E4%BB%B6"><span class="toc-number">1.1.</span> <span class="toc-text">外部组件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A4%96%E9%83%A8%E7%BB%84%E4%BB%B6%E7%9A%84%E7%B1%BB%E5%8E%82"><span class="toc-number">1.2.</span> <span class="toc-text">外部组件的类厂</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%81%9A%E5%90%88"><span class="toc-number">2.</span> <span class="toc-text">聚合</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A4%96%E9%83%A8%E7%BB%84%E4%BB%B6-1"><span class="toc-number">2.1.</span> <span class="toc-text">外部组件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A4%96%E9%83%A8%E7%BB%84%E4%BB%B6%E7%9A%84%E7%B1%BB%E5%8E%82-1"><span class="toc-number">2.2.</span> <span class="toc-text">外部组件的类厂</span></a></li></ol></li></ol>
+    </nav>
+  </div>
+</aside>
+
+<main class="main" role="main">
+  <div class="content">
+  <article id="post-com-4组件复用-包容和聚合" class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
+    
+    <div class="article-header">
+      
+        
+  
+    <h1 class="article-title" itemprop="name">
+      com-4组件复用:包容和聚合
+    </h1>
+  
+
+      
+      <div class="article-meta">
+        <span class="article-date">
+    <i class="icon icon-calendar-check"></i>
+	<a href="/2021/11/21/com-4%E7%BB%84%E4%BB%B6%E5%A4%8D%E7%94%A8-%E5%8C%85%E5%AE%B9%E5%92%8C%E8%81%9A%E5%90%88/" class="article-date">
+	  <time datetime="2021-11-21T02:11:48.000Z" itemprop="datePublished">2021-11-21</time>
+	</a>
+</span>
+        
+  <span class="article-category">
+    <i class="icon icon-folder"></i>
+    <a class="article-category-link" href="/categories/com/">com</a>
+  </span>
+
+        
+
+        
+	<span class="article-read hidden-xs">
+	    <i class="icon icon-eye-fill" aria-hidden="true"></i>
+	    <span id="busuanzi_container_page_pv">
+			<span id="busuanzi_value_page_pv">0</span>
+		</span>
+	</span>
+
+
+        <span class="post-comment"><i class="icon icon-comment"></i> <a href="/2021/11/21/com-4%E7%BB%84%E4%BB%B6%E5%A4%8D%E7%94%A8-%E5%8C%85%E5%AE%B9%E5%92%8C%E8%81%9A%E5%90%88/#comments" class="article-comment-link">评论</a></span>
+        
+	
+		<span class="post-wordcount hidden-xs" itemprop="wordCount">字数统计: 2.5k(字)</span>
+	
+	
+		<span class="post-readcount hidden-xs" itemprop="timeRequired">阅读时长: 12(分)</span>
+	
+
+      </div>
+    </div>
+    <div class="article-entry marked-body" itemprop="articleBody">
+      
+        <p>包容和聚合实际上是一个组件使用另一个组件的技术。对于这两个组件，可以把第一个组件称为外部组件，被使用组件称为内部组件。</p>
+<p>1、包容简介</p>
+<p>COM包容同C++包容是相似的。但是在COM中，同其他内容类似，包容也是在接口级完成的。外部组件包含指向内部组件接口的指针。此时外部组件只是内部组件的一个客户，它将使用内部组件的接口来实现自己的接口。</p>
+<p>外边组件也可以通过将调用转发给内部组件的方法重新实现内部组件所支持的某个接口（适配器模式？很像啊）。并且外部组件还可以在内部组件代码的前后加上一些代码以对接口进行改造。</p>
+<p>2、聚合简介</p>
+<p>聚合是包容的一个特例。当一个外部组件聚合了某个内部组件的的一个接口时，它并没有像包容那样重新实现此接口并明确地将调用请求转发给内部组件。相反，外部组件将直接把内部组件的接口返回给客户。使用此方法，外部组件将无需重现实现并转发接口中的所有函数。</p>
+<p>但是使用此方式，外部组件将无法对接口中的函数进行任何改造。当外部组件将内部组件的接口返回给客户之后，客户就直接同内部组件打交道了。但是此时客户不应该知道他是在同两个不同的组件交互，否则将无法满足封装的要求。这种使得外部组件和内部组件看起来像一个组件的做法是成功的进行聚合的关键。</p>
+<p>以下代码只列出了关键部分，其它部分省略。</p>
+<h2 id="包容"><a href="#包容" class="headerlink" title="包容"></a>包容</h2><p>外部组件包含指向内部组件接口的指针，此时外部组件只是内部组件的一个客户。外部组件可通过将调用转发给内部组件来重新实现内部组件的某个接口，还可在内部组件代码前后加上一些代码对接口改造。</p>
+<p>组件1中的新成员m_pIY保存了指向所包容的组件2中IY接口的指针</p>
+<h3 id="外部组件"><a href="#外部组件" class="headerlink" title="外部组件"></a>外部组件</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br></pre></td><td class="code"><pre><span class="line">//</span><br><span class="line">// Component A</span><br><span class="line">//</span><br><span class="line">class CA : public IX,</span><br><span class="line">           public IY //@N</span><br><span class="line">&#123;</span><br><span class="line">public:</span><br><span class="line">    // IUnknown</span><br><span class="line">    virtual HRESULT __stdcall QueryInterface(const IID&amp; iid, void** ppv) ;</span><br><span class="line">    virtual ULONG   __stdcall AddRef() ;</span><br><span class="line">    virtual ULONG   __stdcall Release() ;</span><br><span class="line"></span><br><span class="line">    // Interface IX</span><br><span class="line">    virtual void __stdcall Fx() &#123; cout &lt;&lt; &quot;Fx&quot; &lt;&lt; endl ;&#125;</span><br><span class="line"></span><br><span class="line">    // Interface IY</span><br><span class="line">    virtual void __stdcall Fy() &#123; m_pIY-&gt;Fy() ;&#125; //@N</span><br><span class="line"></span><br><span class="line">    // Constructor</span><br><span class="line">    CA() ;</span><br><span class="line"></span><br><span class="line">    // Destructor</span><br><span class="line">    ~CA() ;</span><br><span class="line"></span><br><span class="line">    // Initialization function called by the class factory</span><br><span class="line">    // to create the contained component</span><br><span class="line">    HRESULT __stdcall Init() ;     //@N</span><br><span class="line"></span><br><span class="line">private:</span><br><span class="line">    // Reference count</span><br><span class="line">    long m_cRef ;</span><br><span class="line"></span><br><span class="line">    // 被包容的组件</span><br><span class="line">    IY* m_pIY ;</span><br><span class="line">&#125; ;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">//</span><br><span class="line">// Constructor</span><br><span class="line">//</span><br><span class="line">CA::CA()</span><br><span class="line">: m_cRef(1),</span><br><span class="line">  m_pIY(NULL) //@N  内部组件初始化</span><br><span class="line">&#123;</span><br><span class="line">    ::InterlockedIncrement(&amp;g_cComponents) ;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">//</span><br><span class="line">// Destructor</span><br><span class="line">//</span><br><span class="line">CA::~CA() </span><br><span class="line">&#123; </span><br><span class="line">    ::InterlockedDecrement(&amp;g_cComponents) ; </span><br><span class="line">    trace(&quot;Destroy self.&quot;) ;</span><br><span class="line"></span><br><span class="line">    // 释放内部组件 @N</span><br><span class="line">    if (m_pIY != NULL)</span><br><span class="line">    &#123;</span><br><span class="line">        m_pIY-&gt;Release() ;   </span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">// 创建内部组件</span><br><span class="line">HRESULT __stdcall CA::Init()</span><br><span class="line">&#123;</span><br><span class="line">    trace(&quot;Create contained component.&quot;) ;</span><br><span class="line">    //外部组件请求了内部组件IY接口的指针，若调用成功，被保存在m_pIY中</span><br><span class="line">    HRESULT hr = ::CoCreateInstance(CLSID_Component2, </span><br><span class="line">                                    NULL, </span><br><span class="line">                                    CLSCTX_INPROC_SERVER,</span><br><span class="line">                                    IID_IY,</span><br><span class="line">                                    (void**)&amp;m_pIY) ;</span><br><span class="line">    if (FAILED(hr))</span><br><span class="line">    &#123;</span><br><span class="line">        trace(&quot;Could not create contained component.&quot;) ;</span><br><span class="line">        return E_FAIL ;</span><br><span class="line">    &#125;</span><br><span class="line">    else</span><br><span class="line">    &#123;</span><br><span class="line">        return S_OK ;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h3 id="外部组件的类厂"><a href="#外部组件的类厂" class="headerlink" title="外部组件的类厂"></a>外部组件的类厂</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line">//</span><br><span class="line">// IClassFactory implementation</span><br><span class="line">//</span><br><span class="line">HRESULT __stdcall CFactory::CreateInstance(IUnknown* pUnknownOuter,</span><br><span class="line">                                           const IID&amp; iid,</span><br><span class="line">                                           void** ppv) </span><br><span class="line">&#123;</span><br><span class="line">    // Cannot aggregate</span><br><span class="line">    if (pUnknownOuter != NULL)</span><br><span class="line">    &#123;</span><br><span class="line">        return CLASS_E_NOAGGREGATION ;</span><br><span class="line">    &#125;</span><br><span class="line">    // 创建外部组件</span><br><span class="line">    CA* pA = new CA ;</span><br><span class="line">    if (pA == NULL)</span><br><span class="line">    &#123;</span><br><span class="line">        return E_OUTOFMEMORY ;</span><br><span class="line">    &#125;</span><br><span class="line">    // 创建内部组件 @N</span><br><span class="line">    HRESULT hr = pA-&gt;Init() ;</span><br><span class="line">    if (FAILED(hr))</span><br><span class="line">    &#123;</span><br><span class="line">        // 如何失败，则删除</span><br><span class="line">        pA-&gt;Release() ;</span><br><span class="line">        return hr ;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    // Get the requested interface.</span><br><span class="line">    hr = pA-&gt;QueryInterface(iid, ppv) ;</span><br><span class="line">    pA-&gt;Release() ;</span><br><span class="line">    return hr ;   </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="聚合"><a href="#聚合" class="headerlink" title="聚合"></a>聚合</h2><p>为了实现 聚合，内部组件需要实现两个不同的接口，其中一个是非代理IUknown接口：按通常的方式实现内部组件的IUknown接口。另一个是代理接口：未被聚合时将函数调用转发给非代理接口，被聚合时转发给外部组件的IUknown接口。</p>
+<p>聚合情况下，代理IUknown接口将调用外部组件的IUknown实现。外部组件也可以内部组件的非代理IUknown接口来控制组件的生命期。</p>
+<h3 id="外部组件-1"><a href="#外部组件-1" class="headerlink" title="外部组件"></a>外部组件</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br></pre></td><td class="code"><pre><span class="line">//</span><br><span class="line">// Component A</span><br><span class="line">//</span><br><span class="line">class CA : public IX</span><br><span class="line">        // public IY @N</span><br><span class="line">&#123;</span><br><span class="line">public:</span><br><span class="line">    // IUnknown</span><br><span class="line">    virtual HRESULT __stdcall QueryInterface(const IID&amp; iid, void** ppv) ;</span><br><span class="line">    virtual ULONG   __stdcall AddRef() ;</span><br><span class="line">    virtual ULONG   __stdcall Release() ;</span><br><span class="line"></span><br><span class="line">    // Interface IX</span><br><span class="line">    virtual void __stdcall Fx() &#123; cout &lt;&lt; &quot;Fx&quot; &lt;&lt; endl ;&#125;</span><br><span class="line"></span><br><span class="line">    /* @N Component1 aggregates instead of implementing interface IY.</span><br><span class="line">    // Interface IY</span><br><span class="line">    virtual void __stdcall Fy() &#123; m_pIY-&gt;Fy() ;&#125;</span><br><span class="line">    */</span><br><span class="line"></span><br><span class="line">    // Constructor</span><br><span class="line">    CA() ;</span><br><span class="line"></span><br><span class="line">    // Destructor</span><br><span class="line">    ~CA() ;</span><br><span class="line"></span><br><span class="line">    // Initialization function called by the class factory</span><br><span class="line">    // to create the contained component</span><br><span class="line">    HRESULT __stdcall Init() ;  // @N</span><br><span class="line"></span><br><span class="line">private:</span><br><span class="line">    // Reference count</span><br><span class="line">    long m_cRef ;</span><br><span class="line"></span><br><span class="line">    // Pointer to the aggregated component&#x27;s IY interface</span><br><span class="line">    // (We do not have to retain an IY pointer. However, we</span><br><span class="line">    // can use it in QueryInterface.)</span><br><span class="line">    IY* m_pIY ;                 // @N</span><br><span class="line"></span><br><span class="line">    // Pointer to inner component&#x27;s IUnknown</span><br><span class="line">    IUnknown* m_pUnknownInner ; // @N</span><br><span class="line">&#125; ;</span><br><span class="line"></span><br><span class="line">//</span><br><span class="line">// Destructor</span><br><span class="line">// 在外部组件的析构中释放内部组件接口</span><br><span class="line">CA::~CA() </span><br><span class="line">&#123; </span><br><span class="line">    ::InterlockedDecrement(&amp;g_cComponents) ; </span><br><span class="line">    trace(&quot;Destroy self.&quot;) ;</span><br><span class="line"></span><br><span class="line">    // 恢复引用计数，保证组件不会试图再次将自己释放掉</span><br><span class="line">    m_cRef = 1 ;  </span><br><span class="line"></span><br><span class="line">    // 因为对内部组件的Release将会导致对外部组件的Release调用</span><br><span class="line">    IUnknown* pUnknownOuter = this ;</span><br><span class="line">    pUnknownOuter-&gt;AddRef() ;</span><br><span class="line"></span><br><span class="line">    // 将外部组件释放掉</span><br><span class="line">    m_pIY-&gt;Release() ;</span><br><span class="line"></span><br><span class="line">    // 将内部组件释放掉</span><br><span class="line">    if (m_pUnknownInner != NULL)   // @N</span><br><span class="line">    &#123;</span><br><span class="line">        m_pUnknownInner-&gt;Release() ;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 创建内部组件</span><br><span class="line">HRESULT __stdcall CA::Init()</span><br><span class="line">&#123;</span><br><span class="line">    // Get the pointer to the outer unknown.</span><br><span class="line">    // Since this component is not aggregated, the outer unknown</span><br><span class="line">    // is the same as the this pointer. </span><br><span class="line">    IUnknown* pUnknownOuter = this ;</span><br><span class="line"></span><br><span class="line">    trace(&quot;Create inner component.&quot;) ;</span><br><span class="line">    HRESULT hr =</span><br><span class="line">        ::CoCreateInstance(CLSID_Component2,         </span><br><span class="line">                           pUnknownOuter, // 外部组件IUnknown接口 @N</span><br><span class="line">                           CLSCTX_INPROC_SERVER,</span><br><span class="line">                           IID_IUnknown,  // IUnknown，当聚合时  @N</span><br><span class="line">                           (void**)&amp;m_pUnknownInner) ; </span><br><span class="line">    if (FAILED(hr))</span><br><span class="line">    &#123;</span><br><span class="line">        trace(&quot;Could not create contained component.&quot;) ;</span><br><span class="line">        return E_FAIL ;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    //需要在创建了内部组件之后再请求其IID_IY接口</span><br><span class="line">    //QueryInterface会调用AddRef，由于内部组件是被聚合的，会被转发给外部组件的AddRef</span><br><span class="line">    //因此，会导致外部组件的引用计数增加，而内部组件引用计数不变</span><br><span class="line">    trace(&quot;Get the IY interface from the inner component.&quot;) ;</span><br><span class="line">    hr = m_pUnknownInner-&gt;QueryInterface(IID_IY, (void**)&amp;m_pIY) ; //@N</span><br><span class="line">    if (FAILED(hr))</span><br><span class="line">    &#123;</span><br><span class="line">        trace(&quot;Inner component does not support interface IY.&quot;) ;</span><br><span class="line">        m_pUnknownInner-&gt;Release() ;</span><br><span class="line">        return E_FAIL ;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    //  为了实现正确计数，因为创建内部组件会导致外部组件计数增大</span><br><span class="line">    pUnknownOuter-&gt;Release() ; //@N</span><br><span class="line">    return S_OK ;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">//</span><br><span class="line">// IUnknown implementation</span><br><span class="line">//</span><br><span class="line">HRESULT __stdcall CA::QueryInterface(const IID&amp; iid, void** ppv)</span><br><span class="line">&#123;   </span><br><span class="line">    if (iid == IID_IUnknown)</span><br><span class="line">    &#123;</span><br><span class="line">        *ppv = static_cast&lt;IUnknown*&gt;(this) ; </span><br><span class="line">    &#125;</span><br><span class="line">    else if (iid == IID_IX)</span><br><span class="line">    &#123;</span><br><span class="line">        *ppv = static_cast&lt;IX*&gt;(this) ;</span><br><span class="line">    &#125;</span><br><span class="line">    else if (iid == IID_IY)</span><br><span class="line">    &#123;</span><br><span class="line">        trace(&quot;Return inner component&#x27;s IY interface.&quot;) ;</span><br><span class="line">#if 1</span><br><span class="line">        // 得到指向内部接口的指针</span><br><span class="line">        return m_pUnknownInner-&gt;QueryInterface(iid,ppv) ; //@N</span><br><span class="line">#else</span><br><span class="line">        // Or you can return a cached pointer.</span><br><span class="line">        *ppv = m_pIY ;   //@N</span><br><span class="line">        // Fall through so it will get AddRef&#x27;ed</span><br><span class="line">#endif</span><br><span class="line">    &#125;</span><br><span class="line">    else</span><br><span class="line">    &#123;</span><br><span class="line">        *ppv = NULL ;</span><br><span class="line">        return E_NOINTERFACE ;</span><br><span class="line">    &#125;</span><br><span class="line">    reinterpret_cast&lt;IUnknown*&gt;(*ppv)-&gt;AddRef() ;</span><br><span class="line">    return S_OK ;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="外部组件的类厂-1"><a href="#外部组件的类厂-1" class="headerlink" title="外部组件的类厂"></a>外部组件的类厂</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line">//</span><br><span class="line">// IClassFactory implementation</span><br><span class="line">//</span><br><span class="line">HRESULT __stdcall CFactory::CreateInstance(IUnknown* pUnknownOuter,</span><br><span class="line">                                           const IID&amp; iid,</span><br><span class="line">                                           void** ppv) </span><br><span class="line">&#123;</span><br><span class="line">    // Cannot aggregate</span><br><span class="line">    if (pUnknownOuter != NULL)</span><br><span class="line">    &#123;</span><br><span class="line">        return CLASS_E_NOAGGREGATION ;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    // Create component.</span><br><span class="line">    CA* pA = new CA ;</span><br><span class="line">    if (pA == NULL)</span><br><span class="line">    &#123;</span><br><span class="line">        return E_OUTOFMEMORY ;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    // Initialize the component. @N</span><br><span class="line">    HRESULT hr = pA-&gt;Init() ;</span><br><span class="line">    if (FAILED(hr))</span><br><span class="line">    &#123;</span><br><span class="line">        // Initialization failed. Delete component.</span><br><span class="line">        pA-&gt;Release() ;</span><br><span class="line">        return hr ;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    // Get the requested interface.</span><br><span class="line">    hr = pA-&gt;QueryInterface(iid, ppv) ;</span><br><span class="line">    pA-&gt;Release() ;</span><br><span class="line">    return hr ;   </span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>内部组件需要实现的接口—非代理IUknown接口</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line">//</span><br><span class="line">// 非代理 IUnknown 接口  @N</span><br><span class="line">//</span><br><span class="line">struct INondelegatingUnknown</span><br><span class="line">&#123;</span><br><span class="line">    virtual HRESULT __stdcall</span><br><span class="line">        NondelegatingQueryInterface(const IID&amp;, void**) = 0 ;</span><br><span class="line">    virtual ULONG __stdcall NondelegatingAddRef() = 0 ;</span><br><span class="line">    virtual ULONG __stdcall NondelegatingRelease() = 0 ;</span><br><span class="line">&#125; ;</span><br><span class="line"></span><br><span class="line">//</span><br><span class="line">// IUnknown implementation</span><br><span class="line">//</span><br><span class="line">HRESULT __stdcall CB::NondelegatingQueryInterface(const IID&amp; iid,</span><br><span class="line">                                                  void** ppv)</span><br><span class="line">&#123;   </span><br><span class="line">    if (iid == IID_IUnknown)</span><br><span class="line">    &#123;</span><br><span class="line">        //将this指针换成了INondelegatingUnknown指针，重要！</span><br><span class="line">        //保证返回的是一个非代理IUknown指针</span><br><span class="line">        //当非代理接口指针查询IID_IUknown接口时，返回的将总是一个指向</span><br><span class="line">        //其自身的指针。若不进行转换，返回的将是指向代理IUknown接口的指针</span><br><span class="line">        *ppv = static_cast&lt;INondelegatingUnknown*&gt;(this) ;  // @N</span><br><span class="line">    &#125;</span><br><span class="line">    else if (iid == IID_IY)</span><br><span class="line">    &#123;</span><br><span class="line">        *ppv = static_cast&lt;IY*&gt;(this) ;</span><br><span class="line">    &#125;</span><br><span class="line">    else</span><br><span class="line">    &#123;</span><br><span class="line">        *ppv = NULL ;</span><br><span class="line">        return E_NOINTERFACE ;</span><br><span class="line">    &#125;</span><br><span class="line">    reinterpret_cast&lt;IUnknown*&gt;(*ppv)-&gt;AddRef() ;</span><br><span class="line">    return S_OK ;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>内部组件</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br></pre></td><td class="code"><pre><span class="line">//</span><br><span class="line">// Component </span><br><span class="line">//</span><br><span class="line">class CB : public IY,</span><br><span class="line">           public INondelegatingUnknown</span><br><span class="line">&#123;</span><br><span class="line">public:</span><br><span class="line">    // 代理 IUnknown</span><br><span class="line">    // 以内联方式实现</span><br><span class="line">    // 只要将调用请求转发给外部IUknown接口或非代理IUnknown接口即可</span><br><span class="line">    virtual HRESULT __stdcall</span><br><span class="line">        QueryInterface(const IID&amp; iid, void** ppv)</span><br><span class="line">    &#123;</span><br><span class="line">        trace(&quot;Delegate QueryInterface.&quot;) ;</span><br><span class="line">        return m_pUnknownOuter-&gt;QueryInterface(iid, ppv) ; </span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    virtual ULONG __stdcall AddRef() </span><br><span class="line">    &#123;</span><br><span class="line">        trace(&quot;Delegate AddRef.&quot;) ;</span><br><span class="line">        return m_pUnknownOuter-&gt;AddRef() ; </span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    virtual ULONG __stdcall Release() </span><br><span class="line">    &#123;</span><br><span class="line">        trace(&quot;Delegate Release.&quot;) ;</span><br><span class="line">        return m_pUnknownOuter-&gt;Release() ; </span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    // 非代理 IUnknown</span><br><span class="line">    virtual HRESULT __stdcall</span><br><span class="line">        NondelegatingQueryInterface(const IID&amp; iid, void** ppv) ;</span><br><span class="line">    virtual ULONG   __stdcall NondelegatingAddRef() ;</span><br><span class="line">    virtual ULONG   __stdcall NondelegatingRelease() ;</span><br><span class="line"></span><br><span class="line">    // Interface IY</span><br><span class="line">    virtual void __stdcall Fy() &#123; cout &lt;&lt; &quot;Fy&quot; &lt;&lt; endl ;&#125;</span><br><span class="line"></span><br><span class="line">    // Constructor</span><br><span class="line">    CB(IUnknown* m_pUnknownOuter) ;</span><br><span class="line"></span><br><span class="line">    // Destructor</span><br><span class="line">    ~CB() ;</span><br><span class="line"></span><br><span class="line">private:</span><br><span class="line">    long m_cRef ;  //引用计数</span><br><span class="line"></span><br><span class="line">    //当此组件被聚合时，指向外部IUknown接口</span><br><span class="line">    IUnknown* m_pUnknownOuter ;</span><br><span class="line">&#125; ;</span><br><span class="line"></span><br><span class="line">//</span><br><span class="line">// Constructor</span><br><span class="line">// 将外部IUknown的指针传给内部组件的构造函数，初始化m_pUnknownOuter</span><br><span class="line">CB::CB(IUnknown* pUnknownOuter) </span><br><span class="line">: m_cRef(1)</span><br><span class="line">&#123; </span><br><span class="line">    ::InterlockedIncrement(&amp;g_cComponents) ; </span><br><span class="line"></span><br><span class="line">    //若此组件未被聚合，将m_pUnknownOuter设为指向非代理IUknown接口</span><br><span class="line">    if (pUnknownOuter == NULL)</span><br><span class="line">    &#123;</span><br><span class="line">        trace(&quot;Not aggregating; delegate to nondelegating IUnknown.&quot;) ;</span><br><span class="line">        m_pUnknownOuter = reinterpret_cast&lt;IUnknown*&gt;</span><br><span class="line">                          (static_cast&lt;INondelegatingUnknown*&gt;</span><br><span class="line">                          (this)) ;</span><br><span class="line">    &#125;</span><br><span class="line">    //若此组件被聚合，指向外部IUKnown接口</span><br><span class="line">    else</span><br><span class="line">    &#123;</span><br><span class="line">        trace(&quot;Aggregating; delegate to outer IUnknown.&quot;) ;</span><br><span class="line">        m_pUnknownOuter = pUnknownOuter ;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>内部组件的类厂</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">//</span><br><span class="line">// IClassFactory implementation</span><br><span class="line">//</span><br><span class="line">HRESULT __stdcall CFactory::CreateInstance(IUnknown* pUnknownOuter,</span><br><span class="line">                                       const IID&amp; iid,</span><br><span class="line">                                       void** ppv)</span><br><span class="line">&#123;</span><br><span class="line">    //当pUnknownOuter非空，表示外部组件想进行聚合</span><br><span class="line">    //iid必须为IID_IUnknown，因为当组件被聚合时，只能返回一个IUknown接口</span><br><span class="line">    if ((pUnknownOuter != NULL) &amp;&amp; (iid != IID_IUnknown)) //@N</span><br><span class="line">    &#123;</span><br><span class="line">        return CLASS_E_NOAGGREGATION ;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    // Create component.</span><br><span class="line">    CB* pB = new CB(pUnknownOuter) ; // @N</span><br><span class="line">    if (pB == NULL)</span><br><span class="line">    &#123;</span><br><span class="line">        return E_OUTOFMEMORY ;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    //获取新创建的内部组件中客户所请求的接口</span><br><span class="line">    //并非调用QueryInterface</span><br><span class="line">    //因为类厂需要返回一个指向非代理IUknown接口的指针</span><br><span class="line">    HRESULT hr = pB-&gt;NondelegatingQueryInterface(iid, ppv) ; //@N</span><br><span class="line">    pB-&gt;NondelegatingRelease() ; </span><br><span class="line">    return hr ;   </span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>客户</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br></pre></td><td class="code"><pre><span class="line">//</span><br><span class="line">// Client.cpp - client implementation</span><br><span class="line">//</span><br><span class="line">#include &lt;iostream.h&gt;</span><br><span class="line">#include &lt;objbase.h&gt;</span><br><span class="line"></span><br><span class="line">#include &quot;Iface.h&quot;</span><br><span class="line"></span><br><span class="line">void trace(const char* msg) &#123; cout &lt;&lt; &quot;Client: \t&quot; &lt;&lt; msg &lt;&lt; endl ;&#125;</span><br><span class="line"></span><br><span class="line">//</span><br><span class="line">// main function</span><br><span class="line">//</span><br><span class="line">int main()</span><br><span class="line">&#123;</span><br><span class="line">    // Initialize COM Library</span><br><span class="line">    CoInitialize(NULL) ;</span><br><span class="line"></span><br><span class="line">    trace(&quot;Get interface IX from Component 1.&quot;) ;</span><br><span class="line">    IX* pIX = NULL ; </span><br><span class="line">    HRESULT hr = ::CoCreateInstance(CLSID_Component1,</span><br><span class="line">                                    NULL, </span><br><span class="line">                                    CLSCTX_INPROC_SERVER,</span><br><span class="line">                                    IID_IX, </span><br><span class="line">                                    (void**)&amp;pIX) ;</span><br><span class="line">    if (SUCCEEDED(hr))</span><br><span class="line">    &#123;</span><br><span class="line">        trace(&quot;Succeeded creating component.&quot;) ;</span><br><span class="line">        pIX-&gt;Fx() ;</span><br><span class="line"></span><br><span class="line">        trace(&quot;Get interface IY from IX.&quot;) ;</span><br><span class="line">        IY* pIY = NULL ;</span><br><span class="line">        hr = pIX-&gt;QueryInterface(IID_IY, (void**)&amp;pIY) ;</span><br><span class="line">        if (SUCCEEDED(hr))</span><br><span class="line">        &#123;</span><br><span class="line">            trace(&quot;Succeeded getting interface IY from IX.&quot;) ;</span><br><span class="line">            pIY-&gt;Fy() ;</span><br><span class="line"></span><br><span class="line">            trace(&quot;Get interface IX from IY.&quot;) ;</span><br><span class="line">            IX* pIX2 = NULL ;</span><br><span class="line">            hr = pIY-&gt;QueryInterface(IID_IX, (void**)&amp;pIX2);</span><br><span class="line">            if (SUCCEEDED(hr))</span><br><span class="line">            &#123;</span><br><span class="line">                trace(&quot;Succeeded getting interface IX from IY.&quot;) ;</span><br><span class="line">                pIX2-&gt;Release() ;</span><br><span class="line">            &#125;</span><br><span class="line">            else</span><br><span class="line">            &#123;</span><br><span class="line">                trace(&quot;Error! Should have gotten interface IX.&quot;) ;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            pIY-&gt;Release() ;</span><br><span class="line">        &#125;</span><br><span class="line">        else</span><br><span class="line">        &#123;</span><br><span class="line">            trace(&quot;Could not get interface IY.&quot;) ;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        pIX-&gt;Release() ;</span><br><span class="line">    &#125;</span><br><span class="line">    else</span><br><span class="line">    &#123;</span><br><span class="line">        cout &lt;&lt; &quot;Could not create component: &quot; &lt;&lt; hex &lt;&lt; hr &lt;&lt; endl ;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    // Uninitialize COM Library</span><br><span class="line">    CoUninitialize() ;</span><br><span class="line"></span><br><span class="line">    return 0 ;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+      
+    </div>
+    <div class="article-footer">
+      <blockquote class="mt-2x">
+  <ul class="post-copyright list-unstyled">
+    
+    <li class="post-copyright-link hidden-xs">
+      <strong>本文链接：</strong>
+      <a href="https://marblemm.github.io/2021/11/21/com-4%E7%BB%84%E4%BB%B6%E5%A4%8D%E7%94%A8-%E5%8C%85%E5%AE%B9%E5%92%8C%E8%81%9A%E5%90%88/" title="com-4组件复用:包容和聚合" target="_blank" rel="external">https://marblemm.github.io/2021/11/21/com-4组件复用-包容和聚合/</a>
+    </li>
+    
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong> 本博客所有文章除特别声明外，均采用 <a href="http://creativecommons.org/licenses/by/4.0/deed.zh" target="_blank" rel="external">CC BY 4.0 CN协议</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+</blockquote>
+
+
+<div class="panel panel-default panel-badger">
+  <div class="panel-body">
+    <figure class="media">
+      <div class="media-left">
+        <a href="https://github.com/marblemm" target="_blank" class="img-burn thumb-sm visible-lg">
+          <img src="/images/avatar.jpg" class="img-rounded w-full" alt="">
+        </a>
+      </div>
+      <div class="media-body">
+        <h3 class="media-heading"><a href="https://github.com/marblemm" target="_blank"><span class="text-dark">marble</span><small class="ml-1x">software Developer</small></a></h3>
+        <div>个人简介。</div>
+      </div>
+    </figure>
+  </div>
+</div>
+
+
+    </div>
+  </article>
+  
+    
+  <section id="comments">
+  	
+      <div id="vcomments"></div>
+    
+  </section>
+
+
+  
+</div>
+
+  <nav class="bar bar-footer clearfix" data-stick-bottom>
+  <div class="bar-inner">
+  
+  <ul class="pager pull-left">
+    
+    <li class="prev">
+      <a href="/2021/11/24/com-5%E8%B0%83%E7%94%A8com%E7%BB%84%E4%BB%B6%E7%9A%84%E6%96%B9%E6%B3%95%E6%80%BB%E7%BB%93/" title="com-5调用com组件的方法总结"><i class="icon icon-angle-left" aria-hidden="true"></i><span>&nbsp;&nbsp;上一篇</span></a>
+    </li>
+    
+    
+    <li class="next">
+      <a href="/2021/11/06/com-com%E5%85%A5%E9%97%A82/" title="com-com入门2"><span>下一篇&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
+    </li>
+    
+    
+    <li class="toggle-toc">
+      <a class="toggle-btn collapsed" data-toggle="collapse" href="#collapseToc" aria-expanded="false" title="文章目录" role="button">
+        <span>[&nbsp;</span><span>文章目录</span>
+        <i class="text-collapsed icon icon-anchor"></i>
+        <i class="text-in icon icon-close"></i>
+        <span>]</span>
+      </a>
+    </li>
+    
+  </ul>
+  
+  
+  <!-- Button trigger modal -->
+  <button type="button" class="btn btn-fancy btn-donate pop-onhover bg-gradient-warning" data-toggle="modal" data-target="#donateModal"><span>赏</span></button>
+  <!-- <div class="wave-icon wave-icon-danger btn-donate" data-toggle="modal" data-target="#donateModal">
+    <div class="wave-circle"><span class="icon"><i class="icon icon-bill"></i></span></div>
+  </div> -->
+  
+  
+  <div class="bar-right">
+    
+    <div class="share-component" data-sites="weibo,qq,wechat" data-mobile-sites="weibo,qq,qzone"></div>
+    
+  </div>
+  </div>
+</nav>
+  
+<!-- Modal -->
+<div class="modal modal-center modal-small modal-xs-full fade" id="donateModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content donate">
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      <div class="modal-body">
+        <div class="donate-box">
+          <div class="donate-head">
+            <p>感谢您的支持，我会继续努力的!</p>
+          </div>
+          <div class="tab-content">
+            <div role="tabpanel" class="tab-pane fade active in" id="alipay">
+              <div class="donate-payimg">
+                <img src="/images/donate/alipayimg.png" alt="扫码支持" title="扫一扫" />
+              </div>
+              <p class="text-muted mv">扫码打赏，你说多少就多少</p>
+              <p class="text-grey">打开支付宝扫一扫，即可进行扫码打赏哦</p>
+            </div>
+            <div role="tabpanel" class="tab-pane fade" id="wechatpay">
+              <div class="donate-payimg">
+                <img src="/images/donate/wechatpayimg.png" alt="扫码支持" title="扫一扫" />
+              </div>
+              <p class="text-muted mv">扫码打赏，你说多少就多少</p>
+              <p class="text-grey">打开微信扫一扫，即可进行扫码打赏哦</p>
+            </div>
+          </div>
+          <div class="donate-footer">
+            <ul class="nav nav-tabs nav-justified" role="tablist">
+              <li role="presentation" class="active">
+                <a href="#alipay" id="alipay-tab" role="tab" data-toggle="tab" aria-controls="alipay" aria-expanded="true"><i class="icon icon-alipay"></i> 支付宝</a>
+              </li>
+              <li role="presentation" class="">
+                <a href="#wechatpay" role="tab" id="wechatpay-tab" data-toggle="tab" aria-controls="wechatpay" aria-expanded="false"><i class="icon icon-wepay"></i> 微信支付</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+</main>
+
+  <footer class="footer" itemscope itemtype="http://schema.org/WPFooter">
+	
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/marblemm" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="https://gitee.com/marblemm" target="_blank" title="Gitee" data-toggle=tooltip data-placement=top><i class="icon icon-gitee"></i></a></li>
+        
+    </ul>
+
+    <div class="copyright">
+    	
+        <div class="publishby">
+        	Theme by <a href="https://github.com/cofess" target="_blank"> cofess </a>base on <a href="https://github.com/cofess/hexo-theme-pure" target="_blank">pure</a>.
+        </div>
+    </div>
+</footer>
+  <script src="//cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+<script>
+window.jQuery || document.write('<script src="js/jquery.min.js"><\/script>')
+</script>
+
+<script src="/js/plugin.min.js"></script>
+
+
+<script src="/js/application.js"></script>
+
+
+    <script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+
+
+
+
+
+   
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+   
+    
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/valine"></script>
+  <script type="text/javascript">
+  var GUEST = ['nick', 'mail', 'link'];
+  var meta = 'nick,mail,link';
+  meta = meta.split(',').filter(function(item) {
+    return GUEST.indexOf(item) > -1;
+  });
+  new Valine({
+    el: '#vcomments',
+    verify: false,
+    notify: false,
+    appId: 'vsxVYXKPSCaf1SOO9F2DEyXU-gzGzoHsz',
+    appKey: '1djOltTjcB8Ap3RrgA6zX8HF',
+    placeholder: 'Just go go',
+    avatar: 'mm',
+    meta: meta,
+    pageSize: '10' || 10,
+    visitor: false
+  });
+  </script>
+
+     
+
+
+
+
+
+
+
+</body>
+</html>
