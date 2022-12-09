@@ -26,7 +26,7 @@
 <meta property="og:description" content="git 常用命令整理git init 在本地新建一个repo,进入一个项目目录,执行git init,会初始化一个repo,并在当前文件夹下创建一个.git文件夹.  git clone 获取一个url对应的远程Git repo, 创建一个local copy.  一般的格式是git clone [url].  clone下来的repo会以url最后一个斜线后面的名称命名,创建一个文件夹,如果想要">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2021-08-08T03:15:12.000Z">
-<meta property="article:modified_time" content="2021-08-09T15:30:32.139Z">
+<meta property="article:modified_time" content="2022-05-11T15:05:26.843Z">
 <meta property="article:author" content="John Doe">
 <meta name="twitter:card" content="summary">
   <!-- Canonical links -->
@@ -343,7 +343,7 @@
   <div class="slimContent">
     <nav id="toc" class="article-toc">
       <h3 class="toc-title">文章目录</h3>
-      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#git-%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4%E6%95%B4%E7%90%86"><span class="toc-number">1.</span> <span class="toc-text">git 常用命令整理</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#git-init"><span class="toc-number">1.1.</span> <span class="toc-text">git init</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#git-clone"><span class="toc-number">1.2.</span> <span class="toc-text">git clone</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#git-status"><span class="toc-number">1.3.</span> <span class="toc-text">git status</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#git-log"><span class="toc-number">1.4.</span> <span class="toc-text">git log</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#git-add"><span class="toc-number">1.5.</span> <span class="toc-text">git add</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#git-diff"><span class="toc-number">1.6.</span> <span class="toc-text">git diff</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#git-commit"><span class="toc-number">1.7.</span> <span class="toc-text">git commit</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#git-reset"><span class="toc-number">1.8.</span> <span class="toc-text">git reset</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#git-revert"><span class="toc-number">1.9.</span> <span class="toc-text">git revert</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#git-rm"><span class="toc-number">1.10.</span> <span class="toc-text">git rm</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#git-clean"><span class="toc-number">1.11.</span> <span class="toc-text">git clean</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#git-mv"><span class="toc-number">1.12.</span> <span class="toc-text">git mv</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#git-stash"><span class="toc-number">1.13.</span> <span class="toc-text">git stash</span></a></li></ol></li></ol>
+      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#git-%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4%E6%95%B4%E7%90%86"><span class="toc-number">1.</span> <span class="toc-text">git 常用命令整理</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#git-init"><span class="toc-number">1.1.</span> <span class="toc-text">git init</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#git-clone"><span class="toc-number">1.2.</span> <span class="toc-text">git clone</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#git-status"><span class="toc-number">1.3.</span> <span class="toc-text">git status</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#git-log"><span class="toc-number">1.4.</span> <span class="toc-text">git log</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#git-add"><span class="toc-number">1.5.</span> <span class="toc-text">git add</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#git-diff"><span class="toc-number">1.6.</span> <span class="toc-text">git diff</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#git-commit"><span class="toc-number">1.7.</span> <span class="toc-text">git commit</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#git-checkout"><span class="toc-number">1.8.</span> <span class="toc-text">git checkout</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#git-reset"><span class="toc-number">1.9.</span> <span class="toc-text">git reset</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#git-revert"><span class="toc-number">1.10.</span> <span class="toc-text">git revert</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8-amp"><span class="toc-number">1.11.</span> <span class="toc-text">使用 ~ &amp; ^</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#git-rm"><span class="toc-number">1.12.</span> <span class="toc-text">git rm</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#git-clean"><span class="toc-number">1.13.</span> <span class="toc-text">git clean</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#git-mv"><span class="toc-number">1.14.</span> <span class="toc-text">git mv</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#git-stash"><span class="toc-number">1.15.</span> <span class="toc-text">git stash</span></a></li></ol></li></ol>
     </nav>
   </div>
 </aside>
@@ -389,10 +389,10 @@
         <span class="post-comment"><i class="icon icon-comment"></i> <a href="/2021/08/08/git%E5%91%BD%E4%BB%A4%E6%95%B4%E7%90%86-%E6%8F%90%E4%BA%A4/#comments" class="article-comment-link">评论</a></span>
         
 	
-		<span class="post-wordcount hidden-xs" itemprop="wordCount">字数统计: 1.7k(字)</span>
+		<span class="post-wordcount hidden-xs" itemprop="wordCount">字数统计: 2k(字)</span>
 	
 	
-		<span class="post-readcount hidden-xs" itemprop="timeRequired">阅读时长: 6(分)</span>
+		<span class="post-readcount hidden-xs" itemprop="timeRequired">阅读时长: 7(分)</span>
 	
 
       </div>
@@ -428,8 +428,10 @@
  同样是用来看改动的相对信息的,--stat比-p的输出更简单一些.
 </code></pre>
 <h2 id="git-add"><a href="#git-add" class="headerlink" title="git add"></a>git add</h2><pre><code> 在提交之前,Git有一个暂存区(staging area),可以放入新添加的文件或者加入新的改动. commit时提交的改动是上一次加入到staging area中的改动,而不是我们disk上的改动.
+  添加指定文件到暂存区
+ git add main.cpp
+ 将工作区的所有修改添加到暂存区
  git add .
- 会递归地添加当前工作目录中的所有文件.
 </code></pre>
 <h2 id="git-diff"><a href="#git-diff" class="headerlink" title="git diff"></a>git diff</h2><pre><code> 不加参数的git diff:
  show diff of unstaged changes.
@@ -459,6 +461,12 @@
  git commit -a 会先把所有已经track的文件的改动add进来,然后提交(有点像svn的一次提交,不用先暂存). 对于没有track的文件,还是需要git add一下.
  git commit --amend 增补提交. 会使用与当前提交节点相同的父节点进行一次新的提交,旧的提交将会被取消.
 </code></pre>
+<h2 id="git-checkout"><a href="#git-checkout" class="headerlink" title="git checkout"></a>git checkout</h2><pre><code> 撤消指定文件的修改
+ git checkout -- &lt;filename&gt;
+
+ 撤消所有文件的修改，此命令不会删除掉刚新建的文件，因为新建的文件还在是未跟踪状态。
+ git checkout .
+</code></pre>
 <h2 id="git-reset"><a href="#git-reset" class="headerlink" title="git reset"></a>git reset</h2><pre><code> undo changes and commits.
  这里的HEAD关键字指的是当前分支最末梢最新的一个提交.也就是版本库中该分支上的最新版本.
  git reset HEAD: unstage files from index and reset pointer to HEAD
@@ -482,6 +490,7 @@
  git revert HEAD: 撤销最近的一个提交.
  git revert会创建一个反向的新提交,可以通过参数-n来告诉Git先不要提交.
 </code></pre>
+<h2 id="使用-amp"><a href="#使用-amp" class="headerlink" title="使用 ~ &amp; ^"></a>使用 ~ &amp; ^</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">对于不方便记忆的 commit id，开发过程中经常会使用 ~ 和 ^ 去追溯代码。</span><br><span class="line">• ref~ 是 ref~1 的简写，表示提交(ref)的第一个父级。ref~2表示提交第一个父级的第一个父级，依次类推。</span><br><span class="line">• ref^ 是 ref^1 的简写，表示提交(ref)的第一个父级。与 ~ 不同的时，ref^2 表示提交的第二个父级（对于一个 merge 节点会有两个父级），依次类推。</span><br><span class="line">^ 和 ~ 可以组合使用，下面举例说明：</span><br><span class="line"></span><br><span class="line">![1.jpg](1.png)</span><br><span class="line"></span><br><span class="line">上面是一个 Git 的历史记录，下图截取了其中的一段记录说明了 ^ 和 ~ 的区别。一般而言，如果你只是想回溯代码，那么使用 ~ 通常能得到你想要的结果。</span><br><span class="line"></span><br><span class="line">![2.jpg](2.png)</span><br></pre></td></tr></table></figure>
 <h2 id="git-rm"><a href="#git-rm" class="headerlink" title="git rm"></a>git rm</h2><pre><code> git rm file: 从staging区移除文件,同时也移除出工作目录.
  git rm --cached: 从staging区移除文件,但留在工作目录中.
  git rm --cached从功能上等同于git reset HEAD,清除了缓存区,但不动工作目录树.
