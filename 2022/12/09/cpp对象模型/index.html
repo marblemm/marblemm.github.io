@@ -1,0 +1,841 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="Cache-Control" content="no-transform" />
+  <meta http-equiv="Cache-Control" content="no-siteapp" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="format-detection" content="telephone=no,email=no,adress=no">
+  <!-- Color theme for statusbar -->
+  <meta name="theme-color" content="#000000" />
+  <!-- 强制页面在当前窗口以独立页面显示,防止别人在框架里调用页面 -->
+  <meta http-equiv="window-target" content="_top" />
+  
+  
+  <title>c++对象模型 | marble</title>
+  <meta name="description" content="前言看此篇文档前需要先弄清楚指针地址的强制转换和内存对齐知识 从下面这个例子引入强制转换的概念:123456struct test&amp;#123;	char string[2];  &#x2F;&#x2F;2	int *point;   &#x2F;&#x2F;4	int nu[2];    &#x2F;&#x2F;8	short data[3];  &#x2F;&#x2F;6&amp;#125;*p; 如果p 的值为0x100000。如下表表达式的值分别为多少？ 1234p + 0x0">
+<meta property="og:type" content="article">
+<meta property="og:title" content="c++对象模型">
+<meta property="og:url" content="https://marblemm.github.io/2022/12/09/cpp%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="前言看此篇文档前需要先弄清楚指针地址的强制转换和内存对齐知识 从下面这个例子引入强制转换的概念:123456struct test&amp;#123;	char string[2];  &#x2F;&#x2F;2	int *point;   &#x2F;&#x2F;4	int nu[2];    &#x2F;&#x2F;8	short data[3];  &#x2F;&#x2F;6&amp;#125;*p; 如果p 的值为0x100000。如下表表达式的值分别为多少？ 1234p + 0x0">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://marblemm.github.io/2022/12/09/cpp%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B/cpp%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B/1.png">
+<meta property="og:image" content="https://marblemm.github.io/2022/12/09/cpp%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B/cpp%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B/2.png">
+<meta property="og:image" content="https://marblemm.github.io/2022/12/09/cpp%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B/cpp%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B/3.png">
+<meta property="og:image" content="https://marblemm.github.io/2022/12/09/cpp%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B/cpp%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B/4.png">
+<meta property="og:image" content="https://marblemm.github.io/2022/12/09/cpp%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B/cpp%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B/5.png">
+<meta property="og:image" content="https://marblemm.github.io/2022/12/09/cpp%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B/cpp%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B/6.png">
+<meta property="og:image" content="https://marblemm.github.io/2022/12/09/cpp%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B/cpp%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B/7.png">
+<meta property="og:image" content="https://marblemm.github.io/2022/12/09/cpp%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B/cpp%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B/8.png">
+<meta property="og:image" content="https://marblemm.github.io/2022/12/09/cpp%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B/cpp%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B/9.png">
+<meta property="og:image" content="https://marblemm.github.io/2022/12/09/cpp%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B/cpp%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B/10.png">
+<meta property="og:image" content="https://marblemm.github.io/2022/12/09/cpp%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B/cpp%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B/11.png">
+<meta property="og:image" content="https://marblemm.github.io/2022/12/09/cpp%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B/cpp%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B/12.png">
+<meta property="og:image" content="https://marblemm.github.io/2022/12/09/cpp%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B/cpp%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B/13.png">
+<meta property="og:image" content="https://marblemm.github.io/2022/12/09/cpp%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B/cpp%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B/14.png">
+<meta property="og:image" content="https://marblemm.github.io/2022/12/09/cpp%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B/cpp%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B/15.png">
+<meta property="og:image" content="https://marblemm.github.io/2022/12/09/cpp%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B/cpp%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B/16.png">
+<meta property="og:image" content="https://marblemm.github.io/2022/12/09/cpp%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B/cpp%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B/17.png">
+<meta property="og:image" content="https://marblemm.github.io/2022/12/09/cpp%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B/cpp%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B/18.png">
+<meta property="og:image" content="https://marblemm.github.io/2022/12/09/cpp%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B/cpp%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B/19.png">
+<meta property="og:image" content="https://marblemm.github.io/2022/12/09/cpp%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B/cpp%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B/20.png">
+<meta property="article:published_time" content="2022-12-09T01:59:20.000Z">
+<meta property="article:modified_time" content="2022-12-15T13:51:18.029Z">
+<meta property="article:author" content="John Doe">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://marblemm.github.io/2022/12/09/cpp%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B/cpp%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B/1.png">
+  <!-- Canonical links -->
+  <link rel="canonical" href="https://marblemm.github.io/2022/12/09/cpp%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B/index.html">
+  
+    <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png" type="image/x-icon">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+  
+  
+  
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body class="main-center theme-green" itemscope itemtype="http://schema.org/WebPage">
+  <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+  <div class="slimContent">
+    <div class="navbar-header">
+      
+      
+      <div class="profile-block text-center">
+        <a id="avatar" href="https://github.com/marblemm" target="_blank">
+          <img class="img-circle img-rotate" src="/images/avatar.jpg" width="200" height="200">
+        </a>
+        <h2 id="name" class="hidden-xs hidden-sm">marble</h2>
+        <h3 id="title" class="hidden-xs hidden-sm hidden-md">software Developer</h3>
+        <small id="location" class="text-muted hidden-xs hidden-sm"><i class="icon icon-map-marker"></i> wuhan, China</small>
+      </div>
+      
+      <div class="search" id="search-form-wrap">
+
+    <form class="search-form sidebar-form">
+        <div class="input-group">
+            <input type="text" class="search-form-input form-control" placeholder="搜索" />
+            <span class="input-group-btn">
+                <button type="submit" class="search-form-submit btn btn-flat" onclick="return false;"><i class="icon icon-search"></i></button>
+            </span>
+        </div>
+    </form>
+    <div class="ins-search">
+  <div class="ins-search-mask"></div>
+  <div class="ins-search-container">
+    <div class="ins-input-wrapper">
+      <input type="text" class="ins-search-input" placeholder="想要查找什么..." x-webkit-speech />
+      <button type="button" class="close ins-close ins-selectable" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+    </div>
+    <div class="ins-section-wrapper">
+      <div class="ins-section-container"></div>
+    </div>
+  </div>
+</div>
+
+
+</div>
+      <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <nav id="main-navbar" class="collapse navbar-collapse" itemscope itemtype="http://schema.org/SiteNavigationElement" role="navigation">
+      <ul class="nav navbar-nav main-nav ">
+        
+        
+        <li class="menu-item menu-item-home">
+          <a href="/.">
+            
+            <i class="icon icon-home-fill"></i>
+            
+            <span class="menu-title">首页</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives">
+            
+            <i class="icon icon-archives-fill"></i>
+            
+            <span class="menu-title">归档</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories">
+            
+            <i class="icon icon-folder"></i>
+            
+            <span class="menu-title">分类</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-links">
+          <a href="/links">
+            
+            <i class="icon icon-friendship"></i>
+            
+            <span class="menu-title">友链</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-pano">
+          <a href="/pano">
+            
+            <i class="icon icon-friendship"></i>
+            
+            <span class="menu-title">全景</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-pointcloud">
+          <a href="/pointcloud">
+            
+            <i class="icon icon-friendship"></i>
+            
+            <span class="menu-title">点云</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-game">
+          <a href="/2048">
+            
+            <i class="icon icon-friendship"></i>
+            
+            <span class="menu-title">游戏</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about">
+            
+            <i class="icon icon-cup-fill"></i>
+            
+            <span class="menu-title">关于</span>
+          </a>
+        </li>
+        
+      </ul>
+      
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/marblemm" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="https://gitee.com/marblemm" target="_blank" title="Gitee" data-toggle=tooltip data-placement=top><i class="icon icon-gitee"></i></a></li>
+        
+    </ul>
+
+    </nav>
+  </div>
+</header>
+
+  
+    <aside class="sidebar" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    
+      <div class="widget">
+    <h3 class="widget-title">公告</h3>
+    <div class="widget-body">
+        <div id="board">
+            <div class="content">
+                <p>欢迎交流与分享经验!</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">分类</h3>
+    <div class="widget-body">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/c/">c++</a><span class="category-list-count">14</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/c-%E9%9D%A2%E8%AF%95/">c++面试</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/cmake/">cmake</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/com/">com</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/git/">git</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/tool/">tool</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/vs/">vs</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E4%B9%A6%E7%B1%8D/">书籍</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%A4%9A%E7%BA%BF%E7%A8%8B/">多线程</a><span class="category-list-count">5</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget-body">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/cmake/" rel="tag">cmake</a><span class="tag-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget-body tagcloud">
+      <a href="/tags/cmake/" style="font-size: 13px;">cmake</a>
+    </div>
+  </div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget-body">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/12/">十二月 2022</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/11/">十一月 2021</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/10/">十月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/09/">九月 2021</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/08/">八月 2021</a><span class="archive-list-count">23</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget-body">
+      <ul class="recent-post-list list-unstyled no-thumbnail">
+        
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/c/">c++</a>
+              </p>
+              <p class="item-title">
+                <a href="/2022/12/11/cpp%E5%A4%9A%E6%80%81%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0/" class="title">cpp多态如何实现</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2022-12-11T03:18:04.000Z" itemprop="datePublished">2022-12-11</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/c/">c++</a>
+              </p>
+              <p class="item-title">
+                <a href="/2022/12/09/%E5%A4%A7%E5%B0%8F%E7%AB%AF%E4%BB%8B%E7%BB%8D/" class="title">大小端介绍</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2022-12-09T03:41:54.000Z" itemprop="datePublished">2022-12-09</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/c/">c++</a>
+              </p>
+              <p class="item-title">
+                <a href="/2022/12/09/cpp%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B/" class="title">c++对象模型</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2022-12-09T01:59:20.000Z" itemprop="datePublished">2022-12-09</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/com/">com</a>
+              </p>
+              <p class="item-title">
+                <a href="/2021/11/24/com-5%E8%B0%83%E7%94%A8com%E7%BB%84%E4%BB%B6%E7%9A%84%E6%96%B9%E6%B3%95%E6%80%BB%E7%BB%93/" class="title">com-5调用com组件的方法总结</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2021-11-24T15:28:53.000Z" itemprop="datePublished">2021-11-24</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/com/">com</a>
+              </p>
+              <p class="item-title">
+                <a href="/2021/11/21/com-4%E7%BB%84%E4%BB%B6%E5%A4%8D%E7%94%A8-%E5%8C%85%E5%AE%B9%E5%92%8C%E8%81%9A%E5%90%88/" class="title">com-4组件复用:包容和聚合</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2021-11-21T02:11:48.000Z" itemprop="datePublished">2021-11-21</time>
+              </p>
+            </div>
+          </li>
+          
+      </ul>
+    </div>
+  </div>
+  
+
+    
+  </div>
+</aside>
+
+  
+  
+<aside class="sidebar sidebar-toc collapse" id="collapseToc" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    <nav id="toc" class="article-toc">
+      <h3 class="toc-title">文章目录</h3>
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BB%8E%E4%B8%8B%E9%9D%A2%E8%BF%99%E4%B8%AA%E4%BE%8B%E5%AD%90%E5%BC%95%E5%85%A5%E5%BC%BA%E5%88%B6%E8%BD%AC%E6%8D%A2%E7%9A%84%E6%A6%82%E5%BF%B5"><span class="toc-number">1.1.</span> <span class="toc-text">从下面这个例子引入强制转换的概念:</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%86%E6%9E%90%E5%AE%9E%E4%BE%8B"><span class="toc-number">1.2.</span> <span class="toc-text">分析实例</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%9E%E4%BE%8B%E8%A7%A3%E6%9E%90"><span class="toc-number">1.3.</span> <span class="toc-text">实例解析</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%B1%BB%E5%AF%B9%E8%B1%A1%E5%9C%B0%E5%9D%80%E8%8E%B7%E5%8F%96%E5%86%85%E9%83%A8%E5%8F%98%E9%87%8F"><span class="toc-number">1.4.</span> <span class="toc-text">类对象地址获取内部变量</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E4%BD%95%E4%B8%BAC-%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B"><span class="toc-number">2.</span> <span class="toc-text">1.何为C++对象模型?</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E6%96%87%E7%AB%A0%E5%86%85%E5%AE%B9%E7%AE%80%E4%BB%8B"><span class="toc-number">3.</span> <span class="toc-text">2.文章内容简介</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-%E7%90%86%E8%A7%A3%E8%99%9A%E5%87%BD%E6%95%B0%E8%A1%A8"><span class="toc-number">4.</span> <span class="toc-text">3.理解虚函数表</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-%E5%A4%9A%E6%80%81%E4%B8%8E%E8%99%9A%E8%A1%A8"><span class="toc-number">4.1.</span> <span class="toc-text">3.1.多态与虚表</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-2-%E4%BD%BF%E7%94%A8%E6%8C%87%E9%92%88%E8%AE%BF%E9%97%AE%E8%99%9A%E8%A1%A8"><span class="toc-number">4.2.</span> <span class="toc-text">3.2.使用指针访问虚表</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B%E6%A6%82%E8%BF%B0"><span class="toc-number">5.</span> <span class="toc-text">4.对象模型概述</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#4-1-%E7%AE%80%E5%8D%95%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B"><span class="toc-number">5.1.</span> <span class="toc-text">4.1.简单对象模型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-2-%E8%A1%A8%E6%A0%BC%E9%A9%B1%E5%8A%A8%E6%A8%A1%E5%9E%8B"><span class="toc-number">5.2.</span> <span class="toc-text">4.2.表格驱动模型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-3-%E9%9D%9E%E7%BB%A7%E6%89%BF%E4%B8%8B%E7%9A%84C-%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B"><span class="toc-number">5.3.</span> <span class="toc-text">4.3.非继承下的C++对象模型</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-%E7%BB%A7%E6%89%BF%E4%B8%8B%E7%9A%84C-%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B"><span class="toc-number">6.</span> <span class="toc-text">5.继承下的C++对象模型</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#5-1-%E5%8D%95%E7%BB%A7%E6%89%BF"><span class="toc-number">6.1.</span> <span class="toc-text">5.1.单继承</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-2-%E5%A4%9A%E7%BB%A7%E6%89%BF"><span class="toc-number">6.2.</span> <span class="toc-text">5.2.多继承</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#5-2-1%E4%B8%80%E8%88%AC%E7%9A%84%E5%A4%9A%E9%87%8D%E7%BB%A7%E6%89%BF%EF%BC%88%E9%9D%9E%E8%8F%B1%E5%BD%A2%E7%BB%A7%E6%89%BF%EF%BC%89"><span class="toc-number">6.2.1.</span> <span class="toc-text">5.2.1一般的多重继承（非菱形继承）</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-2-2-%E8%8F%B1%E5%BD%A2%E7%BB%A7%E6%89%BF"><span class="toc-number">6.3.</span> <span class="toc-text">5.2.2 菱形继承</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-%E8%99%9A%E7%BB%A7%E6%89%BF"><span class="toc-number">7.</span> <span class="toc-text">6.虚继承</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#6-1-%E8%99%9A%E5%9F%BA%E7%B1%BB%E8%A1%A8%E8%A7%A3%E6%9E%90"><span class="toc-number">7.1.</span> <span class="toc-text">6.1.虚基类表解析</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-2-%E7%AE%80%E5%8D%95%E8%99%9A%E7%BB%A7%E6%89%BF"><span class="toc-number">7.2.</span> <span class="toc-text">6.2.简单虚继承</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-3-%E8%99%9A%E6%8B%9F%E8%8F%B1%E5%BD%A2%E7%BB%A7%E6%89%BF"><span class="toc-number">7.3.</span> <span class="toc-text">6.3.虚拟菱形继承</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E6%96%87%E7%AB%A0"><span class="toc-number">8.</span> <span class="toc-text">参考文章</span></a></li></ol>
+    </nav>
+  </div>
+</aside>
+
+<main class="main" role="main">
+  <div class="content">
+  <article id="post-cpp对象模型" class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
+    
+    <div class="article-header">
+      
+        
+  
+    <h1 class="article-title" itemprop="name">
+      c++对象模型
+    </h1>
+  
+
+      
+      <div class="article-meta">
+        <span class="article-date">
+    <i class="icon icon-calendar-check"></i>
+	<a href="/2022/12/09/cpp%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B/" class="article-date">
+	  <time datetime="2022-12-09T01:59:20.000Z" itemprop="datePublished">2022-12-09</time>
+	</a>
+</span>
+        
+  <span class="article-category">
+    <i class="icon icon-folder"></i>
+    <a class="article-category-link" href="/categories/c/">c++</a>
+  </span>
+
+        
+
+        
+	<span class="article-read hidden-xs">
+	    <i class="icon icon-eye-fill" aria-hidden="true"></i>
+	    <span id="busuanzi_container_page_pv">
+			<span id="busuanzi_value_page_pv">0</span>
+		</span>
+	</span>
+
+
+        <span class="post-comment"><i class="icon icon-comment"></i> <a href="/2022/12/09/cpp%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B/#comments" class="article-comment-link">评论</a></span>
+        
+	
+		<span class="post-wordcount hidden-xs" itemprop="wordCount">字数统计: 10.1k(字)</span>
+	
+	
+		<span class="post-readcount hidden-xs" itemprop="timeRequired">阅读时长: 46(分)</span>
+	
+
+      </div>
+    </div>
+    <div class="article-entry marked-body" itemprop="articleBody">
+      
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>看此篇文档前需要先弄清楚指针地址的强制转换和内存对齐知识</p>
+<h3 id="从下面这个例子引入强制转换的概念"><a href="#从下面这个例子引入强制转换的概念" class="headerlink" title="从下面这个例子引入强制转换的概念:"></a>从下面这个例子引入强制转换的概念:</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">struct test&#123;</span><br><span class="line">	char string[2];  //2</span><br><span class="line">	int *point;   //4</span><br><span class="line">	int nu[2];    //8</span><br><span class="line">	short data[3];  //6</span><br><span class="line">&#125;*p;</span><br></pre></td></tr></table></figure>
+<p>如果p 的值为0x100000。如下表表达式的值分别为多少？</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">p + 0x01 = </span><br><span class="line">(unsigned long)p + 0x01 = </span><br><span class="line">(unsigned int*)p + 0x01 =</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h3 id="分析实例"><a href="#分析实例" class="headerlink" title="分析实例"></a>分析实例</h3><p>主要的原理还是表达式“a+1”与“&amp;a+1”之间的区别，同理，指针变量与一个整数相加减并不是用指针变量里的地址直接加减这个整数。这个整数的单位不是byte 而是元素的个数。</p>
+<ul>
+<li>Q1: p + 0x1 的值为0x100000+sizof(test)0x1。至于此结构体的大小为20byte，所以p +0x1 的值为：0x100014;</li>
+<li>Q2: (unsigned long)p + 0x1 的值呢？这里涉及到强制转换，将指针变量p 保存的值强制转换成无符号的长整型数。任何数值一旦被强制转换，其类型就改变了。所以这个表达式其实就是一个无符号的长整型数加上另一个整数。所以其值为:0x100001;</li>
+<li>Q3:(unsigned int*)p + 0x1 的值呢？这里的p 被强制转换成一个指向无符号整型的指针。所以其值为：0x100000+sizof(unsigned int)*0x1，等于0x100004;</li>
+</ul>
+<h3 id="实例解析"><a href="#实例解析" class="headerlink" title="实例解析"></a>实例解析</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">#include &lt;stdio.h&gt;</span><br><span class="line">int main()</span><br><span class="line">&#123;</span><br><span class="line">	int a[4] = &#123; 1,2,3,4 &#125;;</span><br><span class="line"></span><br><span class="line">	int* p1 = (int*)(&amp;a + 1);</span><br><span class="line">	int* p2 = (int*)((int)a + 1);</span><br><span class="line"></span><br><span class="line">	printf(&quot;The a address is %p\n&quot;, &amp;a);</span><br><span class="line">	printf(&quot;The a+1 address is %p\n&quot;, &amp;(a[1]));</span><br><span class="line">	printf(&quot;The (int)a address is %p\n&quot;, (int)a);</span><br><span class="line">	printf(&quot;The (int)a+1 address is %p\n&quot;, (int)a + 1);</span><br><span class="line">	printf(&quot;%x %p %x\n&quot;, p1[-1], p2, *p2);</span><br><span class="line"></span><br><span class="line">	return 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">The a address is 004FFD18</span><br><span class="line">The a+1 address is 004FFD1C</span><br><span class="line">The (int)a address is 004FFD18</span><br><span class="line">The (int)a+1 address is 004FFD19</span><br><span class="line">4 004FFD19 2000000</span><br></pre></td></tr></table></figure>
+<p>这个p1[-1]是4,是因为sizeof(a)= 16，&amp;a+1就是a数组的末尾了</p>
+<p>p2就是将a的地址转成int后+1=004FFD18+1=004FFD19</p>
+<p>*p2的值应该为&amp;a+sizeof(int)*0x01的值，我们可以通过VS查看内存布局；</p>
+<p><img src="./cpp%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B/1.png" alt="vs"></p>
+<p><img src="./cpp%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B/2.png" alt="vs内存"></p>
+<p>由内存中数据可知当前数据的存储方式为小端模式<br>p2的地址是004FFD19，内存的数据是00 00 00 02，由于是小端模式，所以最后的数值是02 00 00 00</p>
+<p><a href="./%E5%A4%A7%E5%B0%8F%E7%AB%AF%E4%BB%8B%E7%BB%8D.md">大小端介绍</a></p>
+<h3 id="类对象地址获取内部变量"><a href="#类对象地址获取内部变量" class="headerlink" title="类对象地址获取内部变量"></a>类对象地址获取内部变量</h3><p>对于类内部变量可以通过强转类对象地址拿到</p>
+<p><img src="./cpp%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B/3.png" alt="图 1">  </p>
+<pre><code>a:  *(int*)&amp;aaa
+b:  *((int*)&amp;aaa + 1)
+</code></pre>
+<p>对于成员函数可以定义成员函数的函数指针强转拿到</p>
+<p>具体可以查看<a target="_blank" rel="noopener" href="https://blog.csdn.net/Q_1849805767/article/details/107391572?spm=1001.2101.3001.6650.1&utm_medium=distribute.pc_relevant.none-task-blog-2~default~CTRLIST~Rate-1-107391572-blog-47072091.pc_relevant_3mothn_strategy_recovery&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2~default~CTRLIST~Rate-1-107391572-blog-47072091.pc_relevant_3mothn_strategy_recovery&utm_relevant_index=2">成员函数</a></p>
+<p>成员函数是在编译器就确定好的，当成全局函数来调用<br><a target="_blank" rel="noopener" href="https://blog.csdn.net/baidu_41388533/article/details/109564682">https://blog.csdn.net/baidu_41388533/article/details/109564682</a></p>
+<h2 id="1-何为C-对象模型"><a href="#1-何为C-对象模型" class="headerlink" title="1.何为C++对象模型?"></a>1.何为C++对象模型?</h2><p>引用《深度探索C++对象模型》这本书中的话：</p>
+<pre><code>有两个概念可以解释C++对象模型：
+1、语言中直接支持面向对象程序设计的部分。
+2、对于各种支持的底层实现机制。
+</code></pre>
+<p>直接支持面向对象程序设计，包括了构造函数、析构函数、多态、虚函数等等，这些内容在很多书籍上都有讨论，也是C++最被人熟知的地方（特性）。而对象模型的底层实现机制却是很少有书籍讨论的。对象模型的底层实现机制并未标准化，不同的编译器有一定的自由来设计对象模型的实现细节。在我看来，对象模型研究的是对象在存储上的空间与时间上的更优，并对C++面向对象技术加以支持，如以虚指针、虚表机制支持多态特性。</p>
+<h2 id="2-文章内容简介"><a href="#2-文章内容简介" class="headerlink" title="2.文章内容简介"></a>2.文章内容简介</h2><p>这篇文章主要来讨论C++对象在内存中的布局，属于第二个概念的研究范畴。而C++直接支持面向对象程序设计部分则不多讲。文章主要内容如下：</p>
+<ul>
+<li>虚函数表解析。含有虚函数或其父类含有虚函数的类，编译器都会为其添加一个虚函数表,vptr，先了解虚函数表的构成，有助对C++对象模型的理解。</li>
+<li>虚基类表解析。虚继承产生虚基类表(vbptr)，虚基类表的内容与虚函数表完全不同，我们将在讲解虚继承时介绍虚函数表。</li>
+<li>对象模型概述：介绍简单对象模型、表格驱动对象模型，以及非继承情况下的C++对象模型。</li>
+<li>继承下的C++对象模型。分析C++类对象在下面情形中的内存布局：<ul>
+<li>单继承：子类单一继承自父类，分析了子类重写父类虚函数、子类定义了新的虚函数情况下子类对象内存布局。</li>
+<li>多继承：子类继承于多个父类，分析了子类重写父类虚函数、子类定义了新的虚函数情况下子类对象内存布局，同时分析了非虚继承下的菱形继承。</li>
+<li>虚继承：分析了单一继承下的虚继承、多重基层下的虚继承、重复继承下的虚继承。</li>
+</ul>
+</li>
+<li>理解对象的内存布局之后，我们可以分析一些问题：<ul>
+<li>C++封装带来的布局成本是多大？</li>
+<li>由空类组成的继承层次中，每个类对象的大小是多大？</li>
+</ul>
+</li>
+</ul>
+<p>至于其他与内存有关的知识，我假设大家都有一定的了解，如内存对齐，指针操作等。本文初看可能晦涩难懂，要求读者有一定的C++基础，对概念一有一定的掌握。</p>
+<h2 id="3-理解虚函数表"><a href="#3-理解虚函数表" class="headerlink" title="3.理解虚函数表"></a>3.理解虚函数表</h2><h3 id="3-1-多态与虚表"><a href="#3-1-多态与虚表" class="headerlink" title="3.1.多态与虚表"></a>3.1.多态与虚表</h3><p>C++中虚函数的作用主要是为了实现多态机制。多态，简单来说，是指在继承层次中，父类的指针可以具有多种形态——当它指向某个子类对象时，通过它能够调用到子类的函数，而非父类的函数。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">class Base &#123;     virtual void print(void);    &#125;</span><br><span class="line">class Drive1 :public Base&#123;    virtual void print(void);    &#125;</span><br><span class="line">class Drive2 :public Base&#123;    virtual void print(void);    &#125;</span><br><span class="line"></span><br><span class="line">Base * ptr1 = new Base; </span><br><span class="line">Base * ptr2 = new Drive1;  </span><br><span class="line">Base * ptr3 = new Drive2;</span><br><span class="line"></span><br><span class="line">ptr1-&gt;print(); //调用Base::print()</span><br><span class="line">prt2-&gt;print();//调用Drive1::print()</span><br><span class="line">prt3-&gt;print();//调用Drive2::print()</span><br></pre></td></tr></table></figure>
+<p>这是一种运行期多态，即父类指针唯有在程序运行时才能知道所指的真正类型是什么。这种运行期决议，是通过虚函数表来实现的。</p>
+<h3 id="3-2-使用指针访问虚表"><a href="#3-2-使用指针访问虚表" class="headerlink" title="3.2.使用指针访问虚表"></a>3.2.使用指针访问虚表</h3><p>如果我们丰富我们的Base类,使其拥有多个virtual函数：</p>
+<p>当一个类本身定义了虚函数，或其父类有虚函数时，为了支持多态机制，编译器将为该类添加一个虚函数指针（vptr）。虚函数指针一般都放在对象内存布局的第一个位置上，这是为了保证在多层继承或多重继承的情况下能以最高效率取到虚函数表。</p>
+<p>当vprt位于对象内存最前面时，对象的地址即为虚函数指针地址。我们可以取得虚函数指针的地址：</p>
+<p>如下的例子</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line">#pragma once</span><br><span class="line">#include&lt;iostream&gt;</span><br><span class="line">using namespace std;</span><br><span class="line">class Base</span><br><span class="line">&#123;</span><br><span class="line">public:</span><br><span class="line"></span><br><span class="line">	Base(int i) :baseI(i) &#123;&#125;;</span><br><span class="line">	virtual void print(void) &#123; cout &lt;&lt; &quot;调用了虚函数Base::print()&quot; &lt;&lt; endl; &#125;</span><br><span class="line">	virtual void setI() &#123; cout &lt;&lt; &quot;调用了虚函数Base::setI()&quot; &lt;&lt; endl; &#125;</span><br><span class="line">	virtual ~Base() &#123;&#125;</span><br><span class="line">private:</span><br><span class="line">	int baseI;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">int main()</span><br><span class="line">&#123;</span><br><span class="line">	Base b(100);</span><br><span class="line">	int* vptrAdree = (int*)(&amp;b);</span><br><span class="line">	cout &lt;&lt; &quot;虚函数指针（vprt）的地址是：\t&quot; &lt;&lt; vptrAdree &lt;&lt; endl;</span><br><span class="line">	cout &lt;&lt; &quot;baseI的值是：&quot;&lt;&lt;*(vptrAdree + 1) &lt;&lt; &quot;	变量的地址是：&quot; &lt;&lt; vptrAdree + 1 &lt;&lt; endl;</span><br><span class="line"></span><br><span class="line">	typedef void(*Fun)(void);</span><br><span class="line">	Fun vfunc = (Fun) * ((int*)*(int*)(&amp;b));</span><br><span class="line">	cout &lt;&lt; &quot;第一个虚函数的地址是：&quot; &lt;&lt; (int*)*(int*)(&amp;b) &lt;&lt; endl;</span><br><span class="line">	cout &lt;&lt; &quot;通过地址，调用虚函数Base::print()：&quot; ;</span><br><span class="line">	vfunc();</span><br><span class="line">	cout &lt;&lt; &quot;第二个虚函数的地址是：&quot; &lt;&lt; (int*)*(int*)(&amp;b) + 1 &lt;&lt; endl;</span><br><span class="line">	cout &lt;&lt; &quot;通过地址，调用虚函数Base::setI()：&quot;;</span><br><span class="line">	((Fun)* ((int*)*(int*)(&amp;b) + 1))();</span><br><span class="line"></span><br><span class="line">	return 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">结果如下：</span><br><span class="line">虚函数指针（vprt）的地址是：    00FBFBE4</span><br><span class="line">baseI的值是：100        变量的地址是：00FBFBE8</span><br><span class="line">第一个虚函数的地址是：000DAB34</span><br><span class="line">通过地址，调用虚函数Base::print()：调用了虚函数Base::print()</span><br><span class="line">第二个虚函数的地址是：000DAB38</span><br><span class="line">通过地址，调用虚函数Base::setI()：调用了虚函数Base::setI()</span><br></pre></td></tr></table></figure>
+
+<p>我们强行把类对象的地址转换为 int* 类型，取得了虚函数指针的地址。虚函数指针指向虚函数表,虚函数表中存储的是一系列虚函数的地址，虚函数地址出现的顺序与类中虚函数声明的顺序一致。对虚函数指针地址值，可以得到虚函数表的地址，也即是虚函数表第一个虚函数的地址:</p>
+<ul>
+<li>我们把虚表指针的值取出来： <em>(int</em>)(&amp;b)，它是一个地址，虚函数表的地址</li>
+<li>把虚函数表的地址强制转换成 int* : ( int *) <em>( int</em> )( &amp;b )</li>
+<li>再把它转化成我们Fun指针类型 ： (Fun )<em>(int <em>)</em>(int</em>)(&amp;b)</li>
+</ul>
+<p>这样，我们就取得了类中的第一个虚函数，我们可以通过函数指针访问它。<br>同理可以拿到第二个虚函数的地址</p>
+<h2 id="4-对象模型概述"><a href="#4-对象模型概述" class="headerlink" title="4.对象模型概述"></a>4.对象模型概述</h2><p>在C++中，有两种数据成员（class data members）：static 和nonstatic,以及三种类成员函数（class member functions）:static、nonstatic和virtual:</p>
+<p><img src="./cpp%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B/4.png" alt="图 2">  </p>
+<p>现在我们有一个类Base，它包含了上面这5中类型的数据或函数：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">class Base</span><br><span class="line">&#123;</span><br><span class="line">public: </span><br><span class="line">    Base(int i) :baseI(i)&#123;&#125;;  </span><br><span class="line">    int getI()&#123; return baseI; &#125; </span><br><span class="line">    static void countI()&#123;&#125;; </span><br><span class="line">    virtual ~Base()&#123;&#125;</span><br><span class="line">    virtual void print(void)&#123; cout &lt;&lt; &quot;Base::print()&quot;; &#125;    </span><br><span class="line">private: </span><br><span class="line">    int baseI; </span><br><span class="line">    static int baseS;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>那么，这个类在内存中将被如何表示？5种数据都是连续存放的吗？如何布局才能支持C++多态？ 我们的C++标准与编译器将如何塑造出各种数据成员与成员函数呢？</p>
+<h3 id="4-1-简单对象模型"><a href="#4-1-简单对象模型" class="headerlink" title="4.1.简单对象模型"></a>4.1.简单对象模型</h3><p>说明：在下面出现的图中，用蓝色边框框起来的内容在内存上是连续的。</p>
+<p>这个模型非常地简单粗暴。在该模型下，对象由一系列的指针组成，每一个指针都指向一个数据成员或成员函数，也即是说，每个数据成员和成员函数在类中所占的大小是相同的，都为一个指针的大小。这样有个好处——很容易算出对象的大小，不过赔上的是空间和执行期效率。想象一下，如果我们的Point3d类是这种模型，将会比C语言的struct多了许多空间来存放指向函数的指针，而且每次读取类的数据成员，都需要通过再一次寻址——又是时间上的消耗。<br>所以这种对象模型并没有被用于实际产品上。</p>
+<p><img src="./cpp%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B/5.png" alt="图 3">  </p>
+<h3 id="4-2-表格驱动模型"><a href="#4-2-表格驱动模型" class="headerlink" title="4.2.表格驱动模型"></a>4.2.表格驱动模型</h3><p>这个模型在简单对象模型的基础上又添加一个间接层，它把类中的数据分成了两个部分：数据部分与函数部分，并使用两张表格，一张存放数据本身，一张存放函数的地址（也即函数比成员多一次寻址），而类对象仅仅含有两个指针，分别指向上面这两个表。这样看来，对象的大小是固定为两个指针大小。这个模型也没有用于实际应用于真正的C++编译器上。</p>
+<h3 id="4-3-非继承下的C-对象模型"><a href="#4-3-非继承下的C-对象模型" class="headerlink" title="4.3.非继承下的C++对象模型"></a>4.3.非继承下的C++对象模型</h3><p>概述：在此模型下，nonstatic 数据成员被置于每一个类对象中，而static数据成员被置于类对象之外。static与nonstatic函数也都放在类对象之外，而对于virtual 函数，则通过虚函数表+虚指针来支持，具体如下：</p>
+<ul>
+<li>每个类生成一个表格，称为虚表（virtual table，简称vtbl）。虚表中存放着一堆指针，这些指针指向该类每一个虚函数。虚表中的函数地址将按声明时的顺序排列，不过当子类有多个重载函数时例外，后面会讨论。</li>
+<li>每个类对象都拥有一个虚表指针(vptr)，由编译器为其生成。虚表指针的设定与重置皆由类的复制控制（也即是构造函数、析构函数、赋值操作符）来完成。vptr的位置为编译器决定，传统上它被放在所有显示声明的成员之后，不过现在许多编译器把vptr放在一个类对象的最前端。关于数据成员布局的内容，在后面会详细分析。<br>另外，虚函数表的前面设置了一个指向type_info的指针，用以支持RTTI（Run Time Type Identification，运行时类型识别）。RTTI是为多态而生成的信息，包括对象继承关系，对象本身的描述等，只有具有虚函数的对象在会生成。</li>
+</ul>
+<p>在此模型下，Base的对象模型如图：<br><img src="./cpp%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B/6.png" alt="图 4">  </p>
+<p>先在VS上验证类对象的布局：</p>
+<pre><code>Base b(1000);
+</code></pre>
+<p><img src="./cpp%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B/7.png" alt="图 5">  </p>
+<p>可见对象b含有一个vfptr，即vprt。并且只有nonstatic数据成员被放置于对象内。我们展开vfprt：<br><img src="./cpp%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B/8.png" alt="图 6">  </p>
+<p>vfptr中有两个指针类型的数据（地址），第一个指向了Base类的析构函数，第二个指向了Base的虚函数print，顺序与声明顺序相同。</p>
+<p>这与上述的C++对象模型相符合。也可以通过代码来进行验证：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br></pre></td><td class="code"><pre><span class="line">#include &lt;windows.h&gt;</span><br><span class="line">#include &lt;typeinfo&gt;</span><br><span class="line">#include &lt;iostream&gt;</span><br><span class="line">using namespace std;</span><br><span class="line"></span><br><span class="line">typedef unsigned long DWORD;</span><br><span class="line">struct TypeDescriptor</span><br><span class="line">&#123;</span><br><span class="line">	DWORD ptrToVTable;</span><br><span class="line">	DWORD spare;</span><br><span class="line">	char name[8];</span><br><span class="line">&#125;;</span><br><span class="line">struct PMD</span><br><span class="line">&#123;</span><br><span class="line">	int mdisp;  //member displacement</span><br><span class="line">	int pdisp;  //vbtable displacement</span><br><span class="line">	int vdisp;  //displacement inside vbtable</span><br><span class="line">&#125;;</span><br><span class="line">struct RTTIBaseClassDescriptor</span><br><span class="line">&#123;</span><br><span class="line">	struct TypeDescriptor* pTypeDescriptor; //type descriptor of the class</span><br><span class="line">	DWORD numContainedBases; //number of nested classes following in the Base Class Array</span><br><span class="line">	struct PMD where;        //pointer-to-member displacement info</span><br><span class="line">	DWORD attributes;        //flags, usually 0</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">struct RTTIClassHierarchyDescriptor</span><br><span class="line">&#123;</span><br><span class="line">	DWORD signature;      //always zero?</span><br><span class="line">	DWORD attributes;     //bit 0 set = multiple inheritance, bit 1 set = virtual inheritance</span><br><span class="line">	DWORD numBaseClasses; //number of classes in pBaseClassArray</span><br><span class="line">	struct RTTIBaseClassArray* pBaseClassArray;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">struct RTTICompleteObjectLocator</span><br><span class="line">&#123;</span><br><span class="line">	DWORD signature; //always zero ?</span><br><span class="line">	DWORD offset;    //offset of this vtable in the complete class</span><br><span class="line">	DWORD cdOffset;  //constructor displacement offset</span><br><span class="line">	struct TypeDescriptor* pTypeDescriptor; //TypeDescriptor of the complete class</span><br><span class="line">	struct RTTIClassHierarchyDescriptor* pClassDescriptor; //describes inheritance hierarchy</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">class Base</span><br><span class="line">&#123;</span><br><span class="line">public:</span><br><span class="line">	Base(int i) :baseI(i) &#123;&#125;;</span><br><span class="line">	int getI() &#123; return baseI; &#125;</span><br><span class="line">	static void countI() &#123;&#125;;</span><br><span class="line">	virtual ~Base() &#123;&#125;</span><br><span class="line">	virtual void print(void) &#123; cout &lt;&lt; &quot;Base::print()&quot;; &#125;</span><br><span class="line">private:</span><br><span class="line">	int baseI;</span><br><span class="line">	static int baseS;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">void testBase(Base&amp; p)</span><br><span class="line">&#123;</span><br><span class="line">	cout &lt;&lt; &quot;对象的内存起始地址：&quot; &lt;&lt; &amp;p &lt;&lt; endl;</span><br><span class="line">	cout &lt;&lt; &quot;type_info信息:&quot; &lt;&lt; endl;</span><br><span class="line">	RTTICompleteObjectLocator str = *((RTTICompleteObjectLocator*)*((int*)*(int*)(&amp;p) - 1));</span><br><span class="line"></span><br><span class="line">	string classname(str.pTypeDescriptor-&gt;name);</span><br><span class="line">	classname = classname.substr(4, classname.find(&quot;@@&quot;) - 4);</span><br><span class="line">	cout &lt;&lt; &quot;根据type_info信息输出类名:&quot; &lt;&lt; classname &lt;&lt; endl;</span><br><span class="line"></span><br><span class="line">	cout &lt;&lt; &quot;虚函数表地址:&quot; &lt;&lt; (int*)(&amp;p) &lt;&lt; endl;</span><br><span class="line"></span><br><span class="line">	//验证虚表</span><br><span class="line">	cout &lt;&lt; &quot;虚函数表第一个函数的地址：&quot; &lt;&lt; (int*)*((int*)(&amp;p)) &lt;&lt; endl;</span><br><span class="line">	cout &lt;&lt; &quot;析构函数的地址:&quot; &lt;&lt; (int*)*(int*)*((int*)(&amp;p)) &lt;&lt; endl;</span><br><span class="line">	cout &lt;&lt; &quot;虚函数表中，第二个虚函数即print（）的地址：&quot; &lt;&lt; ((int*)*(int*)(&amp;p) + 1) &lt;&lt; endl;</span><br><span class="line"></span><br><span class="line">	//通过地址调用虚函数print（）</span><br><span class="line">	typedef void(*Fun)(void);</span><br><span class="line">	Fun IsPrint = (Fun)*((int*)*(int*)(&amp;p) + 1);</span><br><span class="line">	cout &lt;&lt; endl;</span><br><span class="line">	cout &lt;&lt; &quot;调用了虚函数&quot;;</span><br><span class="line">	IsPrint(); //若地址正确，则调用了Base类的虚函数print（）</span><br><span class="line">	cout &lt;&lt; endl;</span><br><span class="line"></span><br><span class="line">	//输入static函数的地址</span><br><span class="line">	p.countI();//先调用函数以产生一个实例</span><br><span class="line">	cout &lt;&lt; &quot;static函数countI()的地址：&quot; &lt;&lt; p.countI &lt;&lt; endl;</span><br><span class="line"></span><br><span class="line">	//验证nonstatic数据成员</span><br><span class="line">	cout &lt;&lt; &quot;推测nonstatic数据成员baseI的地址：&quot; &lt;&lt; (int*)(&amp;p) + 1 &lt;&lt; endl;</span><br><span class="line">	cout &lt;&lt; &quot;根据推测出的地址，输出该地址的值：&quot; &lt;&lt; *((int*)(&amp;p) + 1) &lt;&lt; endl;</span><br><span class="line">	cout &lt;&lt; &quot;Base::getI():&quot; &lt;&lt; p.getI() &lt;&lt; endl;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">int main()</span><br><span class="line">&#123;</span><br><span class="line">	Base b(5);</span><br><span class="line">	testBase(b);</span><br><span class="line">	</span><br><span class="line">	return 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">对象的内存起始地址：00F5FE0C</span><br><span class="line">type_info信息:</span><br><span class="line">根据type_info信息输出类名:Base</span><br><span class="line">虚函数表地址:00F5FE0C</span><br><span class="line">虚函数表第一个函数的地址：00221B34</span><br><span class="line">析构函数的地址:0021168B</span><br><span class="line">虚函数表中，第二个虚函数即print（）的地址：00221B38</span><br><span class="line"></span><br><span class="line">调用了虚函数调用了虚函数Base::setI()</span><br><span class="line"></span><br><span class="line">static函数countI()的地址：00211316</span><br><span class="line">推测nonstatic数据成员baseI的地址：00F5FE10</span><br><span class="line">根据推测出的地址，输出该地址的值：5</span><br><span class="line">Base::getI():5</span><br></pre></td></tr></table></figure>
+<p>结果分析：</p>
+<pre><code>通过 (int *)(&amp;p)取得虚函数表的地址
+type_info信息的确存在于虚表的前一个位置。通过((int)(int*)(&amp;p) - 1))取得type_infn信息，并成功获得类的名称的Base
+虚函数表的第一个函数是析构函数。
+虚函数表的第二个函数是虚函数print()，取得地址后通过地址调用它（而非通过对象），验证正确
+虚表指针的下一个位置为nonstatic数据成员baseI。
+可以看到，static成员函数的地址段位与虚表指针、baseI的地址段位不同。
+</code></pre>
+<p>好的，至此我们了解了非继承下类对象五种数据在内存上的布局，也知道了在每一个虚函数表前都有一个指针指向type_info，负责对RTTI的支持。而加入继承后类对象在内存中该如何表示呢？</p>
+<h2 id="5-继承下的C-对象模型"><a href="#5-继承下的C-对象模型" class="headerlink" title="5.继承下的C++对象模型"></a>5.继承下的C++对象模型</h2><h3 id="5-1-单继承"><a href="#5-1-单继承" class="headerlink" title="5.1.单继承"></a>5.1.单继承</h3><p>如果我们定义了派生类</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">class Derive : public Base</span><br><span class="line">&#123;</span><br><span class="line">public:</span><br><span class="line">    Derive(int d) :Base(1000),      DeriveI(d)&#123;&#125;;</span><br><span class="line">    //overwrite父类虚函数</span><br><span class="line">    virtual void print(void)&#123; cout &lt;&lt; &quot;Drive::Drive_print()&quot; ; &#125;</span><br><span class="line">    // Derive声明的新的虚函数</span><br><span class="line">        virtual void Drive_print()&#123; cout &lt;&lt; &quot;Drive::Drive_print()&quot; ; &#125;</span><br><span class="line">    virtual ~Derive()&#123;&#125;</span><br><span class="line">private:</span><br><span class="line">    int DeriveI;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>一个派生类如何在机器层面上塑造其父类的实例呢？在简单对象模型中，可以在子类对象中为每个基类子对象分配一个指针。如下图：</p>
+<p><img src="./cpp%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B/9.png" alt="图 7">  </p>
+<p>简单对象模型的缺点就是因间接性导致的空间存取时间上的额外负担，优点则是类的大小是固定的，基类的改动不会影响子类对象的大小。</p>
+<p>在表格驱动对象模型中，我们可以为子类对象增加第三个指针：基类指针(bptr)，基类指针指向指向一个基类表(base class table),同样的，由于间接性导致了空间和存取时间上的额外负担，优点则是无须改变子类对象本身就可以更改基类。表格驱动模型的图就不再贴出来了。</p>
+<p>在C++对象模型中，对于一般继承（这个一般是相对于虚拟继承而言），若子类重写（overwrite）了父类的虚函数，则子类虚函数将覆盖虚表中对应的父类虚函数(注意子类与父类拥有各自的一个虚函数表)；若子类并无overwrite父类虚函数，而是声明了自己新的虚函数，则该虚函数地址将扩充到虚函数表最后（在vs中无法通过监视看到扩充的结果，不过我们通过取地址的方法可以做到，子类新的虚函数确实在父类子物体的虚函数表末端）。而对于虚继承，若子类overwrite父类虚函数，同样地将覆盖父类子物体中的虚函数表对应位置，而若子类声明了自己新的虚函数，则编译器将为子类增加一个新的虚表指针vptr，这与一般继承不同,在后面再讨论。</p>
+<p><img src="./cpp%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B/10.png" alt="图 8">  </p>
+<p>我们使用代码来验证以上模型</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br></pre></td><td class="code"><pre><span class="line">#include &lt;iostream&gt;</span><br><span class="line">using namespace std;</span><br><span class="line"></span><br><span class="line">class Base</span><br><span class="line">&#123;</span><br><span class="line">public:</span><br><span class="line"></span><br><span class="line">	Base(int i) :baseI(i) &#123;&#125;;</span><br><span class="line">	int getI() &#123; return baseI; &#125;</span><br><span class="line">	static void countI() &#123;&#125;;</span><br><span class="line">	virtual void print(void) &#123; cout &lt;&lt; &quot;Base::print()&quot;; &#125;</span><br><span class="line">	virtual ~Base() &#123;&#125;</span><br><span class="line">private:</span><br><span class="line">	int baseI;</span><br><span class="line">	static int baseS;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">class Derive : public Base</span><br><span class="line">&#123;</span><br><span class="line">public:</span><br><span class="line">	Derive(int d) :Base(1000), DeriveI(d) &#123;&#125;;</span><br><span class="line">	//overwrite父类虚函数</span><br><span class="line">	virtual void print(void) &#123; cout &lt;&lt; &quot;Drive::Drive_print()&quot;; &#125;</span><br><span class="line">	// Derive声明的新的虚函数</span><br><span class="line">	virtual void Drive_print() &#123; cout &lt;&lt; &quot;Drive::Drive_print()&quot;; &#125;</span><br><span class="line">	virtual ~Derive() &#123;&#125;</span><br><span class="line">private:</span><br><span class="line">	int DeriveI;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">typedef void(*Fun)(void);</span><br><span class="line"></span><br><span class="line">int main()</span><br><span class="line">&#123;</span><br><span class="line">	Derive d(2000);</span><br><span class="line">	//[0]</span><br><span class="line">	cout &lt;&lt; &quot;[0]Base::vptr&quot;;</span><br><span class="line">	cout &lt;&lt; &quot;\t地址：&quot; &lt;&lt; (int*)(&amp;d) &lt;&lt; endl;</span><br><span class="line">		//vprt[0]</span><br><span class="line">		cout &lt;&lt; &quot;  [0]&quot;;</span><br><span class="line">		Fun fun1 = (Fun) * ((int*)*((int*)(&amp;d)));</span><br><span class="line">		fun1();</span><br><span class="line">		cout &lt;&lt; &quot;\t地址:\t&quot; &lt;&lt; ((int*)*((int*)(&amp;d))) &lt;&lt; endl;</span><br><span class="line"></span><br><span class="line">		//vprt[1]析构函数无法通过地址调用，故手动输出</span><br><span class="line">		cout &lt;&lt; &quot;  [1]&quot; &lt;&lt; &quot;Derive::~Derive \t&quot; &lt;&lt; &quot;\t地址：\t&quot; &lt;&lt;(int*)*(int*)&amp;d + 1 &lt;&lt; endl;</span><br><span class="line"></span><br><span class="line">		//vprt[2]</span><br><span class="line">		cout &lt;&lt; &quot;  [2]&quot;;</span><br><span class="line">		Fun fun2 = (Fun) * ((int*)*((int*)(&amp;d)) + 2);</span><br><span class="line">		fun2();</span><br><span class="line">		cout &lt;&lt; &quot;\t地址:\t&quot; &lt;&lt; ((int*)*((int*)(&amp;d)) + 2) &lt;&lt; endl;</span><br><span class="line">	//[1]</span><br><span class="line">	cout &lt;&lt; &quot;[1]Base::baseI=&quot; &lt;&lt; *(int*)((int*)(&amp;d) + 1);</span><br><span class="line">	cout &lt;&lt; &quot;\t地址：&quot; &lt;&lt; (int*)(&amp;d) + 1;</span><br><span class="line">	cout &lt;&lt; endl;</span><br><span class="line">	//[2]</span><br><span class="line">	cout &lt;&lt; &quot;[2]Derive::DeriveI=&quot; &lt;&lt; *(int*)((int*)(&amp;d) + 2);</span><br><span class="line">	cout &lt;&lt; &quot;\t地址：&quot; &lt;&lt; (int*)(&amp;d) + 2;</span><br><span class="line">	cout &lt;&lt; endl;</span><br><span class="line">	getchar();</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>运行结果：与我们的对象模型符合</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">[0]Base::vptr   地址：003EFE60</span><br><span class="line">  [0]Drive::Drive_print()       地址:   00143918</span><br><span class="line">  [1]Derive::~Derive            地址：  0014391C</span><br><span class="line">  [2]Drive::Drive_print()       地址:   00143920</span><br><span class="line">[1]Base::baseI=1000     地址：003EFE64</span><br><span class="line">[2]Derive::DeriveI=2000 地址：003EFE68</span><br></pre></td></tr></table></figure>
+
+
+<h3 id="5-2-多继承"><a href="#5-2-多继承" class="headerlink" title="5.2.多继承"></a>5.2.多继承</h3><h4 id="5-2-1一般的多重继承（非菱形继承）"><a href="#5-2-1一般的多重继承（非菱形继承）" class="headerlink" title="5.2.1一般的多重继承（非菱形继承）"></a>5.2.1一般的多重继承（非菱形继承）</h4><p>单继承中（一般继承），子类会扩展父类的虚函数表。在多继承中，子类含有多个父类的子对象，该往哪个父类的虚函数表扩展呢？当子类overwrite了父类的函数，需要覆盖多个父类的虚函数表吗？</p>
+<ul>
+<li>子类的虚函数被放在声明的第一个基类的虚函数表中。</li>
+<li>overwrite时，所有基类的print()函数都被子类的print()函数覆盖。</li>
+<li>内存布局中，父类按照其声明顺序排列。</li>
+</ul>
+<p>其中第二点保证了父类指针指向子类对象时，总是能够调用到真正的函数。</p>
+<p>继承类图为：</p>
+<p><img src="./cpp%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B/11.png" alt="图 2">  </p>
+<p>此时Drive_multyBase 的对象模型是这样的：<br><img src="./cpp%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B/12.png" alt="图 1">  </p>
+<p>我们使用代码验证：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br></pre></td><td class="code"><pre><span class="line">#include &lt;iostream&gt;</span><br><span class="line">using namespace std;</span><br><span class="line"></span><br><span class="line">class Base</span><br><span class="line">&#123;</span><br><span class="line">public:</span><br><span class="line">	Base(int i) :baseI(i) &#123;&#125;;</span><br><span class="line">	virtual ~Base() &#123;&#125;</span><br><span class="line">	int getI() &#123; return baseI; &#125;</span><br><span class="line">	static void countI() &#123;&#125;;</span><br><span class="line">	virtual void print(void) &#123; cout &lt;&lt; &quot;Base::print()&quot;; &#125;</span><br><span class="line">private:</span><br><span class="line">	int baseI;</span><br><span class="line">	static int baseS;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">class Base_2</span><br><span class="line">&#123;</span><br><span class="line">public:</span><br><span class="line">	Base_2(int i) :base2I(i) &#123;&#125;;</span><br><span class="line">	virtual ~Base_2() &#123;&#125;</span><br><span class="line">	int getI() &#123; return base2I; &#125;</span><br><span class="line">	static void countI() &#123;&#125;;</span><br><span class="line">	virtual void print(void) &#123; cout &lt;&lt; &quot;Base_2::print()&quot;; &#125;</span><br><span class="line">private:</span><br><span class="line">	int base2I;</span><br><span class="line">	static int base2S;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">class Drive_multyBase :public Base, public Base_2</span><br><span class="line">&#123;</span><br><span class="line">public:</span><br><span class="line"></span><br><span class="line">	Drive_multyBase(int d) :Base(1000), Base_2(2000), Drive_multyBaseI(d) &#123;&#125;;</span><br><span class="line">	virtual void print(void) &#123; cout &lt;&lt; &quot;Drive_multyBase::print&quot;; &#125;</span><br><span class="line">	virtual void Drive_print() &#123; cout &lt;&lt; &quot;Drive_multyBase::Drive_print&quot;; &#125;</span><br><span class="line">private:</span><br><span class="line">	int Drive_multyBaseI;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">typedef void(*Fun)(void);</span><br><span class="line"></span><br><span class="line">int main()</span><br><span class="line">&#123;</span><br><span class="line">	Drive_multyBase d(3000);</span><br><span class="line">	//[0]</span><br><span class="line">	cout &lt;&lt; &quot;[0]Base::vptr&quot;;</span><br><span class="line">	cout &lt;&lt; &quot;\t地址：&quot; &lt;&lt; (int*)(&amp;d) &lt;&lt; endl;</span><br><span class="line"></span><br><span class="line">		//vprt[0]析构函数无法通过地址调用，故手动输出</span><br><span class="line">		cout &lt;&lt; &quot;  [0]&quot; &lt;&lt; &quot;Derive::~Derive\t&quot; &lt;&lt; &quot;\t地址:\t&quot; &lt;&lt; (int*)*((int*)(&amp;d)) &lt;&lt; endl;</span><br><span class="line"></span><br><span class="line">		//vprt[1]</span><br><span class="line">		cout &lt;&lt; &quot;  [1]&quot;;</span><br><span class="line">		Fun fun1 = (Fun) * ((int*)*((int*)(&amp;d)) + 1);</span><br><span class="line">		fun1();</span><br><span class="line">		cout &lt;&lt; &quot;\t地址:\t&quot; &lt;&lt; ((int*)*((int*)(&amp;d)) + 1) &lt;&lt; endl;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">		//vprt[2]</span><br><span class="line">		cout &lt;&lt; &quot;  [2]&quot;;</span><br><span class="line">		Fun fun2 = (Fun) * ((int*)*((int*)(&amp;d)) + 2);</span><br><span class="line">		fun2();</span><br><span class="line">		cout &lt;&lt; &quot;\t地址:\t&quot; &lt;&lt; ((int*)*((int*)(&amp;d)) + 2) &lt;&lt; endl;</span><br><span class="line"></span><br><span class="line">	//[1]</span><br><span class="line">	cout &lt;&lt; &quot;[1]Base::baseI=&quot; &lt;&lt; *(int*)((int*)(&amp;d) + 1);</span><br><span class="line">	cout &lt;&lt; &quot;\t地址：&quot; &lt;&lt; (int*)(&amp;d) + 1;</span><br><span class="line">	cout &lt;&lt; endl;</span><br><span class="line"></span><br><span class="line">	//[2]</span><br><span class="line">	cout &lt;&lt; &quot;[2]Base_2::vptr&quot;;</span><br><span class="line">	cout &lt;&lt; &quot;\t地址：&quot; &lt;&lt; (int*)(&amp;d) + 2 &lt;&lt; endl;</span><br><span class="line"></span><br><span class="line">		//vprt[0]析构函数无法通过地址调用，故手动输出</span><br><span class="line">		cout &lt;&lt; &quot;  [0]&quot; &lt;&lt; &quot;Drive_multyBase::~Derive\t&quot; &lt;&lt; &quot;\t地址:\t&quot; &lt;&lt; (int*)*((int*)(&amp;d) + 2) &lt;&lt; endl;</span><br><span class="line"></span><br><span class="line">		//vprt[1]</span><br><span class="line">		cout &lt;&lt; &quot;  [1]&quot;;</span><br><span class="line">		Fun fun4 = (Fun) * ((int*)*(int*)((int*)(&amp;d) + 2) + 1);</span><br><span class="line">		fun4();</span><br><span class="line">		cout &lt;&lt; &quot;\t地址:\t&quot; &lt;&lt; ((int*)*((int*)(&amp;d) + 2) + 1) &lt;&lt; endl;</span><br><span class="line"></span><br><span class="line">	//[3]</span><br><span class="line">	cout &lt;&lt; &quot;[3]Base_2::base2I=&quot; &lt;&lt; *(int*)((int*)(&amp;d) + 3);</span><br><span class="line">	cout &lt;&lt; &quot;\t地址：&quot; &lt;&lt; (int*)(&amp;d) + 3;</span><br><span class="line">	cout &lt;&lt; endl;</span><br><span class="line"></span><br><span class="line">	//[4]</span><br><span class="line">	cout &lt;&lt; &quot;[4]Drive_multyBase::Drive_multyBaseI=&quot; &lt;&lt; *(int*)((int*)(&amp;d) + 4);</span><br><span class="line">	cout &lt;&lt; &quot;\t地址：&quot; &lt;&lt; (int*)(&amp;d) + 4;</span><br><span class="line">	cout &lt;&lt; endl;</span><br><span class="line"></span><br><span class="line">	getchar();</span><br><span class="line"></span><br><span class="line">	return 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>结果输出：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">[0]Base::vptr   地址：007CF804</span><br><span class="line">  [0]Derive::~Derive            地址:   001549FC</span><br><span class="line">  [1]Drive_multyBase::print     地址:   00154A00</span><br><span class="line">  [2]Drive_multyBase::Drive_print       地址:   00154A04</span><br><span class="line">[1]Base::baseI=1000     地址：007CF808</span><br><span class="line">[2]Base_2::vptr 地址：007CF80C</span><br><span class="line">  [0]Drive_multyBase::~Derive           地址:   00154A10</span><br><span class="line">  [1]Drive_multyBase::print     地址:   00154A14</span><br><span class="line">[3]Base_2::base2I=2000  地址：007CF810</span><br><span class="line">[4]Drive_multyBase::Drive_multyBaseI=3000       地址：007CF814</span><br></pre></td></tr></table></figure>
+
+<h3 id="5-2-2-菱形继承"><a href="#5-2-2-菱形继承" class="headerlink" title="5.2.2 菱形继承"></a>5.2.2 菱形继承</h3><p>菱形继承也称为钻石型继承或重复继承，它指的是基类被某个派生类简单重复继承了多次。这样，派生类对象中拥有多份基类实例（这会带来一些问题）。为了方便叙述，我们不使用上面的代码了，而重新写一个重复继承的继承层次：</p>
+<p><img src="./cpp%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B/13.png" alt="图 3">  </p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br></pre></td><td class="code"><pre><span class="line">#include &lt;iostream&gt;</span><br><span class="line">using namespace std;</span><br><span class="line"></span><br><span class="line">class B</span><br><span class="line">&#123;</span><br><span class="line">public:</span><br><span class="line">	int ib;</span><br><span class="line">public:</span><br><span class="line">	B(int i = 1) :ib(i) &#123;&#125;</span><br><span class="line">	virtual void f() &#123; cout &lt;&lt; &quot;B::f()&quot;; &#125;</span><br><span class="line">	virtual void Bf() &#123; cout &lt;&lt; &quot;B::Bf()&quot;; &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">class B1 : public B</span><br><span class="line">&#123;</span><br><span class="line">public:</span><br><span class="line">	int ib1;</span><br><span class="line">public:</span><br><span class="line">	B1(int i = 100) :ib1(i) &#123;&#125;</span><br><span class="line">	virtual void f() &#123; cout &lt;&lt; &quot;B1::f()&quot;; &#125;</span><br><span class="line">	virtual void f1() &#123; cout &lt;&lt; &quot;B1::f1()&quot;; &#125;</span><br><span class="line">	virtual void Bf1() &#123; cout &lt;&lt; &quot;B1::Bf1()&quot;; &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">class B2 : public B</span><br><span class="line">&#123;</span><br><span class="line">public:</span><br><span class="line">	int ib2;</span><br><span class="line">public:</span><br><span class="line">	B2(int i = 1000) :ib2(i) &#123;&#125;</span><br><span class="line">	virtual void f() &#123; cout &lt;&lt; &quot;B2::f()&quot;; &#125;</span><br><span class="line">	virtual void f2() &#123; cout &lt;&lt; &quot;B2::f2()&quot;; &#125;</span><br><span class="line">	virtual void Bf2() &#123; cout &lt;&lt; &quot;B2::Bf2()&quot;; &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">class D : public B1, public B2</span><br><span class="line">&#123;</span><br><span class="line">public:</span><br><span class="line">	int id;</span><br><span class="line">public:</span><br><span class="line">	D(int i = 10000) :id(i) &#123;&#125;</span><br><span class="line">	virtual void f() &#123; cout &lt;&lt; &quot;D::f()&quot;; &#125;</span><br><span class="line">	virtual void f1() &#123; cout &lt;&lt; &quot;D::f1()&quot;; &#125;</span><br><span class="line">	virtual void f2() &#123; cout &lt;&lt; &quot;D::f2()&quot;; &#125;</span><br><span class="line">	virtual void Df() &#123; cout &lt;&lt; &quot;D::Df()&quot;; &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">typedef void(*Fun)(void);</span><br><span class="line"></span><br><span class="line">int main()</span><br><span class="line">&#123;</span><br><span class="line">	D d;</span><br><span class="line"></span><br><span class="line">	//d.ib = 1;					//编译器提示报错，二义性错误,调用的是B1的ib还是B2的ib？</span><br><span class="line">	d.B1::ib = 1;				//正确</span><br><span class="line">	d.B2::ib = 1;				//正确</span><br><span class="line"></span><br><span class="line">	//d.Bf();					//编译器提示报错，二义性错误,调用的是B1的ib还是B2的ib？</span><br><span class="line">	d.B1::Bf();					//正确</span><br><span class="line">	d.B2::Bf();					//正确</span><br><span class="line"></span><br><span class="line">	cout &lt;&lt; endl;</span><br><span class="line">	cout &lt;&lt; endl;</span><br><span class="line"></span><br><span class="line">	//[0]</span><br><span class="line">	cout &lt;&lt; &quot;[0]B1::vptr&quot;;</span><br><span class="line">	cout &lt;&lt; &quot;\t地址：&quot; &lt;&lt; (int*)(&amp;d) &lt;&lt; endl;</span><br><span class="line">	&#123;</span><br><span class="line">		//vprt[0]</span><br><span class="line">		cout &lt;&lt; &quot;  [0]&quot;;</span><br><span class="line">		Fun df = (Fun) * ((int*)*((int*)(&amp;d)));</span><br><span class="line">		df();</span><br><span class="line">		cout &lt;&lt; &quot;\t地址:\t&quot; &lt;&lt; ((int*)*((int*)(&amp;d))) &lt;&lt; endl;</span><br><span class="line"></span><br><span class="line">		//vprt[1]</span><br><span class="line">		cout &lt;&lt; &quot;  [1]&quot;;</span><br><span class="line">		Fun bf = (Fun) * ((int*)*((int*)(&amp;d)) + 1);</span><br><span class="line">		bf();</span><br><span class="line">		cout &lt;&lt; &quot;\t地址:\t&quot; &lt;&lt; ((int*)*((int*)(&amp;d)) + 1) &lt;&lt; endl;</span><br><span class="line"></span><br><span class="line">		//vprt[2]</span><br><span class="line">		cout &lt;&lt; &quot;  [2]&quot;;</span><br><span class="line">		Fun df1 = (Fun) * ((int*)*((int*)(&amp;d)) + 2);</span><br><span class="line">		df1();</span><br><span class="line">		cout &lt;&lt; &quot;\t地址:\t&quot; &lt;&lt; ((int*)*((int*)(&amp;d)) + 2) &lt;&lt; endl;</span><br><span class="line"></span><br><span class="line">		//vprt[3]</span><br><span class="line">		cout &lt;&lt; &quot;  [3]&quot;;</span><br><span class="line">		Fun bf1 = (Fun) * ((int*)*((int*)(&amp;d)) + 3);</span><br><span class="line">		bf1();</span><br><span class="line">		cout &lt;&lt; &quot;\t地址:\t&quot; &lt;&lt; ((int*)*((int*)(&amp;d)) + 3) &lt;&lt; endl;</span><br><span class="line"></span><br><span class="line">		//vprt[4]</span><br><span class="line">		cout &lt;&lt; &quot;  [4]&quot;;</span><br><span class="line">		Fun ddf = (Fun) * ((int*)*((int*)(&amp;d)) + 4);</span><br><span class="line">		ddf();</span><br><span class="line">		cout &lt;&lt; &quot;\t地址:\t&quot; &lt;&lt; ((int*)*((int*)(&amp;d)) + 4) &lt;&lt; endl;</span><br><span class="line"></span><br><span class="line">	&#125;</span><br><span class="line">	//[1]</span><br><span class="line">	cout &lt;&lt; &quot;[1]B::ib=&quot; &lt;&lt; *((int*)(&amp;d) + 1);</span><br><span class="line">	cout &lt;&lt; &quot;\t地址：&quot; &lt;&lt; (int*)(&amp;d) + 1;</span><br><span class="line">	cout &lt;&lt; endl;</span><br><span class="line"></span><br><span class="line">	//[2]</span><br><span class="line">	cout &lt;&lt; &quot;[2]B1::ib1=&quot; &lt;&lt; *((int*)(&amp;d) + 2);</span><br><span class="line">	cout &lt;&lt; &quot;\t地址：&quot; &lt;&lt; (int*)(&amp;d) + 2;</span><br><span class="line">	cout &lt;&lt; endl;</span><br><span class="line"></span><br><span class="line">	//[3]</span><br><span class="line">	cout &lt;&lt; &quot;[3]B2::vptr&quot;;</span><br><span class="line">	cout &lt;&lt; &quot;\t地址：&quot; &lt;&lt; (int*)(&amp;d) + 3 &lt;&lt; endl;</span><br><span class="line">	&#123;</span><br><span class="line">		//vprt[0]</span><br><span class="line">		cout &lt;&lt; &quot;  [0]&quot;;</span><br><span class="line">		Fun df = (Fun) * ((int*)*(int*)((int*)(&amp;d) + 3));</span><br><span class="line">		df();</span><br><span class="line">		cout &lt;&lt; &quot;\t地址:\t&quot; &lt;&lt; ((int*)*((int*)(&amp;d) + 3)) &lt;&lt; endl;</span><br><span class="line"></span><br><span class="line">		//vprt[1]</span><br><span class="line">		cout &lt;&lt; &quot;  [1]&quot;;</span><br><span class="line">		Fun bf = (Fun) * ((int*)*(int*)((int*)(&amp;d) + 3) + 1);</span><br><span class="line">		bf();</span><br><span class="line">		cout &lt;&lt; &quot;\t地址:\t&quot; &lt;&lt; ((int*)*((int*)(&amp;d) + 3) + 1) &lt;&lt; endl;</span><br><span class="line"></span><br><span class="line">		//vprt[2]</span><br><span class="line">		cout &lt;&lt; &quot;  [2]&quot;;</span><br><span class="line">		Fun df1 = (Fun) * ((int*)*(int*)((int*)(&amp;d) + 3) + 2);</span><br><span class="line">		df1();</span><br><span class="line">		cout &lt;&lt; &quot;\t地址:\t&quot; &lt;&lt; ((int*)*((int*)(&amp;d) + 3) + 2) &lt;&lt; endl;</span><br><span class="line"></span><br><span class="line">		//vprt[3]</span><br><span class="line">		cout &lt;&lt; &quot;  [3]&quot;;</span><br><span class="line">		Fun bf2 = (Fun) * ((int*)*(int*)((int*)(&amp;d) + 3) + 3);</span><br><span class="line">		bf2();</span><br><span class="line">		cout &lt;&lt; &quot;\t地址:\t&quot; &lt;&lt; ((int*)*((int*)(&amp;d) + 3) + 3) &lt;&lt; endl;</span><br><span class="line"></span><br><span class="line">	&#125;</span><br><span class="line">	//[4]</span><br><span class="line">	cout &lt;&lt; &quot;[4]B::ib=&quot; &lt;&lt; *((int*)(&amp;d) + 4);</span><br><span class="line">	cout &lt;&lt; &quot;\t地址：&quot; &lt;&lt; (int*)(&amp;d) + 4;</span><br><span class="line">	cout &lt;&lt; endl;</span><br><span class="line"></span><br><span class="line">	//[5]</span><br><span class="line">	cout &lt;&lt; &quot;[5]B2::ib2=&quot; &lt;&lt; *((int*)(&amp;d) + 5);</span><br><span class="line">	cout &lt;&lt; &quot;\t地址：&quot; &lt;&lt; (int*)(&amp;d) + 5;</span><br><span class="line">	cout &lt;&lt; endl;</span><br><span class="line"></span><br><span class="line">	//[6]</span><br><span class="line">	cout &lt;&lt; &quot;[6]D::id=&quot; &lt;&lt; *((int*)(&amp;d) + 6);</span><br><span class="line">	cout &lt;&lt; &quot;\t地址：&quot; &lt;&lt; (int*)(&amp;d) + 6;</span><br><span class="line">	cout &lt;&lt; endl;</span><br><span class="line"></span><br><span class="line">	return 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这时，根据单继承，我们可以分析出B1，B2类继承于B类时的内存布局。又根据一般多继承，我们可以分析出D类的内存布局。我们可以得出D类子对象的内存布局如下图：<br><img src="./cpp%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B/14.png" alt="图 3">  </p>
+<p>D类对象内存布局中，图中青色表示b1类子对象实例，黄色表示b2类子对象实例，灰色表示D类子对象实例。从图中可以看到，由于D类间接继承了B类两次，导致D类对象中含有两个B类的数据成员ib，一个属于来源B1类，一个来源B2类。这样不仅增大了空间，更重要的是引起了程序歧义：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">B::Bf()B::Bf()</span><br><span class="line"></span><br><span class="line">[0]B1::vptr     地址：006FFB1C</span><br><span class="line">  [0]D::f()     地址:   00C24B8C</span><br><span class="line">  [1]B::Bf()    地址:   00C24B90</span><br><span class="line">  [2]D::f1()    地址:   00C24B94</span><br><span class="line">  [3]B1::Bf1()  地址:   00C24B98</span><br><span class="line">  [4]D::Df()    地址:   00C24B9C</span><br><span class="line">[1]B::ib=1      地址：006FFB20</span><br><span class="line">[2]B1::ib1=100  地址：006FFB24</span><br><span class="line">[3]B2::vptr     地址：006FFB28</span><br><span class="line">  [0]D::f()     地址:   00C24BA8</span><br><span class="line">  [1]B::Bf()    地址:   00C24BAC</span><br><span class="line">  [2]D::f2()    地址:   00C24BB0</span><br><span class="line">  [3]B2::Bf2()  地址:   00C24BB4</span><br><span class="line">[4]B::ib=1      地址：006FFB2C</span><br><span class="line">[5]B2::ib2=1000 地址：006FFB30</span><br><span class="line">[6]D::id=10000  地址：006FFB34</span><br></pre></td></tr></table></figure>
+<p>尽管我们可以通过明确指明调用路径以消除二义性，但二义性的潜在性还没有消除，我们可以通过虚继承来使D类只拥有一个ib实体。</p>
+<h2 id="6-虚继承"><a href="#6-虚继承" class="headerlink" title="6.虚继承"></a>6.虚继承</h2><p>虚继承解决了菱形继承中最派生类拥有多个间接父类实例的情况。虚继承的派生类的内存布局与普通继承很多不同，主要体现在：</p>
+<ul>
+<li>虚继承的子类，如果本身定义了新的虚函数，则编译器为其生成一个虚函数指针（vptr）以及一张虚函数表。该vptr位于对象内存最前面。  vs非虚继承：直接扩展父类虚函数表。</li>
+<li>虚继承的子类也单独保留了父类的vprt与虚函数表。这部分内容接与子类内容以一个四字节的0来分界。</li>
+<li>虚继承的子类对象中，含有四字节的虚表指针偏移值。</li>
+</ul>
+<p>为了分析最后的菱形继承，我们还是先从单虚继承继承开始。</p>
+<h3 id="6-1-虚基类表解析"><a href="#6-1-虚基类表解析" class="headerlink" title="6.1.虚基类表解析"></a>6.1.虚基类表解析</h3><p>在C++对象模型中，虚继承而来的子类会生成一个隐藏的虚基类指针（vbptr），在Microsoft Visual C++中，虚基类表指针总是在虚函数表指针之后，因而，对某个类实例来说，如果它有虚基类指针，</p>
+<p>那么虚基类指针可能在实例的0字节偏移处（该类没有vptr时，vbptr就处于类实例内存布局的最前面，否则vptr处于类实例内存布局的最前面），也可能在类实例的4字节偏移处。</p>
+<p>一个类的虚基类指针指向的虚基类表，与虚函数表一样，虚基类表也由多个条目组成，条目中存放的是偏移值。第一个条目存放虚基类表指针（vbptr）所在地址到该类内存首地址的偏移值，由第一段的分析我们知道，这个偏移值为0（类没有vptr）或者-4（类有虚函数，此时有vptr）。我们通过一张图来更好地理解。</p>
+<p><img src="./cpp%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B/15.png" alt="图 5">  </p>
+<p><img src="./cpp%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B/16.png" alt="图 4">  </p>
+<p>虚基类表的第二、第三…个条目依次为该类的最左虚继承父类、次左虚继承父类…的内存地址相对于虚基类表指针的偏移值，这点我们在下面会验证。</p>
+<h3 id="6-2-简单虚继承"><a href="#6-2-简单虚继承" class="headerlink" title="6.2.简单虚继承"></a>6.2.简单虚继承</h3><p>如果我们的B1类虚继承于B类：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">//类的内容与前面相同</span><br><span class="line">class B&#123;...&#125;</span><br><span class="line">class B1 : virtual public B</span><br></pre></td></tr></table></figure>
+<p><img src="./cpp%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B/17.png" alt="图 6">  </p>
+<p>根据我们前面对虚继承的派生类的内存布局的分析，B1类的对象模型应该是这样的：<br><img src="./cpp%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B/18.png" alt="图 7">  </p>
+<p>我们通过指针访问B1类对象的内存，以验证上面的C++对象模型：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br></pre></td><td class="code"><pre><span class="line">#include &lt;iostream&gt;</span><br><span class="line">using namespace std;</span><br><span class="line"></span><br><span class="line">class B</span><br><span class="line">&#123;</span><br><span class="line">public:</span><br><span class="line">	int ib;</span><br><span class="line">public:</span><br><span class="line">	B(int i = 1) :ib(i) &#123;&#125;</span><br><span class="line">	virtual void f() &#123; cout &lt;&lt; &quot;B::f()&quot;; &#125;</span><br><span class="line">	virtual void Bf() &#123; cout &lt;&lt; &quot;B::Bf()&quot;; &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">class B1 : virtual public B</span><br><span class="line">&#123;</span><br><span class="line">public:</span><br><span class="line">	int ib1;</span><br><span class="line">public:</span><br><span class="line">	B1(int i = 100) :ib1(i) &#123;&#125;</span><br><span class="line">	virtual void f() &#123; cout &lt;&lt; &quot;B1::f()&quot;; &#125;</span><br><span class="line">	virtual void f1() &#123; cout &lt;&lt; &quot;B1::f1()&quot;; &#125;</span><br><span class="line">	virtual void Bf1() &#123; cout &lt;&lt; &quot;B1::Bf1()&quot;; &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">typedef void(*Fun)(void);</span><br><span class="line">int main()</span><br><span class="line">&#123;</span><br><span class="line">	B1 a;</span><br><span class="line">	cout &lt;&lt; &quot;B1对象内存大小为：&quot; &lt;&lt; sizeof(a) &lt;&lt; endl;</span><br><span class="line"></span><br><span class="line">	//取得B1的虚函数表</span><br><span class="line">	cout &lt;&lt; &quot;[0]B1::vptr&quot;;</span><br><span class="line">	cout &lt;&lt; &quot;\t地址：&quot; &lt;&lt; (int*)(&amp;a) &lt;&lt; endl;</span><br><span class="line"></span><br><span class="line">	//输出虚表B1::vptr中的函数</span><br><span class="line">	for (int i = 0; i &lt; 2; ++i)</span><br><span class="line">	&#123;</span><br><span class="line">		cout &lt;&lt; &quot;  [&quot; &lt;&lt; i &lt;&lt; &quot;]&quot;;</span><br><span class="line">		Fun fun1 = (Fun) * ((int*)*(int*)(&amp;a) + i);</span><br><span class="line">		fun1();</span><br><span class="line">		cout &lt;&lt; &quot;\t地址：\t&quot; &lt;&lt; *((int*)*(int*)(&amp;a) + i) &lt;&lt; endl;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	//[1]</span><br><span class="line">	cout &lt;&lt; &quot;[1]vbptr &quot;;</span><br><span class="line">	cout &lt;&lt; &quot;\t地址：&quot; &lt;&lt; (int*)(&amp;a) + 1 &lt;&lt; endl;  //虚表指针的地址</span><br><span class="line">	//输出虚基类指针条目所指的内容</span><br><span class="line">	for (int i = 0; i &lt; 2; i++)</span><br><span class="line">	&#123;</span><br><span class="line">		cout &lt;&lt; &quot;  [&quot; &lt;&lt; i &lt;&lt; &quot;]&quot;;</span><br><span class="line">		cout &lt;&lt; *(int*)((int*)*((int*)(&amp;a) + 1) + i);</span><br><span class="line">		cout &lt;&lt; endl;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	//[2]</span><br><span class="line">	cout &lt;&lt; &quot;[2]B1::ib1=&quot; &lt;&lt; *(int*)((int*)(&amp;a) + 2);</span><br><span class="line">	cout &lt;&lt; &quot;\t地址：&quot; &lt;&lt; (int*)(&amp;a) + 2;</span><br><span class="line">	cout &lt;&lt; endl;</span><br><span class="line"></span><br><span class="line">	//[3]</span><br><span class="line">	cout &lt;&lt; &quot;[3]值=&quot; &lt;&lt; *(int*)((int*)(&amp;a) + 3);</span><br><span class="line">	cout &lt;&lt; &quot;\t\t地址：&quot; &lt;&lt; (int*)(&amp;a) + 3;</span><br><span class="line">	cout &lt;&lt; endl;</span><br><span class="line"></span><br><span class="line">	//[4]</span><br><span class="line">	cout &lt;&lt; &quot;[4]B::vptr&quot;;</span><br><span class="line">	cout &lt;&lt; &quot;\t地址：&quot; &lt;&lt; (int*)(&amp;a) + 3 &lt;&lt; endl;</span><br><span class="line"></span><br><span class="line">	//输出B::vptr中的虚函数</span><br><span class="line">	for (int i = 0; i &lt; 2; ++i)</span><br><span class="line">	&#123;</span><br><span class="line">		cout &lt;&lt; &quot;  [&quot; &lt;&lt; i &lt;&lt; &quot;]&quot;;</span><br><span class="line">		Fun fun1 = (Fun) * ((int*)*((int*)(&amp;a) + 4) + i);</span><br><span class="line">		fun1();</span><br><span class="line">		cout &lt;&lt; &quot;\t地址:\t&quot; &lt;&lt; *((int*)*((int*)(&amp;a) + 4) + i) &lt;&lt; endl;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	//[5]</span><br><span class="line">	cout &lt;&lt; &quot;[5]B::ib=&quot; &lt;&lt; *(int*)((int*)(&amp;a) + 5);</span><br><span class="line">	cout &lt;&lt; &quot;\t地址: &quot; &lt;&lt; (int*)(&amp;a) + 5;</span><br><span class="line">	cout &lt;&lt; endl;</span><br><span class="line"></span><br><span class="line">	return 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>运行结果</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">B1对象内存大小为：24</span><br><span class="line">[0]B1::vptr     地址：00AFF740</span><br><span class="line">  [0]B1::f1()   地址：  5706518</span><br><span class="line">  [1]B1::Bf1()  地址：  5706038</span><br><span class="line">[1]vbptr        地址：00AFF744</span><br><span class="line">  [0]-4</span><br><span class="line">  [1]12</span><br><span class="line">[2]B1::ib1=100  地址：00AFF748</span><br><span class="line">[3]值=0         地址：00AFF74C</span><br><span class="line">[4]B::vptr      地址：00AFF74C</span><br><span class="line">  [0]B1::f()    地址:   5706273</span><br><span class="line">  [1]B::Bf()    地址:   5706828</span><br><span class="line">[5]B::ib=1      地址: 00AFF754</span><br></pre></td></tr></table></figure>
+
+<p>这个结果与我们的C++对象模型图完全符合。这时我们可以来分析一下虚表指针的第二个条目值12的具体来源了，回忆上文讲到的：</p>
+<p>第二、第三…个条目依次为该类的最左虚继承父类、次左虚继承父类…的内存地址相对于虚基类表指针的偏移值。</p>
+<p>在我们的例子中，也就是B类实例内存地址相对于vbptr的偏移值，也即是：[4]-[1]的偏移值，结果即为12，从地址上也可以计算出来：00AFF74C-00AFF744结果的十进制数正是12。现在，我们对虚基类表的构成应该有了一个更好的理解。</p>
+<h3 id="6-3-虚拟菱形继承"><a href="#6-3-虚拟菱形继承" class="headerlink" title="6.3.虚拟菱形继承"></a>6.3.虚拟菱形继承</h3><p>如果我们有如下继承层次：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">class B&#123;...&#125;</span><br><span class="line">class B1: virtual public  B&#123;...&#125;</span><br><span class="line">class B2: virtual public  B&#123;...&#125;</span><br><span class="line">class D : public B1,public B2&#123;...&#125;</span><br></pre></td></tr></table></figure>
+<p>类图如下所示：<br><img src="./cpp%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B/19.png" alt="图 8">  </p>
+<p>菱形虚拟继承下，最派生类D类的对象模型又有不同的构成了。在D类对象的内存构成上，有以下几点：</p>
+<ul>
+<li>在D类对象内存中，基类出现的顺序是：先是B1（最左父类），然后是B2（次左父类），最后是B（虚祖父类）</li>
+<li>D类对象的数据成员id放在B类前面，两部分数据依旧以0来分隔。</li>
+<li>编译器没有为D类生成一个它自己的vptr，而是覆盖并扩展了最左父类的虚基类表，与简单继承的对象模型相同。</li>
+<li>超类B的内容放到了D类对象内存布局的最后。</li>
+</ul>
+<p>菱形虚拟继承下的C++对象模型为：<br><img src="./cpp%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B/20.png" alt="图 9">  </p>
+<p>下面使用代码加以验证：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br></pre></td><td class="code"><pre><span class="line">#include &lt;iostream&gt;</span><br><span class="line">using namespace std;</span><br><span class="line"></span><br><span class="line">class B</span><br><span class="line">&#123;</span><br><span class="line">public:</span><br><span class="line">	int ib;</span><br><span class="line">public:</span><br><span class="line">	B(int i = 1) :ib(i) &#123;&#125;</span><br><span class="line">	virtual void f() &#123; cout &lt;&lt; &quot;B::f()&quot;; &#125;</span><br><span class="line">	virtual void Bf() &#123; cout &lt;&lt; &quot;B::Bf()&quot;; &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">class B1 : virtual public B</span><br><span class="line">&#123;</span><br><span class="line">public:</span><br><span class="line">	int ib1;</span><br><span class="line">public:</span><br><span class="line">	B1(int i = 100) :ib1(i) &#123;&#125;</span><br><span class="line">	virtual void f() &#123; cout &lt;&lt; &quot;B1::f()&quot;; &#125;</span><br><span class="line">	virtual void f1() &#123; cout &lt;&lt; &quot;B1::f1()&quot;; &#125;</span><br><span class="line">	virtual void Bf1() &#123; cout &lt;&lt; &quot;B1::Bf1()&quot;; &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">class B2 : virtual public B</span><br><span class="line">&#123;</span><br><span class="line">public:</span><br><span class="line">	int ib2;</span><br><span class="line">public:</span><br><span class="line">	B2(int i = 1000) :ib2(i) &#123;&#125;</span><br><span class="line">	virtual void f() &#123; cout &lt;&lt; &quot;B2::f()&quot;; &#125;</span><br><span class="line">	virtual void f2() &#123; cout &lt;&lt; &quot;B2::f2()&quot;; &#125;</span><br><span class="line">	virtual void Bf2() &#123; cout &lt;&lt; &quot;B2::Bf2()&quot;; &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">class D : public B1, public B2</span><br><span class="line">&#123;</span><br><span class="line">public:</span><br><span class="line">	int id;</span><br><span class="line">public:</span><br><span class="line">	D(int i = 10000) :id(i) &#123;&#125;</span><br><span class="line">	virtual void f() &#123; cout &lt;&lt; &quot;D::f()&quot;; &#125;</span><br><span class="line">	virtual void f1() &#123; cout &lt;&lt; &quot;D::f1()&quot;; &#125;</span><br><span class="line">	virtual void f2() &#123; cout &lt;&lt; &quot;D::f2()&quot;; &#125;</span><br><span class="line">	virtual void Df() &#123; cout &lt;&lt; &quot;D::Df()&quot;; &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">typedef void(*Fun)(void);</span><br><span class="line"></span><br><span class="line">int main()</span><br><span class="line">&#123;</span><br><span class="line">	D d;</span><br><span class="line">	cout &lt;&lt; &quot;D对象内存大小为：&quot; &lt;&lt; sizeof(d) &lt;&lt; endl;</span><br><span class="line"></span><br><span class="line">	//取得B1的虚函数表</span><br><span class="line">	cout &lt;&lt; &quot;[0]B1::vptr&quot;;</span><br><span class="line">	cout &lt;&lt; &quot;\t地址：&quot; &lt;&lt; (int*)(&amp;d) &lt;&lt; endl;</span><br><span class="line"></span><br><span class="line">	//输出虚表B1::vptr中的函数</span><br><span class="line">	for (int i = 0; i &lt; 3; ++i)</span><br><span class="line">	&#123;</span><br><span class="line">		cout &lt;&lt; &quot;  [&quot; &lt;&lt; i &lt;&lt; &quot;]&quot;;</span><br><span class="line">		Fun fun1 = (Fun) * ((int*)*(int*)(&amp;d) + i);</span><br><span class="line">		fun1();</span><br><span class="line">		cout &lt;&lt; &quot;\t地址：\t&quot; &lt;&lt; *((int*)*(int*)(&amp;d) + i) &lt;&lt; endl;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	//[1]</span><br><span class="line">	cout &lt;&lt; &quot;[1]B1::vbptr &quot;;</span><br><span class="line">	cout &lt;&lt; &quot;\t地址：&quot; &lt;&lt; (int*)(&amp;d) + 1 &lt;&lt; endl;  //虚表指针的地址</span><br><span class="line">	//输出虚基类指针条目所指的内容</span><br><span class="line">	for (int i = 0; i &lt; 2; i++)</span><br><span class="line">	&#123;</span><br><span class="line">		cout &lt;&lt; &quot;  [&quot; &lt;&lt; i &lt;&lt; &quot;]&quot;;</span><br><span class="line">		cout &lt;&lt; *(int*)((int*)*((int*)(&amp;d) + 1) + i);</span><br><span class="line">		cout &lt;&lt; endl;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	//[2]</span><br><span class="line">	cout &lt;&lt; &quot;[2]B1::ib1=&quot; &lt;&lt; *(int*)((int*)(&amp;d) + 2);</span><br><span class="line">	cout &lt;&lt; &quot;\t地址：&quot; &lt;&lt; (int*)(&amp;d) + 2;</span><br><span class="line">	cout &lt;&lt; endl;</span><br><span class="line"></span><br><span class="line">	//[3]</span><br><span class="line">	cout &lt;&lt; &quot;[3]B2::vptr&quot;;</span><br><span class="line">	cout &lt;&lt; &quot;\t地址：&quot; &lt;&lt; (int*)(&amp;d) + 3 &lt;&lt; endl;</span><br><span class="line"></span><br><span class="line">	//输出B2::vptr中的虚函数</span><br><span class="line">	for (int i = 0; i &lt; 2; ++i)</span><br><span class="line">	&#123;</span><br><span class="line">		cout &lt;&lt; &quot;  [&quot; &lt;&lt; i &lt;&lt; &quot;]&quot;;</span><br><span class="line">		Fun fun1 = (Fun) * ((int*)*((int*)(&amp;d) + 3) + i);</span><br><span class="line">		fun1();</span><br><span class="line">		cout &lt;&lt; &quot;\t地址:\t&quot; &lt;&lt; *((int*)*((int*)(&amp;d) + 3) + i) &lt;&lt; endl;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	//[4]</span><br><span class="line">	cout &lt;&lt; &quot;[4]B2::vbptr &quot;;</span><br><span class="line">	cout &lt;&lt; &quot;\t地址：&quot; &lt;&lt; (int*)(&amp;d) + 4 &lt;&lt; endl;  //虚表指针的地址</span><br><span class="line">	//输出虚基类指针条目所指的内容</span><br><span class="line">	for (int i = 0; i &lt; 2; i++)</span><br><span class="line">	&#123;</span><br><span class="line">		cout &lt;&lt; &quot;  [&quot; &lt;&lt; i &lt;&lt; &quot;]&quot;;</span><br><span class="line">		cout &lt;&lt; *(int*)((int*)*((int*)(&amp;d) + 4) + i);</span><br><span class="line">		cout &lt;&lt; endl;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	//[5]</span><br><span class="line">	cout &lt;&lt; &quot;[5]B2::ib2=&quot; &lt;&lt; *(int*)((int*)(&amp;d) + 5);</span><br><span class="line">	cout &lt;&lt; &quot;\t地址: &quot; &lt;&lt; (int*)(&amp;d) + 5;</span><br><span class="line">	cout &lt;&lt; endl;</span><br><span class="line"></span><br><span class="line">	//[6]</span><br><span class="line">	cout &lt;&lt; &quot;[6]D::id=&quot; &lt;&lt; *(int*)((int*)(&amp;d) + 6);</span><br><span class="line">	cout &lt;&lt; &quot;\t地址: &quot; &lt;&lt; (int*)(&amp;d) + 6;</span><br><span class="line">	cout &lt;&lt; endl;</span><br><span class="line"></span><br><span class="line">	//[7]</span><br><span class="line">	cout &lt;&lt; &quot;[7]值=&quot; &lt;&lt; *(int*)((int*)(&amp;d) + 7);</span><br><span class="line">	cout &lt;&lt; &quot;\t\t地址：&quot; &lt;&lt; (int*)(&amp;d) + 7;</span><br><span class="line">	cout &lt;&lt; endl;</span><br><span class="line"></span><br><span class="line">	//间接父类</span><br><span class="line">	//[8]</span><br><span class="line">	cout &lt;&lt; &quot;[8]B::vptr&quot;;</span><br><span class="line">	cout &lt;&lt; &quot;\t地址：&quot; &lt;&lt; (int*)(&amp;d) + 8 &lt;&lt; endl;</span><br><span class="line"></span><br><span class="line">	//输出B::vptr中的虚函数</span><br><span class="line">	for (int i = 0; i &lt; 2; ++i)</span><br><span class="line">	&#123;</span><br><span class="line">		cout &lt;&lt; &quot;  [&quot; &lt;&lt; i &lt;&lt; &quot;]&quot;;</span><br><span class="line">		Fun fun1 = (Fun) * ((int*)*((int*)(&amp;d) + 8) + i);</span><br><span class="line">		fun1();</span><br><span class="line">		cout &lt;&lt; &quot;\t地址:\t&quot; &lt;&lt; *((int*)*((int*)(&amp;d) + 8) + i) &lt;&lt; endl;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	//[9]</span><br><span class="line">	cout &lt;&lt; &quot;[9]B::id=&quot; &lt;&lt; *(int*)((int*)(&amp;d) + 9);</span><br><span class="line">	cout &lt;&lt; &quot;\t地址: &quot; &lt;&lt; (int*)(&amp;d) + 9;</span><br><span class="line">	cout &lt;&lt; endl;</span><br><span class="line"></span><br><span class="line">	getchar();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>查看运行结果</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">D对象内存大小为：40</span><br><span class="line">[0]B1::vptr     地址：00EFF6D0</span><br><span class="line">  [0]D::f1()    地址：  11801401</span><br><span class="line">  [1]B1::Bf1()  地址：  11800866</span><br><span class="line">  [2]D::Df()    地址：  11801021</span><br><span class="line">[1]B1::vbptr    地址：00EFF6D4</span><br><span class="line">  [0]-4</span><br><span class="line">  [1]28</span><br><span class="line">[2]B1::ib1=100  地址：00EFF6D8</span><br><span class="line">[3]B2::vptr     地址：00EFF6DC</span><br><span class="line">  [0]D::f2()    地址:   11801571</span><br><span class="line">  [1]B2::Bf2()  地址:   11801366</span><br><span class="line">[4]B2::vbptr    地址：00EFF6E0</span><br><span class="line">  [0]-4</span><br><span class="line">  [1]16</span><br><span class="line">[5]B2::ib2=1000 地址: 00EFF6E4</span><br><span class="line">[6]D::id=10000  地址: 00EFF6E8</span><br><span class="line">[7]值=0         地址：00EFF6EC</span><br><span class="line">[8]B::vptr      地址：00EFF6F0</span><br><span class="line">  [0]D::f()     地址:   11801681</span><br><span class="line">  [1]B::Bf()    地址:   11801651</span><br><span class="line">[9]B::id=1      地址: 00EFF6F4</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h2><p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/qg-whz/p/4909359.html">https://www.cnblogs.com/qg-whz/p/4909359.html</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/tgycoder/p/5426628.html#!comments">https://www.cnblogs.com/tgycoder/p/5426628.html#!comments</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/skynet/p/3343726.html">https://www.cnblogs.com/skynet/p/3343726.html</a><br>对于虚表offset to top可以看这篇<br><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/bcdb38a2b06a">https://www.jianshu.com/p/bcdb38a2b06a</a></p>
+
+      
+    </div>
+    <div class="article-footer">
+      <blockquote class="mt-2x">
+  <ul class="post-copyright list-unstyled">
+    
+    <li class="post-copyright-link hidden-xs">
+      <strong>本文链接：</strong>
+      <a href="https://marblemm.github.io/2022/12/09/cpp%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B/" title="c++对象模型" target="_blank" rel="external">https://marblemm.github.io/2022/12/09/cpp对象模型/</a>
+    </li>
+    
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong> 本博客所有文章除特别声明外，均采用 <a href="http://creativecommons.org/licenses/by/4.0/deed.zh" target="_blank" rel="external">CC BY 4.0 CN协议</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+</blockquote>
+
+
+<div class="panel panel-default panel-badger">
+  <div class="panel-body">
+    <figure class="media">
+      <div class="media-left">
+        <a href="https://github.com/marblemm" target="_blank" class="img-burn thumb-sm visible-lg">
+          <img src="/images/avatar.jpg" class="img-rounded w-full" alt="">
+        </a>
+      </div>
+      <div class="media-body">
+        <h3 class="media-heading"><a href="https://github.com/marblemm" target="_blank"><span class="text-dark">marble</span><small class="ml-1x">software Developer</small></a></h3>
+        <div>个人简介。</div>
+      </div>
+    </figure>
+  </div>
+</div>
+
+
+    </div>
+  </article>
+  
+    
+  <section id="comments">
+  	
+      <div id="vcomments"></div>
+    
+  </section>
+
+
+  
+</div>
+
+  <nav class="bar bar-footer clearfix" data-stick-bottom>
+  <div class="bar-inner">
+  
+  <ul class="pager pull-left">
+    
+    <li class="prev">
+      <a href="/2022/12/09/%E5%A4%A7%E5%B0%8F%E7%AB%AF%E4%BB%8B%E7%BB%8D/" title="大小端介绍"><i class="icon icon-angle-left" aria-hidden="true"></i><span>&nbsp;&nbsp;上一篇</span></a>
+    </li>
+    
+    
+    <li class="next">
+      <a href="/2021/11/24/com-5%E8%B0%83%E7%94%A8com%E7%BB%84%E4%BB%B6%E7%9A%84%E6%96%B9%E6%B3%95%E6%80%BB%E7%BB%93/" title="com-5调用com组件的方法总结"><span>下一篇&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
+    </li>
+    
+    
+    <li class="toggle-toc">
+      <a class="toggle-btn collapsed" data-toggle="collapse" href="#collapseToc" aria-expanded="false" title="文章目录" role="button">
+        <span>[&nbsp;</span><span>文章目录</span>
+        <i class="text-collapsed icon icon-anchor"></i>
+        <i class="text-in icon icon-close"></i>
+        <span>]</span>
+      </a>
+    </li>
+    
+  </ul>
+  
+  
+  <!-- Button trigger modal -->
+  <button type="button" class="btn btn-fancy btn-donate pop-onhover bg-gradient-warning" data-toggle="modal" data-target="#donateModal"><span>赏</span></button>
+  <!-- <div class="wave-icon wave-icon-danger btn-donate" data-toggle="modal" data-target="#donateModal">
+    <div class="wave-circle"><span class="icon"><i class="icon icon-bill"></i></span></div>
+  </div> -->
+  
+  
+  <div class="bar-right">
+    
+    <div class="share-component" data-sites="weibo,qq,wechat" data-mobile-sites="weibo,qq,qzone"></div>
+    
+  </div>
+  </div>
+</nav>
+  
+<!-- Modal -->
+<div class="modal modal-center modal-small modal-xs-full fade" id="donateModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content donate">
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      <div class="modal-body">
+        <div class="donate-box">
+          <div class="donate-head">
+            <p>感谢您的支持，我会继续努力的!</p>
+          </div>
+          <div class="tab-content">
+            <div role="tabpanel" class="tab-pane fade active in" id="alipay">
+              <div class="donate-payimg">
+                <img src="/images/donate/alipayimg.png" alt="扫码支持" title="扫一扫" />
+              </div>
+              <p class="text-muted mv">扫码打赏，你说多少就多少</p>
+              <p class="text-grey">打开支付宝扫一扫，即可进行扫码打赏哦</p>
+            </div>
+            <div role="tabpanel" class="tab-pane fade" id="wechatpay">
+              <div class="donate-payimg">
+                <img src="/images/donate/wechatpayimg.png" alt="扫码支持" title="扫一扫" />
+              </div>
+              <p class="text-muted mv">扫码打赏，你说多少就多少</p>
+              <p class="text-grey">打开微信扫一扫，即可进行扫码打赏哦</p>
+            </div>
+          </div>
+          <div class="donate-footer">
+            <ul class="nav nav-tabs nav-justified" role="tablist">
+              <li role="presentation" class="active">
+                <a href="#alipay" id="alipay-tab" role="tab" data-toggle="tab" aria-controls="alipay" aria-expanded="true"><i class="icon icon-alipay"></i> 支付宝</a>
+              </li>
+              <li role="presentation" class="">
+                <a href="#wechatpay" role="tab" id="wechatpay-tab" data-toggle="tab" aria-controls="wechatpay" aria-expanded="false"><i class="icon icon-wepay"></i> 微信支付</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+</main>
+
+  <footer class="footer" itemscope itemtype="http://schema.org/WPFooter">
+	
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/marblemm" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="https://gitee.com/marblemm" target="_blank" title="Gitee" data-toggle=tooltip data-placement=top><i class="icon icon-gitee"></i></a></li>
+        
+    </ul>
+
+    <div class="copyright">
+    	
+        <div class="publishby">
+        	Theme by <a href="https://github.com/cofess" target="_blank"> cofess </a>base on <a href="https://github.com/cofess/hexo-theme-pure" target="_blank">pure</a>.
+        </div>
+    </div>
+</footer>
+  <script src="//cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+<script>
+window.jQuery || document.write('<script src="js/jquery.min.js"><\/script>')
+</script>
+
+<script src="/js/plugin.min.js"></script>
+
+
+<script src="/js/application.js"></script>
+
+
+    <script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+
+
+
+
+
+   
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+   
+    
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/valine"></script>
+  <script type="text/javascript">
+  var GUEST = ['nick', 'mail', 'link'];
+  var meta = 'nick,mail,link';
+  meta = meta.split(',').filter(function(item) {
+    return GUEST.indexOf(item) > -1;
+  });
+  new Valine({
+    el: '#vcomments',
+    verify: false,
+    notify: false,
+    appId: 'vsxVYXKPSCaf1SOO9F2DEyXU-gzGzoHsz',
+    appKey: '1djOltTjcB8Ap3RrgA6zX8HF',
+    placeholder: 'Just go go',
+    avatar: 'mm',
+    meta: meta,
+    pageSize: '10' || 10,
+    visitor: false
+  });
+  </script>
+
+     
+
+
+
+
+
+
+
+</body>
+</html>

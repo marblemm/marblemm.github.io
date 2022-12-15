@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="Cache-Control" content="no-transform" />
+  <meta http-equiv="Cache-Control" content="no-siteapp" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="format-detection" content="telephone=no,email=no,adress=no">
+  <!-- Color theme for statusbar -->
+  <meta name="theme-color" content="#000000" />
+  <!-- 强制页面在当前窗口以独立页面显示,防止别人在框架里调用页面 -->
+  <meta http-equiv="window-target" content="_top" />
+  
+  
+  <title>cpp多态如何实现 | marble</title>
+  <meta name="description" content="多态的实现需要先了解c++对象模型机制 多态（Polymorphisn）在C++中是通过虚函数实现的。通过前面的模型【参见“有重写的单继承”】知道，如果类中有虚函数，编译器就会自动生成一个虚函数表，对象中包含一个指向虚函数表的指针。能够实现多态的关键在于：虚函数是允许被派生类重写的，在虚函数表中，派生类函数对覆盖（override）基类函数。除此之外，还必须通过指针或引用调用方法才行，将派生类对象">
+<meta property="og:type" content="article">
+<meta property="og:title" content="cpp多态如何实现">
+<meta property="og:url" content="https://marblemm.github.io/2022/12/11/cpp%E5%A4%9A%E6%80%81%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="多态的实现需要先了解c++对象模型机制 多态（Polymorphisn）在C++中是通过虚函数实现的。通过前面的模型【参见“有重写的单继承”】知道，如果类中有虚函数，编译器就会自动生成一个虚函数表，对象中包含一个指向虚函数表的指针。能够实现多态的关键在于：虚函数是允许被派生类重写的，在虚函数表中，派生类函数对覆盖（override）基类函数。除此之外，还必须通过指针或引用调用方法才行，将派生类对象">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://marblemm.github.io/2022/12/11/cpp%E5%A4%9A%E6%80%81%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0/cpp%E5%A4%9A%E6%80%81%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0/1.png">
+<meta property="og:image" content="https://marblemm.github.io/2022/12/11/cpp%E5%A4%9A%E6%80%81%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0/cpp%E5%A4%9A%E6%80%81%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0/2.png">
+<meta property="article:published_time" content="2022-12-11T03:18:04.000Z">
+<meta property="article:modified_time" content="2022-12-12T13:08:36.654Z">
+<meta property="article:author" content="John Doe">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://marblemm.github.io/2022/12/11/cpp%E5%A4%9A%E6%80%81%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0/cpp%E5%A4%9A%E6%80%81%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0/1.png">
+  <!-- Canonical links -->
+  <link rel="canonical" href="https://marblemm.github.io/2022/12/11/cpp%E5%A4%9A%E6%80%81%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0/index.html">
+  
+    <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png" type="image/x-icon">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+  
+  
+  
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body class="main-center theme-green" itemscope itemtype="http://schema.org/WebPage">
+  <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+  <div class="slimContent">
+    <div class="navbar-header">
+      
+      
+      <div class="profile-block text-center">
+        <a id="avatar" href="https://github.com/marblemm" target="_blank">
+          <img class="img-circle img-rotate" src="/images/avatar.jpg" width="200" height="200">
+        </a>
+        <h2 id="name" class="hidden-xs hidden-sm">marble</h2>
+        <h3 id="title" class="hidden-xs hidden-sm hidden-md">software Developer</h3>
+        <small id="location" class="text-muted hidden-xs hidden-sm"><i class="icon icon-map-marker"></i> wuhan, China</small>
+      </div>
+      
+      <div class="search" id="search-form-wrap">
+
+    <form class="search-form sidebar-form">
+        <div class="input-group">
+            <input type="text" class="search-form-input form-control" placeholder="搜索" />
+            <span class="input-group-btn">
+                <button type="submit" class="search-form-submit btn btn-flat" onclick="return false;"><i class="icon icon-search"></i></button>
+            </span>
+        </div>
+    </form>
+    <div class="ins-search">
+  <div class="ins-search-mask"></div>
+  <div class="ins-search-container">
+    <div class="ins-input-wrapper">
+      <input type="text" class="ins-search-input" placeholder="想要查找什么..." x-webkit-speech />
+      <button type="button" class="close ins-close ins-selectable" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+    </div>
+    <div class="ins-section-wrapper">
+      <div class="ins-section-container"></div>
+    </div>
+  </div>
+</div>
+
+
+</div>
+      <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <nav id="main-navbar" class="collapse navbar-collapse" itemscope itemtype="http://schema.org/SiteNavigationElement" role="navigation">
+      <ul class="nav navbar-nav main-nav ">
+        
+        
+        <li class="menu-item menu-item-home">
+          <a href="/.">
+            
+            <i class="icon icon-home-fill"></i>
+            
+            <span class="menu-title">首页</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives">
+            
+            <i class="icon icon-archives-fill"></i>
+            
+            <span class="menu-title">归档</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories">
+            
+            <i class="icon icon-folder"></i>
+            
+            <span class="menu-title">分类</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-links">
+          <a href="/links">
+            
+            <i class="icon icon-friendship"></i>
+            
+            <span class="menu-title">友链</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-pano">
+          <a href="/pano">
+            
+            <i class="icon icon-friendship"></i>
+            
+            <span class="menu-title">全景</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-pointcloud">
+          <a href="/pointcloud">
+            
+            <i class="icon icon-friendship"></i>
+            
+            <span class="menu-title">点云</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-game">
+          <a href="/2048">
+            
+            <i class="icon icon-friendship"></i>
+            
+            <span class="menu-title">游戏</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about">
+            
+            <i class="icon icon-cup-fill"></i>
+            
+            <span class="menu-title">关于</span>
+          </a>
+        </li>
+        
+      </ul>
+      
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/marblemm" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="https://gitee.com/marblemm" target="_blank" title="Gitee" data-toggle=tooltip data-placement=top><i class="icon icon-gitee"></i></a></li>
+        
+    </ul>
+
+    </nav>
+  </div>
+</header>
+
+  
+    <aside class="sidebar" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    
+      <div class="widget">
+    <h3 class="widget-title">公告</h3>
+    <div class="widget-body">
+        <div id="board">
+            <div class="content">
+                <p>欢迎交流与分享经验!</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">分类</h3>
+    <div class="widget-body">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/c/">c++</a><span class="category-list-count">14</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/c-%E9%9D%A2%E8%AF%95/">c++面试</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/cmake/">cmake</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/com/">com</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/git/">git</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/tool/">tool</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/vs/">vs</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E4%B9%A6%E7%B1%8D/">书籍</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%A4%9A%E7%BA%BF%E7%A8%8B/">多线程</a><span class="category-list-count">5</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget-body">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/cmake/" rel="tag">cmake</a><span class="tag-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget-body tagcloud">
+      <a href="/tags/cmake/" style="font-size: 13px;">cmake</a>
+    </div>
+  </div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget-body">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/12/">十二月 2022</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/11/">十一月 2021</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/10/">十月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/09/">九月 2021</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/08/">八月 2021</a><span class="archive-list-count">23</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget-body">
+      <ul class="recent-post-list list-unstyled no-thumbnail">
+        
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/c/">c++</a>
+              </p>
+              <p class="item-title">
+                <a href="/2022/12/11/cpp%E5%A4%9A%E6%80%81%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0/" class="title">cpp多态如何实现</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2022-12-11T03:18:04.000Z" itemprop="datePublished">2022-12-11</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/c/">c++</a>
+              </p>
+              <p class="item-title">
+                <a href="/2022/12/09/%E5%A4%A7%E5%B0%8F%E7%AB%AF%E4%BB%8B%E7%BB%8D/" class="title">大小端介绍</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2022-12-09T03:41:54.000Z" itemprop="datePublished">2022-12-09</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/c/">c++</a>
+              </p>
+              <p class="item-title">
+                <a href="/2022/12/09/cpp%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B/" class="title">c++对象模型</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2022-12-09T01:59:20.000Z" itemprop="datePublished">2022-12-09</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/com/">com</a>
+              </p>
+              <p class="item-title">
+                <a href="/2021/11/24/com-5%E8%B0%83%E7%94%A8com%E7%BB%84%E4%BB%B6%E7%9A%84%E6%96%B9%E6%B3%95%E6%80%BB%E7%BB%93/" class="title">com-5调用com组件的方法总结</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2021-11-24T15:28:53.000Z" itemprop="datePublished">2021-11-24</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/com/">com</a>
+              </p>
+              <p class="item-title">
+                <a href="/2021/11/21/com-4%E7%BB%84%E4%BB%B6%E5%A4%8D%E7%94%A8-%E5%8C%85%E5%AE%B9%E5%92%8C%E8%81%9A%E5%90%88/" class="title">com-4组件复用:包容和聚合</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2021-11-21T02:11:48.000Z" itemprop="datePublished">2021-11-21</time>
+              </p>
+            </div>
+          </li>
+          
+      </ul>
+    </div>
+  </div>
+  
+
+    
+  </div>
+</aside>
+
+  
+  
+<aside class="sidebar sidebar-toc collapse" id="collapseToc" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    <nav id="toc" class="article-toc">
+      <h3 class="toc-title">文章目录</h3>
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A4%9A%E6%80%81%E7%9A%84%E5%AE%9E%E7%8E%B0"><span class="toc-number">1.</span> <span class="toc-text">多态的实现</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E6%9E%90%E6%9E%84%E5%87%BD%E6%95%B0%E8%AE%BE%E4%B8%BA%E8%99%9A%E5%87%BD%E6%95%B0%E6%98%AF%E5%BF%85%E8%A6%81%E7%9A%84"><span class="toc-number">2.</span> <span class="toc-text">为什么析构函数设为虚函数是必要的</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#C-%E5%B0%81%E8%A3%85%E5%B8%A6%E6%9D%A5%E7%9A%84%E5%B8%83%E5%B1%80%E6%88%90%E6%9C%AC%E6%98%AF%E5%A4%9A%E5%A4%A7"><span class="toc-number">3.</span> <span class="toc-text">C++封装带来的布局成本是多大</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%8B%E9%9D%A2%E8%BF%99%E4%B8%AA%E7%A9%BA%E7%B1%BB%E6%9E%84%E6%88%90%E7%9A%84%E7%BB%A7%E6%89%BF%E5%B1%82%E6%AC%A1%E4%B8%AD%EF%BC%8C%E6%AF%8F%E4%B8%AA%E7%B1%BB%E7%9A%84%E5%A4%A7%E5%B0%8F%E6%98%AF%E5%A4%9A%E5%B0%91%EF%BC%9F"><span class="toc-number">4.</span> <span class="toc-text">下面这个空类构成的继承层次中，每个类的大小是多少？</span></a></li></ol>
+    </nav>
+  </div>
+</aside>
+
+<main class="main" role="main">
+  <div class="content">
+  <article id="post-cpp多态如何实现" class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
+    
+    <div class="article-header">
+      
+        
+  
+    <h1 class="article-title" itemprop="name">
+      cpp多态如何实现
+    </h1>
+  
+
+      
+      <div class="article-meta">
+        <span class="article-date">
+    <i class="icon icon-calendar-check"></i>
+	<a href="/2022/12/11/cpp%E5%A4%9A%E6%80%81%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0/" class="article-date">
+	  <time datetime="2022-12-11T03:18:04.000Z" itemprop="datePublished">2022-12-11</time>
+	</a>
+</span>
+        
+  <span class="article-category">
+    <i class="icon icon-folder"></i>
+    <a class="article-category-link" href="/categories/c/">c++</a>
+  </span>
+
+        
+
+        
+	<span class="article-read hidden-xs">
+	    <i class="icon icon-eye-fill" aria-hidden="true"></i>
+	    <span id="busuanzi_container_page_pv">
+			<span id="busuanzi_value_page_pv">0</span>
+		</span>
+	</span>
+
+
+        <span class="post-comment"><i class="icon icon-comment"></i> <a href="/2022/12/11/cpp%E5%A4%9A%E6%80%81%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0/#comments" class="article-comment-link">评论</a></span>
+        
+	
+		<span class="post-wordcount hidden-xs" itemprop="wordCount">字数统计: 1.9k(字)</span>
+	
+	
+		<span class="post-readcount hidden-xs" itemprop="timeRequired">阅读时长: 7(分)</span>
+	
+
+      </div>
+    </div>
+    <div class="article-entry marked-body" itemprop="articleBody">
+      
+        <h2 id="多态的实现"><a href="#多态的实现" class="headerlink" title="多态的实现"></a>多态的实现</h2><p>需要先了解<a href="./cpp%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B.md">c++对象模型机制</a></p>
+<p>多态（Polymorphisn）在C++中是通过虚函数实现的。通过前面的模型【参见“有重写的单继承”】知道，如果类中有虚函数，编译器就会自动生成一个虚函数表，对象中包含一个指向虚函数表的指针。能够实现多态的关键在于：虚函数是允许被派生类重写的，在虚函数表中，派生类函数对覆盖（override）基类函数。除此之外，还必须通过指针或引用调用方法才行，将派生类对象赋给基类对象。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br></pre></td><td class="code"><pre><span class="line">#include &lt;iostream&gt;</span><br><span class="line">using namespace std;</span><br><span class="line"></span><br><span class="line">class BaseClass</span><br><span class="line">&#123;</span><br><span class="line">public:</span><br><span class="line">	BaseClass()</span><br><span class="line">	&#123;</span><br><span class="line">		cout &lt;&lt; &quot;base::base()&quot; &lt;&lt; endl;</span><br><span class="line">	&#125;</span><br><span class="line">	virtual ~BaseClass()</span><br><span class="line">	&#123;</span><br><span class="line">		cout &lt;&lt; &quot;base::~base()&quot; &lt;&lt; endl;</span><br><span class="line">	&#125;</span><br><span class="line">	void print()</span><br><span class="line">	&#123;</span><br><span class="line">		cout &lt;&lt; &quot;base::print()&quot; &lt;&lt; endl;</span><br><span class="line">	&#125;</span><br><span class="line">	virtual void print_virtual()</span><br><span class="line">	&#123;</span><br><span class="line">		cout &lt;&lt; &quot;base::print_virtual()&quot; &lt;&lt; endl;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">class DerivedClass : public BaseClass</span><br><span class="line">&#123;</span><br><span class="line">public:</span><br><span class="line">	DerivedClass() : BaseClass()</span><br><span class="line">	&#123;</span><br><span class="line">		cout &lt;&lt; &quot;Derived::Derived()&quot; &lt;&lt; endl;</span><br><span class="line">	&#125;</span><br><span class="line">	virtual ~DerivedClass()</span><br><span class="line">	&#123;</span><br><span class="line">		cout &lt;&lt; &quot;Derived::~Derived()&quot; &lt;&lt; endl;</span><br><span class="line">	&#125;</span><br><span class="line">	void print()</span><br><span class="line">	&#123;</span><br><span class="line">		cout &lt;&lt; &quot;Derived::print()&quot; &lt;&lt; endl;</span><br><span class="line">	&#125;</span><br><span class="line">	virtual void print_virtual()</span><br><span class="line">	&#123;</span><br><span class="line">		cout &lt;&lt; &quot;Derived::print_virtual()&quot; &lt;&lt; endl;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">int main()</span><br><span class="line">&#123;</span><br><span class="line">	BaseClass b;</span><br><span class="line">	DerivedClass d;</span><br><span class="line"></span><br><span class="line">	b = d;</span><br><span class="line">	b.print();</span><br><span class="line">	b.print_virtual();</span><br><span class="line"></span><br><span class="line">	BaseClass* p;</span><br><span class="line"></span><br><span class="line">	p = &amp;d;</span><br><span class="line">	p-&gt;print();</span><br><span class="line">	p-&gt;print_virtual();</span><br><span class="line"></span><br><span class="line">	return 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>上面2个类，基类Base、派生类Derived中都包含下面2个方法：</p>
+<pre><code>void print() const;
+
+virtual void print_virtual() const;
+</code></pre>
+<p>这个2个方法的区别就在于一个是普通成员函数，一个是虚函数</p>
+<p>根据模型推测只有p-&gt;print_virtual()才实现了动态，其他3调用都是调用基类的方法。原因如下：</p>
+<pre><code>b.print();b.print_virtual();不能实现多态是因为通过基类对象调用，而非指针或引用所以不能实现多态。
+p-&gt;print();不能实现多态是因为，print函数没有声明为虚函数（virtual），派生类中也定义了print函数只是隐藏了基类的print函数。
+</code></pre>
+<p>结果输出：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">base::base()</span><br><span class="line">base::base()</span><br><span class="line">Derived::Derived()</span><br><span class="line">base::print()</span><br><span class="line">base::print_virtual()</span><br><span class="line">base::print()</span><br><span class="line">Derived::print_virtual()</span><br><span class="line">Derived::~Derived()</span><br><span class="line">base::~base()</span><br><span class="line">base::~base()</span><br></pre></td></tr></table></figure>
+
+<h2 id="为什么析构函数设为虚函数是必要的"><a href="#为什么析构函数设为虚函数是必要的" class="headerlink" title="为什么析构函数设为虚函数是必要的"></a>为什么析构函数设为虚函数是必要的</h2><p>析构函数应当都是虚函数，除非明确该类不做基类（不被其他类继承）。基类的析构函数声明为虚函数，这样做是为了确保释放派生对象时，按照正确的顺序调用析构函数。</p>
+<p>从前面介绍的C++对象模型可以知道，如果析构函数不定义为虚函数，那么派生类就不会重写基类的析构函数，在有多态行为的时候，派生类的析构函数不会被调用到（有内存泄漏的风险！）。</p>
+<h2 id="C-封装带来的布局成本是多大"><a href="#C-封装带来的布局成本是多大" class="headerlink" title="C++封装带来的布局成本是多大"></a>C++封装带来的布局成本是多大</h2><p>在C语言中，“数据”和“处理数据的操作（函数）”是分开来声明的，也就是说，语言本身并没有支持“数据和函数”之间的关联性。<br>在C++中，我们通过类来将属性与操作绑定在一起，称为ADT，抽象数据结构。</p>
+<p>C语言中使用struct（结构体）来封装数据，使用函数来处理数据。举个例子，如果我们定义了一个struct Point3如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">typedef struct Point3</span><br><span class="line">&#123;</span><br><span class="line">    float x;</span><br><span class="line">    float y;</span><br><span class="line">    float z;</span><br><span class="line">&#125; Point3;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>为了打印这个Point3d，我们可以定义一个函数：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">void Point3d_print(const Point3d *pd)</span><br><span class="line">&#123;</span><br><span class="line">    printf(&quot;(%f,%f,%f)&quot;,pd-&gt;x,pd-&gt;y,pd_z);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>而在C++中，我们更倾向于定义一个Point3d类，以ADT来实现上面的操作:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">class Point3d</span><br><span class="line">&#123;</span><br><span class="line">    public:</span><br><span class="line">        point3d (float x = 0.0,float y = 0.0,float z = 0.0)</span><br><span class="line">            : _x(x), _y(y), _z(z)&#123;&#125;</span><br><span class="line"></span><br><span class="line">        float x() const &#123;return _x;&#125;</span><br><span class="line">        float y() const &#123;return _y;&#125;</span><br><span class="line">        float z() const &#123;return _z;&#125;</span><br><span class="line">    </span><br><span class="line">    private:</span><br><span class="line">        float _x;</span><br><span class="line">        float _y;</span><br><span class="line">        float _z;</span><br><span class="line">&#125;；</span><br><span class="line"></span><br><span class="line">inline ostream&amp;</span><br><span class="line">operator&lt;&lt;(ostream &amp;os, const Point3d &amp;pt)</span><br><span class="line">&#123;</span><br><span class="line">    os&lt;&lt;&quot;(&quot;&lt;&lt;pr.x()&lt;&lt;&quot;,&quot;</span><br><span class="line">        &lt;&lt;pt.y()&lt;&lt;&quot;,&quot;&lt;&lt;pt.z()&lt;&lt;&quot;)&quot;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>看到这段代码，很多人第一个疑问可能是：加上了封装，布局成本增加了多少？答案是class Point3d并没有增加成本。学过了C++对象模型，我们知道，Point3d类对象的内存中，只有三个数据成员。</p>
+<p>上面的类声明中，三个数据成员直接内含在每一个Point3d对象中，而成员函数虽然在类中声明，却不出现在类对象（object）之中，这些函数(non-inline)属于类而不属于类对象，只会为类产生唯一的函数实例。</p>
+<p>所以，Point3d的封装并没有带来任何空间或执行期的效率影响。而在下面这种情况下，C++的封装额外成本才会显示出来：</p>
+<pre><code>虚函数机制（virtual function） , 用以支持执行期绑定，实现多态。
+虚基类 （virtual base class） ，虚继承关系产生虚基类，用于在多重继承下保证基类在子类中拥有唯一实例。
+</code></pre>
+<p>不仅如此，Point3d类数据成员的内存布局与c语言的结构体Point3d成员内存布局是相同的。C++中处在同一个访问标识符（指public、private、protected）下的声明的数据成员，在内存中必定保证以其声明顺序出现。而处于不同访问标识符声明下的成员则无此规定。对于Point3类来说，它的三个数据成员都处于private下，在内存中一起声明顺序出现。我们可以做下实验：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">void TestPoint3Member(const Point3d&amp; p)</span><br><span class="line">&#123;</span><br><span class="line"> </span><br><span class="line">    cout &lt;&lt; &quot;推测_x的地址是：&quot; &lt;&lt; (float *) (&amp;p) &lt;&lt; endl;</span><br><span class="line">    cout &lt;&lt; &quot;推测_y的地址是：&quot; &lt;&lt; (float *) (&amp;p) + 1 &lt;&lt; endl;</span><br><span class="line">    cout &lt;&lt; &quot;推测_z的地址是：&quot; &lt;&lt; (float *) (&amp;p) + 2 &lt;&lt; endl;</span><br><span class="line"> </span><br><span class="line">    cout &lt;&lt; &quot;根据推测出的地址输出_x的值：&quot; &lt;&lt; *((float *)(&amp;p)) &lt;&lt; endl;</span><br><span class="line">    cout &lt;&lt; &quot;根据推测出的地址输出_y的值：&quot; &lt;&lt; *((float *)(&amp;p)+1) &lt;&lt; endl;</span><br><span class="line">    cout &lt;&lt; &quot;根据推测出的地址输出_z的值：&quot; &lt;&lt; *((float *)(&amp;p)+2) &lt;&lt; endl;</span><br><span class="line"> </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code>//测试代码
+Point3d a(1,2,3);
+TestPoint3Member(a);
+</code></pre>
+<p>运行结果：</p>
+<p><img src="./cpp%E5%A4%9A%E6%80%81%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0/1.png" alt="图 1">  </p>
+<p>从结果可以看到，_x,_y,_z三个数据成员在内存中紧挨着。</p>
+<p>总结一下：</p>
+<p>不考虑虚函数与虚继承，当数据都在同一个访问标识符下，C++的类与C语言的结构体在对象大小和内存布局上是一致的，C++的封装并没有带来空间时间上的影响。</p>
+<h2 id="下面这个空类构成的继承层次中，每个类的大小是多少？"><a href="#下面这个空类构成的继承层次中，每个类的大小是多少？" class="headerlink" title="下面这个空类构成的继承层次中，每个类的大小是多少？"></a>下面这个空类构成的继承层次中，每个类的大小是多少？</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">class B&#123;&#125;;</span><br><span class="line">class B1 :public virtual  B&#123;&#125;;</span><br><span class="line">class B2 :public virtual  B&#123;&#125;;</span><br><span class="line">class D : public B1, public B2&#123;&#125;;</span><br><span class="line"></span><br><span class="line">int main()</span><br><span class="line">&#123;</span><br><span class="line">    B b;</span><br><span class="line">    B1 b1;</span><br><span class="line">    B2 b2;</span><br><span class="line">    D d;</span><br><span class="line">    cout &lt;&lt; &quot;sizeof(b)=&quot; &lt;&lt; sizeof(b)&lt;&lt;endl;</span><br><span class="line">    cout &lt;&lt; &quot;sizeof(b1)=&quot; &lt;&lt; sizeof(b1) &lt;&lt; endl;</span><br><span class="line">    cout &lt;&lt; &quot;sizeof(b2)=&quot; &lt;&lt; sizeof(b2) &lt;&lt; endl;</span><br><span class="line">    cout &lt;&lt; &quot;sizeof(d)=&quot; &lt;&lt; sizeof(d) &lt;&lt; endl;</span><br><span class="line">    getchar();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>输出结果是：<br><img src="./cpp%E5%A4%9A%E6%80%81%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0/2.png" alt="图 2">  </p>
+<p>解析：</p>
+<ul>
+<li>编译器为空类安插1字节的char，以使该类对象在内存得以配置一个地址。</li>
+<li>b1虚继承于b，编译器为其安插一个4字节的虚基类表指针（32为机器），此时b1已不为空，编译器不再为其安插1字节的char（优化）。</li>
+<li>b2同理。</li>
+<li>d含有来自b1与b2两个父类的两个虚基类表指针。大小为8字节。</li>
+</ul>
+<p>参考：</p>
+<p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/qg-whz/p/4909359.html#!comments">https://www.cnblogs.com/qg-whz/p/4909359.html#!comments</a></p>
+
+      
+    </div>
+    <div class="article-footer">
+      <blockquote class="mt-2x">
+  <ul class="post-copyright list-unstyled">
+    
+    <li class="post-copyright-link hidden-xs">
+      <strong>本文链接：</strong>
+      <a href="https://marblemm.github.io/2022/12/11/cpp%E5%A4%9A%E6%80%81%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0/" title="cpp多态如何实现" target="_blank" rel="external">https://marblemm.github.io/2022/12/11/cpp多态如何实现/</a>
+    </li>
+    
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong> 本博客所有文章除特别声明外，均采用 <a href="http://creativecommons.org/licenses/by/4.0/deed.zh" target="_blank" rel="external">CC BY 4.0 CN协议</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+</blockquote>
+
+
+<div class="panel panel-default panel-badger">
+  <div class="panel-body">
+    <figure class="media">
+      <div class="media-left">
+        <a href="https://github.com/marblemm" target="_blank" class="img-burn thumb-sm visible-lg">
+          <img src="/images/avatar.jpg" class="img-rounded w-full" alt="">
+        </a>
+      </div>
+      <div class="media-body">
+        <h3 class="media-heading"><a href="https://github.com/marblemm" target="_blank"><span class="text-dark">marble</span><small class="ml-1x">software Developer</small></a></h3>
+        <div>个人简介。</div>
+      </div>
+    </figure>
+  </div>
+</div>
+
+
+    </div>
+  </article>
+  
+    
+  <section id="comments">
+  	
+      <div id="vcomments"></div>
+    
+  </section>
+
+
+  
+</div>
+
+  <nav class="bar bar-footer clearfix" data-stick-bottom>
+  <div class="bar-inner">
+  
+  <ul class="pager pull-left">
+    
+    
+    <li class="next">
+      <a href="/2022/12/09/%E5%A4%A7%E5%B0%8F%E7%AB%AF%E4%BB%8B%E7%BB%8D/" title="大小端介绍"><span>下一篇&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
+    </li>
+    
+    
+    <li class="toggle-toc">
+      <a class="toggle-btn collapsed" data-toggle="collapse" href="#collapseToc" aria-expanded="false" title="文章目录" role="button">
+        <span>[&nbsp;</span><span>文章目录</span>
+        <i class="text-collapsed icon icon-anchor"></i>
+        <i class="text-in icon icon-close"></i>
+        <span>]</span>
+      </a>
+    </li>
+    
+  </ul>
+  
+  
+  <!-- Button trigger modal -->
+  <button type="button" class="btn btn-fancy btn-donate pop-onhover bg-gradient-warning" data-toggle="modal" data-target="#donateModal"><span>赏</span></button>
+  <!-- <div class="wave-icon wave-icon-danger btn-donate" data-toggle="modal" data-target="#donateModal">
+    <div class="wave-circle"><span class="icon"><i class="icon icon-bill"></i></span></div>
+  </div> -->
+  
+  
+  <div class="bar-right">
+    
+    <div class="share-component" data-sites="weibo,qq,wechat" data-mobile-sites="weibo,qq,qzone"></div>
+    
+  </div>
+  </div>
+</nav>
+  
+<!-- Modal -->
+<div class="modal modal-center modal-small modal-xs-full fade" id="donateModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content donate">
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      <div class="modal-body">
+        <div class="donate-box">
+          <div class="donate-head">
+            <p>感谢您的支持，我会继续努力的!</p>
+          </div>
+          <div class="tab-content">
+            <div role="tabpanel" class="tab-pane fade active in" id="alipay">
+              <div class="donate-payimg">
+                <img src="/images/donate/alipayimg.png" alt="扫码支持" title="扫一扫" />
+              </div>
+              <p class="text-muted mv">扫码打赏，你说多少就多少</p>
+              <p class="text-grey">打开支付宝扫一扫，即可进行扫码打赏哦</p>
+            </div>
+            <div role="tabpanel" class="tab-pane fade" id="wechatpay">
+              <div class="donate-payimg">
+                <img src="/images/donate/wechatpayimg.png" alt="扫码支持" title="扫一扫" />
+              </div>
+              <p class="text-muted mv">扫码打赏，你说多少就多少</p>
+              <p class="text-grey">打开微信扫一扫，即可进行扫码打赏哦</p>
+            </div>
+          </div>
+          <div class="donate-footer">
+            <ul class="nav nav-tabs nav-justified" role="tablist">
+              <li role="presentation" class="active">
+                <a href="#alipay" id="alipay-tab" role="tab" data-toggle="tab" aria-controls="alipay" aria-expanded="true"><i class="icon icon-alipay"></i> 支付宝</a>
+              </li>
+              <li role="presentation" class="">
+                <a href="#wechatpay" role="tab" id="wechatpay-tab" data-toggle="tab" aria-controls="wechatpay" aria-expanded="false"><i class="icon icon-wepay"></i> 微信支付</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+</main>
+
+  <footer class="footer" itemscope itemtype="http://schema.org/WPFooter">
+	
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/marblemm" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="https://gitee.com/marblemm" target="_blank" title="Gitee" data-toggle=tooltip data-placement=top><i class="icon icon-gitee"></i></a></li>
+        
+    </ul>
+
+    <div class="copyright">
+    	
+        <div class="publishby">
+        	Theme by <a href="https://github.com/cofess" target="_blank"> cofess </a>base on <a href="https://github.com/cofess/hexo-theme-pure" target="_blank">pure</a>.
+        </div>
+    </div>
+</footer>
+  <script src="//cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+<script>
+window.jQuery || document.write('<script src="js/jquery.min.js"><\/script>')
+</script>
+
+<script src="/js/plugin.min.js"></script>
+
+
+<script src="/js/application.js"></script>
+
+
+    <script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+
+
+
+
+
+   
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+   
+    
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/valine"></script>
+  <script type="text/javascript">
+  var GUEST = ['nick', 'mail', 'link'];
+  var meta = 'nick,mail,link';
+  meta = meta.split(',').filter(function(item) {
+    return GUEST.indexOf(item) > -1;
+  });
+  new Valine({
+    el: '#vcomments',
+    verify: false,
+    notify: false,
+    appId: 'vsxVYXKPSCaf1SOO9F2DEyXU-gzGzoHsz',
+    appKey: '1djOltTjcB8Ap3RrgA6zX8HF',
+    placeholder: 'Just go go',
+    avatar: 'mm',
+    meta: meta,
+    pageSize: '10' || 10,
+    visitor: false
+  });
+  </script>
+
+     
+
+
+
+
+
+
+
+</body>
+</html>
