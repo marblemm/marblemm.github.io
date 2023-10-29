@@ -2,5 +2,3 @@
 个人博客
 
 [http://marblemm.github.io](http://marblemm.github.io)
-
-[http://marblemm.gitee.io](http://marblemm.gitee.io)
